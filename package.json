@@ -2,7 +2,7 @@
   "name": "progressbar",
   "private": true,
   "version": "0.0.0",
-  "hoomepage": "https://https://g-domingos.github.io/progressbar",
+  "hoomepage": "./",
   "type": "module",
   "scripts": {
     "dev": "vite",
