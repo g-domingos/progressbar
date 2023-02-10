@@ -19,7 +19,8 @@ export const Home = () => {
 
   const location = useLocation();
   const { pathname } = location;
-  const clientId = pathname.split("/").slice(2, 3)[0];
+
+  const clientId = pathname.split("/").slice(3, 4)[0];
 
   const fetchData = async () => {
     setProcessing(true);

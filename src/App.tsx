@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
-    <BrowserRouter basename={window.location.pathname || ""}>
+    <BrowserRouter >
       <GlobalStyle />
       <Router />
     </BrowserRouter>
