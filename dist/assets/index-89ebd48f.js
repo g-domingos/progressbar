@@ -190,7 +190,7 @@ Error generating stack: `+i.message+`
       font-weight: 500;
     }
   }
-`,Ig="/assets/Logo-ec2f04a3.png";var qs={},Dg={get exports(){return qs},set exports(e){qs=e}};/*!
+`,Ig="/progressbar/assets/Logo-ec2f04a3.png";var qs={},Dg={get exports(){return qs},set exports(e){qs=e}};/*!
 	Copyright (c) 2018 Jed Watson.
 	Licensed under the MIT License (MIT), see
 	http://jedwatson.github.io/classnames
