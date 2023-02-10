@@ -2,12 +2,14 @@
   "name": "progressbar",
   "private": true,
   "version": "0.0.0",
+  "hoomepage": "https://https://g-domingos.github.io/progressbar",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@types/node": "^18.11.19",
@@ -28,6 +30,7 @@
     "@types/react-dom": "^18.0.10",
     "@types/styled-components": "^5.1.26",
     "@vitejs/plugin-react": "^3.1.0",
+    "github-pages": "^3.0.2",
     "typescript": "^4.9.5",
     "vite": "^4.1.0"
   }
