@@ -2,7 +2,7 @@
   "name": "progressbar",
   "private": true,
   "version": "0.0.0",
-  "hoomepage": "./",
+  "hoomepage": "/progressbar/",
   "type": "module",
   "scripts": {
     "dev": "vite",
