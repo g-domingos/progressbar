@@ -215,4 +215,4 @@ Error generating stack: `+i.message+`
   body, input, textarea, button {
     font: 400 1rem Roboto, sans-serif;
   }
-`;function Qg(){return Po(vy,{children:[ve(Wg,{}),ve(Vg,{})]})}Wl.createRoot(document.getElementById("root")).render(ve(Sn.StrictMode,{children:ve(Qg,{})}));
+`;function Qg(){return Po(vy,{basename:window.location.pathname||"",children:[ve(Wg,{}),ve(Vg,{})]})}Wl.createRoot(document.getElementById("root")).render(ve(Sn.StrictMode,{children:ve(Qg,{})}));
