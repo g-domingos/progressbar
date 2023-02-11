@@ -5,10 +5,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
-    <HashRouter >
+    <BrowserRouter basename={window.location.pathname || ""}>
       <GlobalStyle />
       <Router />
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
