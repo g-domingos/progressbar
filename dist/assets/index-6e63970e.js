@@ -258,4 +258,4 @@ Error generating stack: `+i.message+`
   body, input, textarea, button {
     font: 400 1rem Roboto, sans-serif;
   }
-`;function m1(){return Ct($y,{children:[ee(h1,{}),ee(p1,{})]})}Jl.createRoot(document.getElementById("root")).render(ee(xn.StrictMode,{children:ee(m1,{})}));
+`;function m1(){return Ct($y,{basename:window.location.pathname||"",children:[ee(h1,{}),ee(p1,{})]})}Jl.createRoot(document.getElementById("root")).render(ee(xn.StrictMode,{children:ee(m1,{})}));
