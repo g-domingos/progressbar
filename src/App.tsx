@@ -4,8 +4,9 @@ import { GlobalStyle } from "./styles/global";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
+  // basename={window.location.pathname || ""}
   return (
-    <BrowserRouter basename={window.location.pathname || ""}>
+    <BrowserRouter>
       <GlobalStyle />
       <Router />
     </BrowserRouter>

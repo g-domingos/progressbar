@@ -19,7 +19,6 @@ export const MainDiv = styled.div`
     height: 8%;
     border: 10px solid #eeeeee;
     background: #eeeeee;
-    color: red;
     display: flex;
     gap: 4px;
     border-radius: 16px;
@@ -54,16 +53,16 @@ export const Span = styled.span<{ customWidth?: number; statusColor?: string }>`
   }
 `;
 
-export const Circle = styled.div<{ opaco?: boolean }>`
+export const Circle = styled.div<{ opaco?: boolean; color?: string }>`
   opacity: ${(props) => (props.opaco ? "1" : "0.4")};
   display: flex;
   justify-content: center;
   align-items: center;
   width: 40px;
   height: 40px;
-  background: #f1c233;
+  background: ${(props) => (props.color ? props.color : "#f1c233")};
   border-radius: 100%;
-  color: black;
+  color: ${(props) => (props.color === "black" ? "#f1c233" : "black")};
   font-weight: 900;
   font-size: 20px;
 `;
@@ -74,24 +73,20 @@ export const SpinnerDiv = styled.div`
 
 export const TextBox = styled.div`
   display: flex;
+  align-items: baseline;
   position: absolute;
   max-width: 38%;
   left: 13%;
-  top: 20%;
+  top: 18%;
   color: black;
   font-weight: 1000;
   font-size: 46px;
   font-family: Roboto;
 
   span {
-    position: absolute;
-    left: -30px;
-    width: 80px;
-    height: 80px;
-    border-radius: 100%;
-    background: #f1c233;
-    filter: blur(5px);
-    z-index: -1;
+    font-size: 70px;
+    margin-left: 20px;
+    color: #7ed957 !important;
   }
 `;
 
@@ -117,5 +112,56 @@ export const LabelContainer = styled.div`
       font-size: 25px;
       font-weight: 500;
     }
+  }
+`;
+
+export const DateContainer = styled.div`
+  position: absolute;
+  top: -90px;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 800;
+  width: 70%;
+`;
+
+export const DateBackground = styled.span<{ color?: string }>`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background: ${(props) => props.color};
+  border-radius: 9px;
+`;
+
+export const PredictDelivered = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 30.75%;
+  left: 11%;
+  font-size: 14px;
+  font-weight: 700;
+  color: gray;
+`;
+
+export const Legend = styled.div`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  bottom: 10%;
+  gap: 20px;
+  font-weight: 800;
+  font-family: Roboto;
+
+  span {
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    background: black;
+  }
+
+  & > span:first-child {
+    background: #f1c233 !important;
   }
 `;

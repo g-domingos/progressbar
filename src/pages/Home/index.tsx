@@ -3,8 +3,12 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import {
   Circle,
+  DateBackground,
+  DateContainer,
   LabelContainer,
+  Legend,
   MainDiv,
+  PredictDelivered,
   Span,
   SpinnerDiv,
   TextBox,
@@ -43,16 +47,21 @@ export const Home = () => {
     fetch();
   }, []);
 
+  const getFormattedDate = (dateInput: any) => {
+    var date = new Date(dateInput);
+    var day = date.getDate().toString().padStart(2, "0");
+    var month = (date.getMonth() + 1).toString().padStart(2, "0");
+    var year = date.getFullYear();
+    var formattedDate = day + "/" + month + "/" + year;
+
+    const dateFromSheet = new Date(formattedDate).getTime();
+
+    return dateFromSheet;
+  };
+
   const getStatusColor = (dateInput: number | any) => {
     if (dateInput) {
-      var date = new Date(dateInput);
-      var day = date.getDate().toString().padStart(2, "0");
-      var month = (date.getMonth() + 1).toString().padStart(2, "0");
-      var year = date.getFullYear();
-      var formattedDate = day + "/" + month + "/" + year;
-
-      const dateFromSheet = new Date(formattedDate).getTime();
-
+      const dateFromSheet = getFormattedDate(dateInput);
       const todayDate = new Date().setHours(0, 0, 0, 0);
       const tomorrow = new Date().setHours(24, 0, 0, 0);
 
@@ -69,11 +78,33 @@ export const Home = () => {
     }
   };
 
+  const isLate = (predictData: number | any, deliveryDate: any) => {
+    const predict = getFormattedDate(predictData);
+    const delivery = getFormattedDate(deliveryDate);
+
+    if (delivery > predict) {
+      return "#FF5757";
+    } else if (delivery <= predict) {
+      return "#CFFF00";
+    }
+  };
+
+  const getPercentageProgress = (array: any[]) => {
+    const amountActivity = array?.slice(1).length;
+    const completed = array?.slice(1).filter((item: any) => item[3]).length;
+
+    return ((completed / amountActivity) * 100).toFixed();
+  };
   return (
     <MainDiv>
       <TextBox>
-        seu progresso
+        <label>seu progresso:</label>
+        <span>{apiData?.length && getPercentageProgress(apiData)}%</span>
       </TextBox>
+      <PredictDelivered>
+        <label>previsto</label>
+        <label>entregue</label>
+      </PredictDelivered>
       <img src={Logo} />
       {processing ? (
         <SpinnerDiv>
@@ -84,10 +115,21 @@ export const Home = () => {
           {apiData?.slice(1)?.map((item: any, index: number) => (
             <Span
               customWidth={apiData.length}
-              statusColor={getStatusColor(item[1])}
+              statusColor={getStatusColor(item[3])}
             >
-              <label>{item[1]?.slice(0, 5)}</label>
-              <Circle opaco={item[1]?.length}>{index + 1}</Circle>
+              <DateContainer>
+                <label>{item[2]?.slice(0, 5)}</label>
+                <DateBackground color={isLate(item[2], item[3])}>
+                  <label>{item[3]?.slice(0, 5)}</label>
+                </DateBackground>
+              </DateContainer>
+
+              <Circle
+                opaco={item[3]?.length}
+                color={item[1]?.length ? "black" : "#f1c233"}
+              >
+                {index + 1}
+              </Circle>
             </Span>
           ))}
         </div>
@@ -95,11 +137,22 @@ export const Home = () => {
       <LabelContainer>
         {apiData?.slice(1)?.map((item: any, index: number) => (
           <div>
-            <Circle opaco={item[1]?.length}>{index + 1}</Circle>
+            <Circle
+              opaco={item[3]?.length}
+              color={item[1]?.length ? "black" : "#f1c233"}
+            >
+              {index + 1}
+            </Circle>
             <label>{item[0]}</label>
           </div>
         ))}
       </LabelContainer>
+      <Legend>
+        <span></span>
+        <label>Responsabilidade Integracomm</label>
+        <span></span>
+        <label>Responsabilidade Cliente</label>
+      </Legend>
     </MainDiv>
   );
 };
