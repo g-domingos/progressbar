@@ -5,10 +5,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <GlobalStyle />
       <Router />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
