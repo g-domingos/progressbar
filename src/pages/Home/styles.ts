@@ -31,6 +31,11 @@ export const MainDiv = styled.div`
     width: 280px;
     height: 85px;
   }
+
+  a:active,
+  a:focus {
+    box-shadow: none;
+  }
 `;
 
 export const Span = styled.span<{ customWidth?: number; statusColor?: string }>`

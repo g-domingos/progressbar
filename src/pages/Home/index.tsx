@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { NavLink, useLocation, useParams } from "react-router-dom";
 import {
   Circle,
   DateBackground,
@@ -49,6 +49,7 @@ export const Home = () => {
 
   const getFormattedDate = (dateInput: any) => {
     var date = new Date(dateInput);
+
     var day = date.getDate().toString().padStart(2, "0");
     var month = (date.getMonth() + 1).toString().padStart(2, "0");
     var year = date.getFullYear();
@@ -65,22 +66,24 @@ export const Home = () => {
       const todayDate = new Date().setHours(0, 0, 0, 0);
       const tomorrow = new Date().setHours(24, 0, 0, 0);
 
-      if (dateFromSheet < todayDate) {
+      // return "#DFF8CA";
+      if (dateInput) {
         return "#0F6360";
-      } else if (
-        dateFromSheet >= todayDate &&
-        dateFromSheet <= tomorrow - 1000
-      ) {
-        return "#71B27E";
       }
 
-      return "#DFF8CA";
+      if (dateFromSheet >= todayDate && dateFromSheet <= tomorrow - 1000) {
+        return "#71B27E";
+      }
     }
   };
 
   const isLate = (predictData: number | any, deliveryDate: any) => {
-    const predict = getFormattedDate(predictData);
-    const delivery = getFormattedDate(deliveryDate);
+    const predict = new Date(
+      predictData?.split("/").reverse().join("-")
+    ).getTime();
+    const delivery = new Date(
+      deliveryDate?.split("/").reverse().join("-")
+    ).getTime();
 
     if (delivery > predict) {
       return "#FF5757";
@@ -91,7 +94,7 @@ export const Home = () => {
 
   const getPercentageProgress = (array: any[]) => {
     const amountActivity = array?.slice(1).length;
-    const completed = array?.slice(1).filter((item: any) => item[3]).length;
+    const completed = array?.slice(1).filter((item: any) => item[4]).length;
 
     return ((completed / amountActivity) * 100).toFixed();
   };
@@ -105,7 +108,13 @@ export const Home = () => {
         <label>previsto</label>
         <label>entregue</label>
       </PredictDelivered>
-      <img src={Logo} />
+      <NavLink
+        to="https://integracomm.com.br/area-do-cliente/"
+        style={{ textDecoration: "none", height: "100px" }}
+        target="_blank"
+      >
+        <img src={Logo} />
+      </NavLink>
       {processing ? (
         <SpinnerDiv>
           <Spinner />
@@ -115,18 +124,18 @@ export const Home = () => {
           {apiData?.slice(1)?.map((item: any, index: number) => (
             <Span
               customWidth={apiData.length}
-              statusColor={getStatusColor(item[3])}
+              statusColor={getStatusColor(item[4])}
             >
               <DateContainer>
-                <label>{item[2]?.slice(0, 5)}</label>
-                <DateBackground color={isLate(item[2], item[3])}>
-                  <label>{item[3]?.slice(0, 5)}</label>
+                <label>{item[3]?.slice(0, 5)}</label>
+                <DateBackground color={isLate(item[3], item[4])}>
+                  <label>{item[4]?.slice(0, 5)}</label>
                 </DateBackground>
               </DateContainer>
 
               <Circle
-                opaco={item[3]?.length}
-                color={item[1]?.length ? "black" : "#f1c233"}
+                opaco={item[4]?.length}
+                color={item[5]?.length ? "black" : "#f1c233"}
               >
                 {index + 1}
               </Circle>
@@ -138,8 +147,8 @@ export const Home = () => {
         {apiData?.slice(1)?.map((item: any, index: number) => (
           <div>
             <Circle
-              opaco={item[3]?.length}
-              color={item[1]?.length ? "black" : "#f1c233"}
+              opaco={item[4]?.length}
+              color={item[5]?.length ? "black" : "#f1c233"}
             >
               {index + 1}
             </Circle>
@@ -151,7 +160,7 @@ export const Home = () => {
         <span></span>
         <label>Responsabilidade Integracomm</label>
         <span></span>
-        <label>Responsabilidade Cliente</label>
+        <label>Responsabilidade Parceiro</label>
       </Legend>
     </MainDiv>
   );

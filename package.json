@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "/progressbar/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -12,6 +13,7 @@
   },
   "dependencies": {
     "@types/node": "^18.11.19",
+    "aws": "^0.0.3-2",
     "axios": "^1.3.2",
     "bootstrap": "^5.2.3",
     "gh-pages": "^5.0.0",
