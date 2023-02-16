@@ -209,7 +209,7 @@ Error generating stack: `+i.message+`
   position: absolute;
   display: flex;
   flex-direction: column;
-  top: 30.75%;
+  top: 332px;
   left: 11%;
   font-size: 14px;
   font-weight: 700;
