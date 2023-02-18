@@ -13,11 +13,11 @@ export const MainDiv = styled.div`
 
   .div {
     position: absolute;
-    top: 300px;
+    top: 240px;
     align-items: center;
     width: 75%;
-    height: 60px;
-    border: 5px solid #eeeeee;
+    height: 50px;
+    border: 4px solid #eeeeee;
     background: #eeeeee;
     display: flex;
     gap: 4px;
@@ -28,8 +28,8 @@ export const MainDiv = styled.div`
 
   img {
     margin-top: 30px;
-    width: 200px;
-    height: 60px;
+    width: 110px;
+    height: 34px;
   }
 
   a:active,
@@ -41,7 +41,7 @@ export const MainDiv = styled.div`
 export const Span = styled.span<{ customWidth?: number; statusColor?: string }>`
   width: calc(100% / ${(props) => props.customWidth});
   background: ${(props) => props.statusColor};
-  height: 100%;
+  height: 35px;
   border: 5px solid transparent;
   border-radius: 6px;
   display: flex;
@@ -82,14 +82,14 @@ export const TextBox = styled.div`
   position: absolute;
   max-width: 500px;
   left: 13%;
-  top: 130px;
+  top: 100px;
   color: black;
   font-weight: 1000;
-  font-size: 30px;
+  font-size: 25px;
   font-family: Roboto;
 
   span {
-    font-size: 60px;
+    font-size: 50px;
     margin-left: 20px;
     color: #7ed957 !important;
   }
@@ -103,9 +103,9 @@ export const LabelContainer = styled.div`
   gap: 15px;
   justify-content: space-between;
   position: absolute;
-  top: 400px;
+  top: 340px;
   width: 80%;
-  height: 200px;
+  height: 170px;
 
   & > div {
     display: flex;
@@ -114,7 +114,7 @@ export const LabelContainer = styled.div`
 
     & > label {
       margin-left: 10px;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 500;
     }
   }
@@ -143,9 +143,9 @@ export const PredictDelivered = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
-  top: 252px;
+  top: 193px;
   left: 10%;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: gray;
 `;
