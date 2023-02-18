@@ -98,6 +98,7 @@ export const Home = () => {
 
     return ((completed / amountActivity) * 100).toFixed();
   };
+
   return (
     <MainDiv>
       <TextBox>
