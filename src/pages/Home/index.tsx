@@ -29,14 +29,12 @@ export const Home = () => {
   const fetchData = async () => {
     setProcessing(true);
     axios
-      .get(
-        `https://gefgshpdak.execute-api.us-east-1.amazonaws.com/client-id/${clientId}`
-      )
+      .get(`https://8e7my2u569.execute-api.us-east-1.amazonaws.com/${clientId}`)
       .then((response) => {
         setApiData(response.data.body);
         setProcessing(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err: any) => console.log(err));
   };
 
   useEffect(() => {
@@ -45,7 +43,7 @@ export const Home = () => {
     };
 
     fetch();
-  }, []);
+  }, [pathname]);
 
   const getFormattedDate = (dateInput: any) => {
     var date = new Date(dateInput);
