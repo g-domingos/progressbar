@@ -95,11 +95,11 @@ Error generating stack: `+i.message+`
 
   .div {
     position: absolute;
-    top: 300px;
+    top: 240px;
     align-items: center;
     width: 75%;
-    height: 60px;
-    border: 5px solid #eeeeee;
+    height: 50px;
+    border: 4px solid #eeeeee;
     background: #eeeeee;
     display: flex;
     gap: 4px;
@@ -110,8 +110,8 @@ Error generating stack: `+i.message+`
 
   img {
     margin-top: 30px;
-    width: 200px;
-    height: 60px;
+    width: 110px;
+    height: 34px;
   }
 
   a:active,
@@ -121,7 +121,7 @@ Error generating stack: `+i.message+`
 `,qv=mt.span`
   width: calc(100% / ${e=>e.customWidth});
   background: ${e=>e.statusColor};
-  height: 100%;
+  height: 35px;
   border: 5px solid transparent;
   border-radius: 6px;
   display: flex;
@@ -156,14 +156,14 @@ Error generating stack: `+i.message+`
   position: absolute;
   max-width: 500px;
   left: 13%;
-  top: 130px;
+  top: 100px;
   color: black;
   font-weight: 1000;
-  font-size: 30px;
+  font-size: 25px;
   font-family: Roboto;
 
   span {
-    font-size: 60px;
+    font-size: 50px;
     margin-left: 20px;
     color: #7ed957 !important;
   }
@@ -175,9 +175,9 @@ Error generating stack: `+i.message+`
   gap: 15px;
   justify-content: space-between;
   position: absolute;
-  top: 400px;
+  top: 340px;
   width: 80%;
-  height: 200px;
+  height: 170px;
 
   & > div {
     display: flex;
@@ -186,7 +186,7 @@ Error generating stack: `+i.message+`
 
     & > label {
       margin-left: 10px;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 500;
     }
   }
@@ -209,9 +209,9 @@ Error generating stack: `+i.message+`
   position: absolute;
   display: flex;
   flex-direction: column;
-  top: 252px;
+  top: 193px;
   left: 10%;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: gray;
 `,i1=mt.div`
@@ -237,7 +237,7 @@ Error generating stack: `+i.message+`
 	Copyright (c) 2018 Jed Watson.
 	Licensed under the MIT License (MIT), see
 	http://jedwatson.github.io/classnames
-*/(function(e){(function(){var t={}.hasOwnProperty;function n(){for(var r=[],o=0;o<arguments.length;o++){var i=arguments[o];if(i){var l=typeof i;if(l==="string"||l==="number")r.push(i);else if(Array.isArray(i)){if(i.length){var s=n.apply(null,i);s&&r.push(s)}}else if(l==="object"){if(i.toString!==Object.prototype.toString&&!i.toString.toString().includes("[native code]")){r.push(i.toString());continue}for(var u in i)t.call(i,u)&&i[u]&&r.push(u)}}}return r.join(" ")}e.exports?(n.default=n,e.exports=n):window.classNames=n})()})(s1);const u1=ou,a1=["xxl","xl","lg","md","sm","xs"],c1="xs",f1=N.createContext({prefixes:{},breakpoints:a1,minBreakpoint:c1});function d1(e,t){const{prefixes:n}=N.useContext(f1);return e||n[t]||t}const oh=N.forwardRef(({bsPrefix:e,variant:t,animation:n="border",size:r,as:o="div",className:i,...l},s)=>{e=d1(e,"spinner");const u=`${e}-${n}`;return ee(o,{ref:s,...l,className:u1(i,u,r&&`${u}-${r}`,t&&`text-${t}`)})});oh.displayName="Spinner";const p1=()=>{var y,v;const[e,t]=N.useState(),[n,r]=N.useState(!1),o=lr(),{pathname:i}=o,l=i.split("/").slice(3,4)[0],s=async()=>{r(!0),Zg.get(`https://gefgshpdak.execute-api.us-east-1.amazonaws.com/client-id/${l}`).then(h=>{t(h.data.body),r(!1)}).catch(h=>console.log(h))};N.useEffect(()=>{(async()=>{await s()})()},[]);const u=h=>{var g=new Date(h),k=g.getDate().toString().padStart(2,"0"),f=(g.getMonth()+1).toString().padStart(2,"0"),c=g.getFullYear(),m=k+"/"+f+"/"+c;return new Date(m).getTime()},a=h=>{if(h){const g=u(h),k=new Date().setHours(0,0,0,0),f=new Date().setHours(24,0,0,0);if(h)return"#0F6360";if(g>=k&&g<=f-1e3)return"#71B27E"}},d=(h,g)=>{const k=new Date(h==null?void 0:h.split("/").reverse().join("-")).getTime(),f=new Date(g==null?void 0:g.split("/").reverse().join("-")).getTime();if(f>k)return"#FF5757";if(f<=k)return"#CFFF00"},p=h=>{const g=h==null?void 0:h.slice(1).length;return((h==null?void 0:h.slice(1).filter(f=>f[4]).length)/g*100).toFixed()};return Ct(Zv,{children:[Ct(e1,{children:[ee("label",{children:"seu progresso:"}),Ct("span",{children:[(e==null?void 0:e.length)&&p(e),"%"]})]}),Ct(o1,{children:[ee("label",{children:"previsto"}),ee("label",{children:"entregue"})]}),ee(jy,{to:"https://integracomm.com.br/area-do-cliente/",style:{textDecoration:"none",height:"100px"},target:"_blank",children:ee("img",{src:l1})}),n?ee(bv,{children:ee(oh,{})}):ee("div",{className:"div",children:(y=e==null?void 0:e.slice(1))==null?void 0:y.map((h,g)=>{var k,f,c,m;return Ct(qv,{customWidth:e.length,statusColor:a(h[4]),children:[Ct(n1,{children:[ee("label",{children:(k=h[3])==null?void 0:k.slice(0,5)}),ee(r1,{color:d(h[3],h[4]),children:ee("label",{children:(f=h[4])==null?void 0:f.slice(0,5)})})]}),ee(rf,{opaco:(c=h[4])==null?void 0:c.length,color:(m=h[5])!=null&&m.length?"black":"#f1c233",children:g+1})]})})}),ee(t1,{children:(v=e==null?void 0:e.slice(1))==null?void 0:v.map((h,g)=>{var k,f;return Ct("div",{children:[ee(rf,{opaco:(k=h[4])==null?void 0:k.length,color:(f=h[5])!=null&&f.length?"black":"#f1c233",children:g+1}),ee("label",{children:h[0]})]})})}),Ct(i1,{children:[ee("span",{}),ee("label",{children:"Responsabilidade Integracomm"}),ee("span",{}),ee("label",{children:"Responsabilidade Parceiro"})]})]})},h1=()=>ee(Oy,{children:ee(Sp,{path:"progressbar/client-id/:id",element:ee(p1,{})})}),m1=Jv`
+*/(function(e){(function(){var t={}.hasOwnProperty;function n(){for(var r=[],o=0;o<arguments.length;o++){var i=arguments[o];if(i){var l=typeof i;if(l==="string"||l==="number")r.push(i);else if(Array.isArray(i)){if(i.length){var s=n.apply(null,i);s&&r.push(s)}}else if(l==="object"){if(i.toString!==Object.prototype.toString&&!i.toString.toString().includes("[native code]")){r.push(i.toString());continue}for(var u in i)t.call(i,u)&&i[u]&&r.push(u)}}}return r.join(" ")}e.exports?(n.default=n,e.exports=n):window.classNames=n})()})(s1);const u1=ou,a1=["xxl","xl","lg","md","sm","xs"],c1="xs",f1=N.createContext({prefixes:{},breakpoints:a1,minBreakpoint:c1});function d1(e,t){const{prefixes:n}=N.useContext(f1);return e||n[t]||t}const oh=N.forwardRef(({bsPrefix:e,variant:t,animation:n="border",size:r,as:o="div",className:i,...l},s)=>{e=d1(e,"spinner");const u=`${e}-${n}`;return ee(o,{ref:s,...l,className:u1(i,u,r&&`${u}-${r}`,t&&`text-${t}`)})});oh.displayName="Spinner";const p1=()=>{var y,v;const[e,t]=N.useState(),[n,r]=N.useState(!1),o=lr(),{pathname:i}=o,l=i.split("/").slice(3,4)[0],s=async()=>{r(!0),Zg.get(`https://8e7my2u569.execute-api.us-east-1.amazonaws.com/${l}`).then(h=>{t(h.data.body),r(!1)}).catch(h=>console.log(h))};N.useEffect(()=>{(async()=>{await s()})()},[i]);const u=h=>{var g=new Date(h),k=g.getDate().toString().padStart(2,"0"),f=(g.getMonth()+1).toString().padStart(2,"0"),c=g.getFullYear(),m=k+"/"+f+"/"+c;return new Date(m).getTime()},a=h=>{if(h){const g=u(h),k=new Date().setHours(0,0,0,0),f=new Date().setHours(24,0,0,0);if(h)return"#0F6360";if(g>=k&&g<=f-1e3)return"#71B27E"}},d=(h,g)=>{const k=new Date(h==null?void 0:h.split("/").reverse().join("-")).getTime(),f=new Date(g==null?void 0:g.split("/").reverse().join("-")).getTime();if(f>k)return"#FF5757";if(f<=k)return"#CFFF00"},p=h=>{const g=h==null?void 0:h.slice(1).length;return((h==null?void 0:h.slice(1).filter(f=>f[4]).length)/g*100).toFixed()};return Ct(Zv,{children:[Ct(e1,{children:[ee("label",{children:"seu progresso:"}),Ct("span",{children:[(e==null?void 0:e.length)&&p(e),"%"]})]}),Ct(o1,{children:[ee("label",{children:"previsto"}),ee("label",{children:"entregue"})]}),ee(jy,{to:"https://integracomm.com.br/area-do-cliente/",style:{textDecoration:"none",height:"100px"},target:"_blank",children:ee("img",{src:l1})}),n?ee(bv,{children:ee(oh,{})}):ee("div",{className:"div",children:(y=e==null?void 0:e.slice(1))==null?void 0:y.map((h,g)=>{var k,f,c,m;return Ct(qv,{customWidth:e.length,statusColor:a(h[4]),children:[Ct(n1,{children:[ee("label",{children:(k=h[3])==null?void 0:k.slice(0,5)}),ee(r1,{color:d(h[3],h[4]),children:ee("label",{children:(f=h[4])==null?void 0:f.slice(0,5)})})]}),ee(rf,{opaco:(c=h[4])==null?void 0:c.length,color:(m=h[5])!=null&&m.length?"black":"#f1c233",children:g+1})]})})}),ee(t1,{children:(v=e==null?void 0:e.slice(1))==null?void 0:v.map((h,g)=>{var k,f;return Ct("div",{children:[ee(rf,{opaco:(k=h[4])==null?void 0:k.length,color:(f=h[5])!=null&&f.length?"black":"#f1c233",children:g+1}),ee("label",{children:h[0]})]})})}),Ct(i1,{children:[ee("span",{}),ee("label",{children:"Responsabilidade Integracomm"}),ee("span",{}),ee("label",{children:"Responsabilidade Parceiro"})]})]})},h1=()=>ee(Oy,{children:ee(Sp,{path:"progressbar/client-id/:id",element:ee(p1,{})})}),m1=Jv`
   * {
     margin: 0;
     padding: 0;
