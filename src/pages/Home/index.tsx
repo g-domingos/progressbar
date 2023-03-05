@@ -4,6 +4,7 @@ import { NavLink, useLocation, useParams } from "react-router-dom";
 import {
   Circle,
   DateBackground,
+  DateBar,
   DateContainer,
   LabelContainer,
   Legend,
@@ -14,7 +15,8 @@ import {
   TextBox,
 } from "./styles";
 import Logo from "../../images/Logo.png";
-
+import { BsNut } from "react-icons/bs";
+import { AiOutlineCalendar } from "react-icons/ai";
 import Spinner from "react-bootstrap/Spinner";
 
 export const Home = () => {
@@ -64,9 +66,8 @@ export const Home = () => {
       const todayDate = new Date().setHours(0, 0, 0, 0);
       const tomorrow = new Date().setHours(24, 0, 0, 0);
 
-      // return "#DFF8CA";
       if (dateInput) {
-        return "#0F6360";
+        return "#FFFF00";
       }
 
       if (dateFromSheet >= todayDate && dateFromSheet <= tomorrow - 1000) {
@@ -100,20 +101,12 @@ export const Home = () => {
   return (
     <MainDiv>
       <TextBox>
-        <label>seu progresso:</label>
-        <span>{apiData?.length && getPercentageProgress(apiData)}%</span>
+        <span>
+          <BsNut size={30} />
+        </span>
+        <label>Progresso</label>
+        {/*  */}
       </TextBox>
-      <PredictDelivered>
-        <label>previsto</label>
-        <label>entregue</label>
-      </PredictDelivered>
-      <NavLink
-        to="https://integracomm.com.br/area-do-cliente/"
-        style={{ textDecoration: "none", height: "100px" }}
-        target="_blank"
-      >
-        <img src={Logo} />
-      </NavLink>
       {processing ? (
         <SpinnerDiv>
           <Spinner />
@@ -122,26 +115,51 @@ export const Home = () => {
         <div className="div">
           {apiData?.slice(1)?.map((item: any, index: number) => (
             <Span
-              customWidth={apiData.length}
+              isFirst={index === 0}
+              isLast={
+                apiData?.slice(1)[index][4] && !apiData?.slice(1)[index + 1]?.[4]
+              }
+              customWidth={apiData.length - 1}
               statusColor={getStatusColor(item[4])}
             >
-              <DateContainer>
-                <label>{item[3]?.slice(0, 5)}</label>
-                <DateBackground color={isLate(item[3], item[4])}>
-                  <label>{item[4]?.slice(0, 5)}</label>
-                </DateBackground>
-              </DateContainer>
+              {apiData?.slice(1)[index]?.[4] &&
+              !apiData?.slice(1)[index + 1]?.[4] ? (
+                <span>
+                  {apiData?.length && getPercentageProgress(apiData)}%
+                </span>
+              ) : null}
 
-              <Circle
+              {/* <Circle
                 opaco={item[4]?.length}
                 color={item[5]?.length ? "black" : "#f1c233"}
               >
                 {index + 1}
-              </Circle>
+              </Circle> */}
             </Span>
           ))}
         </div>
       )}
+      <DateBar>
+        {apiData?.slice(1)?.map((item: any, index: number) => (
+          <DateContainer customWidth={apiData.length - 1}>
+            {index === 0 && <AiOutlineCalendar size={30} />}
+            <label>{item[3]?.slice(0, 5)}</label>
+            {/* <DateBackground color={isLate(item[3], item[4])}>
+              <label>{item[4]?.slice(0, 5)}</label>
+            </DateBackground> */}
+          </DateContainer>
+        ))}
+      </DateBar>
+      <PredictDelivered>
+        <label>previsto</label>
+        <label>entregue</label>
+      </PredictDelivered>
+      {/* <NavLink
+        to="https://integracomm.com.br/area-do-cliente/"
+        style={{ textDecoration: "none", height: "100px" }}
+        target="_blank"
+      ></NavLink> */}
+
       <LabelContainer>
         {apiData?.slice(1)?.map((item: any, index: number) => (
           <div>

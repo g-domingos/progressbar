@@ -7,29 +7,24 @@ export const Container = styled.body`
 
 export const MainDiv = styled.div`
   height: 100vh;
-  display: flex;
-  justify-content: center;
   position: relative;
+  padding-left: 40px;
+  padding-right: 40px;
 
   .div {
-    position: absolute;
-    top: 240px;
-    align-items: center;
-    width: 75%;
-    height: 50px;
-    border: 4px solid #eeeeee;
-    background: #eeeeee;
+    width: 100%;
+    height: 40px;
     display: flex;
-    gap: 4px;
-    border-radius: 16px;
-    justify-content: center;
-    padding: 5px 0 5px 0;
+    border-radius: 25px;
+    box-shadow: 0 0 15px lightgray;
   }
 
-  img {
-    margin-top: 30px;
-    width: 110px;
-    height: 34px;
+  span {
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   a:active,
@@ -38,16 +33,21 @@ export const MainDiv = styled.div`
   }
 `;
 
-export const Span = styled.span<{ customWidth?: number; statusColor?: string }>`
+export const Span = styled.span<{
+  customWidth?: number;
+  statusColor?: string;
+  isFirst?: boolean;
+  isLast?: boolean;
+}>`
   width: calc(100% / ${(props) => props.customWidth});
   background: ${(props) => props.statusColor};
-  height: 35px;
-  border: 5px solid transparent;
-  border-radius: 6px;
+  height: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
+  border-bottom-left-radius: ${(props) => (props.isFirst ? "20px" : "none")};
+  border-top-left-radius: ${(props) => (props.isFirst ? "20px" : "none")};
+  border-bottom-right-radius: ${(props) => (props.isLast ? "20px" : "none")};
+  border-top-right-radius: ${(props) => (props.isLast ? "20px" : "none")};
 
   & > label {
     position: absolute;
@@ -78,21 +78,15 @@ export const SpinnerDiv = styled.div`
 
 export const TextBox = styled.div`
   display: flex;
-  align-items: baseline;
-  position: absolute;
-  max-width: 500px;
-  left: 13%;
-  top: 100px;
+  align-items: center;
   color: black;
+  gap: 10px;
   font-weight: 1000;
-  font-size: 25px;
+  font-size: 22px;
   font-family: Roboto;
-
-  span {
-    font-size: 50px;
-    margin-left: 20px;
-    color: #7ed957 !important;
-  }
+  padding-left: 15px;
+  padding-top: 15px;
+  padding-bottom: 10px;
 `;
 
 export const LabelContainer = styled.div`
@@ -120,15 +114,13 @@ export const LabelContainer = styled.div`
   }
 `;
 
-export const DateContainer = styled.div`
-  position: absolute;
-  top: -60px;
+export const DateContainer = styled.div<{ customWidth?: any }>`
+  width: calc(100% / ${(props) => props.customWidth});
   font-size: 10px;
-  display: flex;
   flex-direction: column;
   align-items: center;
   font-weight: 800;
-  width: 70%;
+  border: 1px solid red;
 `;
 
 export const DateBackground = styled.span<{ color?: string }>`
@@ -169,4 +161,16 @@ export const Legend = styled.div`
   & > span:first-child {
     background: #f1c233 !important;
   }
+`;
+
+export const DateBar = styled.div`
+  display: flex;
+  width: 100%;
+  margin-top: 20px;
+  height: 40px;
+  border-bottom-left-radius: 20px;
+  border-top-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 0 15px lightgray;
 `;
