@@ -3,21 +3,27 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation, useParams } from "react-router-dom";
 import {
   Circle,
+  ConcludedItem,
   DateBackground,
   DateBar,
   DateContainer,
   LabelContainer,
   Legend,
   MainDiv,
+  Pencil,
   PredictDelivered,
   Span,
   SpinnerDiv,
+  TasksContainer,
   TextBox,
 } from "./styles";
-import Logo from "../../images/Logo.png";
+
 import { BsNut } from "react-icons/bs";
 import { AiOutlineCalendar } from "react-icons/ai";
+import { FiCheckSquare } from "react-icons/fi";
+import { BiPencil } from "react-icons/bi";
 import Spinner from "react-bootstrap/Spinner";
+import { isMobile } from "react-device-detect";
 
 export const Home = () => {
   const [apiData, setApiData] = useState<any>();
@@ -105,7 +111,6 @@ export const Home = () => {
           <BsNut size={30} />
         </span>
         <label>Progresso</label>
-        {/*  */}
       </TextBox>
       {processing ? (
         <SpinnerDiv>
@@ -117,9 +122,10 @@ export const Home = () => {
             <Span
               isFirst={index === 0}
               isLast={
-                apiData?.slice(1)[index][4] && !apiData?.slice(1)[index + 1]?.[4]
+                apiData?.slice(1)[index][4] &&
+                !apiData?.slice(1)[index + 1]?.[4]
               }
-              customWidth={apiData.length - 1}
+              customWidth={apiData?.length - 1}
               statusColor={getStatusColor(item[4])}
             >
               {apiData?.slice(1)[index]?.[4] &&
@@ -128,37 +134,88 @@ export const Home = () => {
                   {apiData?.length && getPercentageProgress(apiData)}%
                 </span>
               ) : null}
-
-              {/* <Circle
-                opaco={item[4]?.length}
-                color={item[5]?.length ? "black" : "#f1c233"}
-              >
-                {index + 1}
-              </Circle> */}
             </Span>
           ))}
         </div>
       )}
       <DateBar>
-        {apiData?.slice(1)?.map((item: any, index: number) => (
-          <DateContainer customWidth={apiData.length - 1}>
-            {index === 0 && <AiOutlineCalendar size={30} />}
-            <label>{item[3]?.slice(0, 5)}</label>
-            {/* <DateBackground color={isLate(item[3], item[4])}>
-              <label>{item[4]?.slice(0, 5)}</label>
-            </DateBackground> */}
-          </DateContainer>
-        ))}
+        {apiData?.slice(1)?.map((item: any, index: number) =>
+          isMobile ? (
+            <>
+              {index === 0 && (
+                <span className="calendar">
+                  <AiOutlineCalendar size={15} style={{ marginRight: "5px" }} />
+                </span>
+              )}
+              <DateContainer customWidth={apiData?.length - 1}>
+                <label>{item[3]?.slice(0, 5).split("/")[0]}/</label>
+                <label>{item[3]?.slice(0, 5).split("/")[1]}</label>
+              </DateContainer>
+            </>
+          ) : (
+            <>
+              <DateContainer customWidth={apiData?.length - 1}>
+                {index === 0 && (
+                  <AiOutlineCalendar size={20} style={{ marginRight: "5px" }} />
+                )}
+                <label>{item[3]?.slice(0, 5)}</label>
+              </DateContainer>
+            </>
+          )
+        )}
       </DateBar>
-      <PredictDelivered>
-        <label>previsto</label>
-        <label>entregue</label>
-      </PredictDelivered>
-      {/* <NavLink
-        to="https://integracomm.com.br/area-do-cliente/"
-        style={{ textDecoration: "none", height: "100px" }}
-        target="_blank"
-      ></NavLink> */}
+      <ConcludedItem>
+        {apiData?.slice(1)?.map((item: any, index: number) =>
+          isMobile ? (
+            <>
+              {index === 0 && (
+                <span className="done">
+                  <FiCheckSquare size={15} style={{ marginRight: "0.5px" }} />
+                </span>
+              )}
+              <DateContainer customWidth={apiData?.length - 1} isConcluded>
+                <DateBackground color={isLate(item[3], item[4])}>
+                  <label>
+                    {item[4]?.slice(0, 5).split("/")[0]}
+                    {item[4]?.slice(0, 5).split("/")[0] ? "/" : null}
+                  </label>
+                  <label>{item[4]?.slice(0, 5).split("/")[1]}</label>
+                </DateBackground>
+              </DateContainer>
+            </>
+          ) : (
+            <>
+              <DateContainer customWidth={apiData?.length - 1}>
+                {index === 0 && (
+                  <FiCheckSquare size={20} style={{ marginRight: "0.5px" }} />
+                )}
+                <DateBackground color={isLate(item[3], item[4])}>
+                  <label>{item[4]?.slice(0, 5)}</label>
+                </DateBackground>
+              </DateContainer>
+            </>
+          )
+        )}
+      </ConcludedItem>
+      <TasksContainer customWidth={apiData?.length - 1}>
+        {apiData?.slice(1)?.map((item: any, index: number) => (
+          <>
+            {index === 0 && (
+              <Pencil>
+                <BiPencil size={20} style={{ marginLeft: "10px" }} />
+              </Pencil>
+            )}
+            <div>
+              <Circle
+                opaco={item[4]?.length}
+                color={item[5]?.length ? "black" : "#f1c233"}
+              >
+                {index + 1}
+              </Circle>
+            </div>
+          </>
+        ))}
+      </TasksContainer>
 
       <LabelContainer>
         {apiData?.slice(1)?.map((item: any, index: number) => (
@@ -174,10 +231,12 @@ export const Home = () => {
         ))}
       </LabelContainer>
       <Legend>
-        <span></span>
-        <label>Responsabilidade Integracomm</label>
-        <span></span>
-        <label>Responsabilidade Parceiro</label>
+        <div>
+          <span></span>
+          <label>Responsabilidade Integracomm</label>
+          <span></span>
+          <label>Responsabilidade Parceiro</label>
+        </div>
       </Legend>
     </MainDiv>
   );
