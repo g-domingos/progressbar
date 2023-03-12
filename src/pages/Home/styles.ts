@@ -95,7 +95,8 @@ export const SpinnerDiv = styled.div`
 
 export const TextBox = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
   color: black;
   gap: 10px;
   font-weight: 1000;
@@ -104,6 +105,13 @@ export const TextBox = styled.div`
   padding-left: 15px;
   padding-top: 15px;
   padding-bottom: 10px;
+
+  & > div:last-child {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+  }
 `;
 
 export const LabelContainer = styled.div`
@@ -113,7 +121,7 @@ export const LabelContainer = styled.div`
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 80%;
+  width: 90%;
   height: 110px;
 
   & > div {
@@ -142,13 +150,14 @@ export const DateContainer = styled.div<{
   isConcluded?: boolean;
 }>`
   width: calc(100% / ${(props) => props.customWidth});
-  font-size: 18px;
+  font-size: 16px;
   flex-direction: column;
   font-weight: 500;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  position: relative;
 
   @media screen and (max-width: 767px) {
     padding-left: 0.5rem;
@@ -248,7 +257,10 @@ export const DateBar = styled.div`
   border-bottom-right-radius: 20px;
   border-top-right-radius: 20px;
   box-shadow: 0 0 15px lightgray;
-  padding-right: 15px;
+  padding-left: 18px;
+  padding-right: 18px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 
   @media screen and (max-width: 767px) {
     position: relative;
@@ -293,6 +305,7 @@ export const TasksContainer = styled.div<{ customWidth?: any }>`
   width: 100%;
   align-items: center;
   padding-left: 18px;
+  padding-right: 18px;
 
   & > div {
     width: calc(100% / ${(props) => props.customWidth}) !important;
@@ -322,3 +335,71 @@ export const Pencil = styled.span`
     left: -0.8rem;
   }
 `;
+
+export const Tooltip = styled.div`
+  position: absolute;
+  background: lightgray;
+  padding: 5px;
+  border-radius: 5px;
+  width: 10rem;
+  top: 2rem;
+`;
+
+
+export const Pulsating = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 30px;
+  height: 30px;
+  
+  &:before {
+    content: '';
+    position: relative;
+    display: block;
+    width: 300%;
+    height: 300%;
+    box-sizing: border-box;
+    margin-left: -100%;
+    margin-top: -100%;
+    border-radius: 45px;
+    background-color: lightgray;
+    animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+  
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0; 
+    top: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border-radius: 15px;
+    box-shadow: 0 0 8px rgba(0,0,0,.3);
+    animation: pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -.4s infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(.33);
+  }
+  80%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(.8);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(.8);
+  }
+}`;

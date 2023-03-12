@@ -12,10 +12,12 @@ import {
   MainDiv,
   Pencil,
   PredictDelivered,
+  Pulsating,
   Span,
   SpinnerDiv,
   TasksContainer,
   TextBox,
+  Tooltip,
 } from "./styles";
 
 import { BsNut } from "react-icons/bs";
@@ -24,15 +26,26 @@ import { FiCheckSquare } from "react-icons/fi";
 import { BiPencil } from "react-icons/bi";
 import Spinner from "react-bootstrap/Spinner";
 import { isMobile } from "react-device-detect";
+import { url } from "../../env";
 
 export const Home = () => {
   const [apiData, setApiData] = useState<any>();
+  const [statuses, setStatuses] = useState<any>();
+  const [task, setTask] = useState<any>();
+  const [showLabel, setShowLabel] = useState<boolean>(false);
   const [processing, setProcessing] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const location = useLocation();
   const { pathname } = location;
 
-  const clientId = pathname.split("/").slice(3, 4)[0];
+  let clientId = pathname.split("/").slice(3, 4)[0];
+  const clientResponsabilities = [
+    "integração marketplaces",
+    "importação de anúncios",
+    "características",
+    "criação de kits",
+  ];
 
   const fetchData = async () => {
     setProcessing(true);
@@ -45,14 +58,40 @@ export const Home = () => {
       .catch((err: any) => console.log(err));
   };
 
-  useEffect(() => {
-    const fetch = async () => {
-      await fetchData();
-    };
+  const getStatusesList = () => {
+    setProcessing(true);
+    axios
+      .get(url.ENDPOINT + "/statuses")
+      .then((response) => {
+        setStatuses(response.data.body);
+        setProcessing(false);
+      })
+      .catch((err: any) => console.log(err));
+  };
 
-    fetch();
+  const getStatusByClient = () => {
+    const taskId = "85yvra1j7";
+    axios
+      .get(url.ENDPOINT + `/task/${taskId}`)
+      .then((response) => {
+        setTask(response.data.body);
+        setProcessing(false);
+      })
+      .catch((err: any) => console.log(err));
+  };
+
+  useEffect(() => {
+    // const fetch = async () => {
+    //   await fetchData();
+    // };
+
+    // fetch();
+
+    getStatusesList();
+    getStatusByClient();
   }, [pathname]);
 
+  console.log(task);
   const getFormattedDate = (dateInput: any) => {
     var date = new Date(dateInput);
 
@@ -66,51 +105,62 @@ export const Home = () => {
     return dateFromSheet;
   };
 
-  const getStatusColor = (dateInput: number | any) => {
-    if (dateInput) {
-      const dateFromSheet = getFormattedDate(dateInput);
-      const todayDate = new Date().setHours(0, 0, 0, 0);
-      const tomorrow = new Date().setHours(24, 0, 0, 0);
-
-      if (dateInput) {
-        return "#FFFF00";
-      }
-
-      if (dateFromSheet >= todayDate && dateFromSheet <= tomorrow - 1000) {
-        return "#71B27E";
-      }
+  const getStatusColor = (index: number | any) => {
+    if (index <= task?.status.orderindex) {
+      return "#FFFF00";
     }
   };
 
-  const isLate = (predictData: number | any, deliveryDate: any) => {
-    const predict = new Date(
-      predictData?.split("/").reverse().join("-")
-    ).getTime();
-    const delivery = new Date(
-      deliveryDate?.split("/").reverse().join("-")
-    ).getTime();
+  const isLate = (dueDate: number) => {
+    // const predict = new Date(
+    //   predictData?.split("/").reverse().join("-")
+    // ).getTime();
+    // const delivery = new Date(
+    //   deliveryDate?.split("/").reverse().join("-")
+    // ).getTime();
 
-    if (delivery > predict) {
+    // if (delivery > predict) {
+    //   return "#FF5757";
+    // } else if (delivery <= predict) {
+    //   return "#CFFF00";
+    // }
+
+    if (new Date().getTime() > dueDate) {
       return "#FF5757";
-    } else if (delivery <= predict) {
+    }
+    if (new Date().getTime() < dueDate) {
       return "#CFFF00";
     }
   };
 
   const getPercentageProgress = (array: any[]) => {
-    const amountActivity = array?.slice(1).length;
-    const completed = array?.slice(1).filter((item: any) => item[4]).length;
+    const amountActivity = array?.length;
+    const completed = task?.status.orderindex;
 
     return ((completed / amountActivity) * 100).toFixed();
+  };
+
+  const dateFormatter = (epoch: number) => {
+    const date = new Intl.DateTimeFormat("pt-BR").format(epoch);
+
+    const dateWithoutYear = date
+      .split("/")
+      .slice(0, date.split("/").length - 1)
+      .join("/");
+
+    return dateWithoutYear;
   };
 
   return (
     <MainDiv>
       <TextBox>
-        <span>
-          <BsNut size={30} />
-        </span>
-        <label>Progresso</label>
+        <div>{task?.name}</div>
+        <div>
+          <span>
+            <BsNut size={30} />
+          </span>
+          <label>Progresso</label>
+        </div>
       </TextBox>
       {processing ? (
         <SpinnerDiv>
@@ -118,28 +168,48 @@ export const Home = () => {
         </SpinnerDiv>
       ) : (
         <div className="div">
-          {apiData?.slice(1)?.map((item: any, index: number) => (
+          {statuses?.map((item: any, index: number) => (
             <Span
               isFirst={index === 0}
-              isLast={
-                apiData?.slice(1)[index][4] &&
-                !apiData?.slice(1)[index + 1]?.[4]
-              }
-              customWidth={apiData?.length - 1}
-              statusColor={getStatusColor(item[4])}
+              isLast={index === task?.status.orderindex}
+              customWidth={statuses?.length - 1}
+              statusColor={getStatusColor(index)}
             >
-              {apiData?.slice(1)[index]?.[4] &&
-              !apiData?.slice(1)[index + 1]?.[4] ? (
+              {index === task?.status.orderindex ? (
                 <span>
-                  {apiData?.length && getPercentageProgress(apiData)}%
+                  {statuses?.length && getPercentageProgress(statuses)}%
                 </span>
               ) : null}
             </Span>
           ))}
         </div>
       )}
+      <TasksContainer customWidth={statuses?.length - 1}>
+        {statuses?.map((item: any, index: number) => (
+          <>
+            {/* {index === 0 && (
+              <Pencil>
+                <BiPencil size={20} style={{ marginLeft: "10px" }} />
+              </Pencil>
+            )} */}
+            <div>
+              <Circle
+                opaco={index <= task?.status.orderindex}
+                color={
+                  clientResponsabilities.includes(item.status)
+                    ? "black"
+                    : "#f1c233"
+                }
+              >
+                {index + 1}
+              </Circle>
+              {index === task?.status.orderindex && <Pulsating></Pulsating>}
+            </div>
+          </>
+        ))}
+      </TasksContainer>
       <DateBar>
-        {apiData?.slice(1)?.map((item: any, index: number) =>
+        {statuses?.map((item: any, index: number) =>
           isMobile ? (
             <>
               {index === 0 && (
@@ -147,25 +217,41 @@ export const Home = () => {
                   <AiOutlineCalendar size={15} style={{ marginRight: "5px" }} />
                 </span>
               )}
-              <DateContainer customWidth={apiData?.length - 1}>
-                <label>{item[3]?.slice(0, 5).split("/")[0]}/</label>
-                <label>{item[3]?.slice(0, 5).split("/")[1]}</label>
+              <DateContainer customWidth={statuses?.length - 1}>
+                {/* <label>{item[3]?.slice(0, 5).split("/")[0]}/</label>
+                <label>{item[3]?.slice(0, 5).split("/")[1]}</label> */}
               </DateContainer>
             </>
           ) : (
             <>
-              <DateContainer customWidth={apiData?.length - 1}>
-                {index === 0 && (
-                  <AiOutlineCalendar size={20} style={{ marginRight: "5px" }} />
+              <DateContainer customWidth={statuses?.length - 1}>
+                {index === task?.status.orderindex && (
+                  <>
+                    <DateBackground
+                      color={isLate(task?.due_date)}
+                      onMouseEnter={() => setShowTooltip(true)}
+                      onMouseLeave={() => setShowTooltip(false)}
+                    >
+                      {index === task?.status.orderindex && (
+                        <label>{dateFormatter(task.date_updated)}</label>
+                      )}
+                    </DateBackground>
+
+                    {showTooltip && (
+                      <Tooltip>
+                        Data esperada para Conclusão:{" "}
+                        {dateFormatter(task.due_date)}
+                      </Tooltip>
+                    )}
+                  </>
                 )}
-                <label>{item[3]?.slice(0, 5)}</label>
               </DateContainer>
             </>
           )
         )}
       </DateBar>
-      <ConcludedItem>
-        {apiData?.slice(1)?.map((item: any, index: number) =>
+      {/* <ConcludedItem>
+        {statuses?.map((item: any, index: number) =>
           isMobile ? (
             <>
               {index === 0 && (
@@ -173,7 +259,7 @@ export const Home = () => {
                   <FiCheckSquare size={15} style={{ marginRight: "0.5px" }} />
                 </span>
               )}
-              <DateContainer customWidth={apiData?.length - 1} isConcluded>
+              <DateContainer customWidth={statuses?.length - 1} isConcluded>
                 <DateBackground color={isLate(item[3], item[4])}>
                   <label>
                     {item[4]?.slice(0, 5).split("/")[0]}
@@ -185,7 +271,7 @@ export const Home = () => {
             </>
           ) : (
             <>
-              <DateContainer customWidth={apiData?.length - 1}>
+              <DateContainer customWidth={statuses?.length - 1}>
                 {index === 0 && (
                   <FiCheckSquare size={20} style={{ marginRight: "0.5px" }} />
                 )}
@@ -196,40 +282,27 @@ export const Home = () => {
             </>
           )
         )}
-      </ConcludedItem>
-      <TasksContainer customWidth={apiData?.length - 1}>
-        {apiData?.slice(1)?.map((item: any, index: number) => (
-          <>
-            {index === 0 && (
-              <Pencil>
-                <BiPencil size={20} style={{ marginLeft: "10px" }} />
-              </Pencil>
-            )}
+      </ConcludedItem> */}
+      <button onClick={() => setShowLabel(!showLabel)}>Mostrar tarefas</button>
+      {showLabel && (
+        <LabelContainer>
+          {statuses?.map((item: any, index: number) => (
             <div>
               <Circle
-                opaco={item[4]?.length}
-                color={item[5]?.length ? "black" : "#f1c233"}
+                opaco={index <= task?.status.orderindex}
+                color={
+                  clientResponsabilities.includes(item.status)
+                    ? "black"
+                    : "#f1c233"
+                }
               >
                 {index + 1}
               </Circle>
+              <label>{item.status}</label>
             </div>
-          </>
-        ))}
-      </TasksContainer>
-
-      <LabelContainer>
-        {apiData?.slice(1)?.map((item: any, index: number) => (
-          <div>
-            <Circle
-              opaco={item[4]?.length}
-              color={item[5]?.length ? "black" : "#f1c233"}
-            >
-              {index + 1}
-            </Circle>
-            <label>{item[0]}</label>
-          </div>
-        ))}
-      </LabelContainer>
+          ))}
+        </LabelContainer>
+      )}
       <Legend>
         <div>
           <span></span>

@@ -7,7 +7,7 @@ export const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<DefaultLayout />}>
-        <Route path="progressbar/client-id/:id" element={<Home />} />
+        <Route path="/client-id/:id" element={<Home />} />
       </Route>
     </Routes>
   );
