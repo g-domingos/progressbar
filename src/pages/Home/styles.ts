@@ -345,7 +345,6 @@ export const Tooltip = styled.div`
   top: 2rem;
 `;
 
-
 export const Pulsating = styled.div`
   position: absolute;
   left: 50%;
@@ -353,9 +352,9 @@ export const Pulsating = styled.div`
   transform: translateX(-50%) translateY(-50%);
   width: 30px;
   height: 30px;
-  
+
   &:before {
-    content: '';
+    content: "";
     position: relative;
     display: block;
     width: 300%;
@@ -367,39 +366,64 @@ export const Pulsating = styled.div`
     background-color: lightgray;
     animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
   }
-  
+
   &:after {
-    content: '';
+    content: "";
     position: absolute;
-    left: 0; 
+    left: 0;
     top: 0;
     display: block;
     width: 100%;
     height: 100%;
     background-color: transparent;
     border-radius: 15px;
-    box-shadow: 0 0 8px rgba(0,0,0,.3);
-    animation: pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -.4s infinite;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    animation: pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
   }
-}
 
-@keyframes pulse-ring {
-  0% {
-    transform: scale(.33);
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.33);
+    }
+    80%,
+    100% {
+      opacity: 0;
+    }
   }
-  80%, 100% {
-    opacity: 0;
-  }
-}
 
-@keyframes pulse-dot {
-  0% {
-    transform: scale(.8);
+  @keyframes pulse-dot {
+    0% {
+      transform: scale(0.8);
+    }
+    50% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0.8);
+    }
   }
-  50% {
-    transform: scale(1);
+`;
+
+export const StandardText = styled.div`
+  margin-top: 1rem;
+  width: 35%;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-left: 0.8rem;
+  padding-bottom: 0.3rem;
+  box-shadow: 0 0 20px lightgray;
+  border-radius: 1rem;
+
+  label {
+    font-weight: 600;
   }
-  100% {
-    transform: scale(.8);
-  }
-}`;
+`;
+
+export const Button = styled.button`
+  margin-top: 2rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: lightgray;
+`

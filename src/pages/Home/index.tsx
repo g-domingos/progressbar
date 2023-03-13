@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { NavLink, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
+  Button,
   Circle,
-  ConcludedItem,
   DateBackground,
   DateBar,
   DateContainer,
@@ -15,6 +15,7 @@ import {
   Pulsating,
   Span,
   SpinnerDiv,
+  StandardText,
   TasksContainer,
   TextBox,
   Tooltip,
@@ -45,6 +46,13 @@ export const Home = () => {
     "importação de anúncios",
     "características",
     "criação de kits",
+  ];
+
+  const clientResponsabilitiesObject = [
+    { id: 3, name: "integração marketplaces" },
+    { id: 5, name: "importação de anúncios" },
+    { id: 7, name: "características" },
+    { id: 11, name: "criação de kits" },
   ];
 
   const fetchData = async () => {
@@ -81,17 +89,10 @@ export const Home = () => {
   };
 
   useEffect(() => {
-    // const fetch = async () => {
-    //   await fetchData();
-    // };
-
-    // fetch();
-
     getStatusesList();
     getStatusByClient();
   }, [pathname]);
 
-  console.log(task);
   const getFormattedDate = (dateInput: any) => {
     var date = new Date(dateInput);
 
@@ -112,19 +113,6 @@ export const Home = () => {
   };
 
   const isLate = (dueDate: number) => {
-    // const predict = new Date(
-    //   predictData?.split("/").reverse().join("-")
-    // ).getTime();
-    // const delivery = new Date(
-    //   deliveryDate?.split("/").reverse().join("-")
-    // ).getTime();
-
-    // if (delivery > predict) {
-    //   return "#FF5757";
-    // } else if (delivery <= predict) {
-    //   return "#CFFF00";
-    // }
-
     if (new Date().getTime() > dueDate) {
       return "#FF5757";
     }
@@ -132,6 +120,21 @@ export const Home = () => {
       return "#CFFF00";
     }
   };
+
+  function addBusinessDays(date: number) {
+    const currentDate = new Date(+date);
+
+    for (let i = 1; i <= 2; i++) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      if (currentDate.getDay() === 6) {
+        currentDate.setDate(currentDate.getDate() + 2);
+      } else if (currentDate.getDay() === 0) {
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    return currentDate.getTime();
+  }
 
   const getPercentageProgress = (array: any[]) => {
     const amountActivity = array?.length;
@@ -228,7 +231,7 @@ export const Home = () => {
                 {index === task?.status.orderindex && (
                   <>
                     <DateBackground
-                      color={isLate(task?.due_date)}
+                      color={isLate(addBusinessDays(task?.date_updated))}
                       onMouseEnter={() => setShowTooltip(true)}
                       onMouseLeave={() => setShowTooltip(false)}
                     >
@@ -240,7 +243,7 @@ export const Home = () => {
                     {showTooltip && (
                       <Tooltip>
                         Data esperada para Conclusão:{" "}
-                        {dateFormatter(task.due_date)}
+                        {dateFormatter(addBusinessDays(task?.date_updated))}
                       </Tooltip>
                     )}
                   </>
@@ -283,7 +286,26 @@ export const Home = () => {
           )
         )}
       </ConcludedItem> */}
-      <button onClick={() => setShowLabel(!showLabel)}>Mostrar tarefas</button>
+      <StandardText>
+        <label>Tarefa Atual:</label>
+        <span>{task?.status.status}</span>
+      </StandardText>
+      <StandardText>
+        <label>Próxima Tarefa:</label>
+        <span>{statuses?.[task?.status?.orderindex + 1]?.status}</span>
+      </StandardText>
+      <StandardText>
+        <label>Vou precisar de você:</label>
+        <span>
+          {clientResponsabilitiesObject
+            .filter((item: any) => item.id >= task?.status.orderindex)
+            .map((value: any) => value.name)
+            .join(", ")}
+        </span>
+      </StandardText>
+      <Button onClick={() => setShowLabel(!showLabel)}>
+        {showLabel ? "Esconder" : "Tarefas"}
+      </Button>
       {showLabel && (
         <LabelContainer>
           {statuses?.map((item: any, index: number) => (
