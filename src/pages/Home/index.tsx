@@ -3,31 +3,23 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import {
   Button,
+  CardTask,
   Circle,
-  DateBackground,
-  DateBar,
-  DateContainer,
   LabelContainer,
   Legend,
   MainDiv,
-  Pencil,
-  PredictDelivered,
-  Pulsating,
   Span,
   SpinnerDiv,
-  StandardText,
-  TasksContainer,
+  TaskContainer,
+  TaskIsCurrent,
   TextBox,
-  Tooltip,
 } from "./styles";
 
 import { BsNut } from "react-icons/bs";
-import { AiOutlineCalendar } from "react-icons/ai";
-import { FiCheckSquare } from "react-icons/fi";
-import { BiPencil } from "react-icons/bi";
 import Spinner from "react-bootstrap/Spinner";
 import { isMobile } from "react-device-detect";
 import { url } from "../../env";
+import { IoIosArrowDown } from "react-icons/io";
 
 export const Home = () => {
   const [apiData, setApiData] = useState<any>();
@@ -40,7 +32,8 @@ export const Home = () => {
   const location = useLocation();
   const { pathname } = location;
 
-  let clientId = pathname.split("/").slice(3, 4)[0];
+  let taskId = pathname.split("/").slice(2)[0];
+
   const clientResponsabilities = [
     "integração marketplaces",
     "importação de anúncios",
@@ -55,16 +48,9 @@ export const Home = () => {
     { id: 11, name: "criação de kits" },
   ];
 
-  const fetchData = async () => {
-    setProcessing(true);
-    axios
-      .get(`https://8e7my2u569.execute-api.us-east-1.amazonaws.com/${clientId}`)
-      .then((response) => {
-        setApiData(response.data.body);
-        setProcessing(false);
-      })
-      .catch((err: any) => console.log(err));
-  };
+  const isClientResponsibilitie = clientResponsabilitiesObject.map(
+    (item: any) => item.id
+  );
 
   const getStatusesList = () => {
     setProcessing(true);
@@ -78,7 +64,6 @@ export const Home = () => {
   };
 
   const getStatusByClient = () => {
-    const taskId = "85yvra1j7";
     axios
       .get(url.ENDPOINT + `/task/${taskId}`)
       .then((response) => {
@@ -92,6 +77,8 @@ export const Home = () => {
     getStatusesList();
     getStatusByClient();
   }, [pathname]);
+
+  console.log("task", task);
 
   const getFormattedDate = (dateInput: any) => {
     var date = new Date(dateInput);
@@ -107,7 +94,7 @@ export const Home = () => {
   };
 
   const getStatusColor = (index: number | any) => {
-    if (index <= task?.status.orderindex) {
+    if (index <= task?.status?.orderindex) {
       return "#FFFF00";
     }
   };
@@ -138,7 +125,7 @@ export const Home = () => {
 
   const getPercentageProgress = (array: any[]) => {
     const amountActivity = array?.length;
-    const completed = task?.status.orderindex;
+    const completed = task?.status?.orderindex;
 
     return ((completed / amountActivity) * 100).toFixed();
   };
@@ -174,11 +161,11 @@ export const Home = () => {
           {statuses?.map((item: any, index: number) => (
             <Span
               isFirst={index === 0}
-              isLast={index === task?.status.orderindex}
+              isLast={index === task?.status?.orderindex}
               customWidth={statuses?.length - 1}
               statusColor={getStatusColor(index)}
             >
-              {index === task?.status.orderindex ? (
+              {index === task?.status?.orderindex ? (
                 <span>
                   {statuses?.length && getPercentageProgress(statuses)}%
                 </span>
@@ -187,131 +174,49 @@ export const Home = () => {
           ))}
         </div>
       )}
-      <TasksContainer customWidth={statuses?.length - 1}>
-        {statuses?.map((item: any, index: number) => (
-          <>
-            {/* {index === 0 && (
-              <Pencil>
-                <BiPencil size={20} style={{ marginLeft: "10px" }} />
-              </Pencil>
-            )} */}
-            <div>
-              <Circle
-                opaco={index <= task?.status.orderindex}
-                color={
-                  clientResponsabilities.includes(item.status)
-                    ? "black"
-                    : "#f1c233"
-                }
+      <TaskIsCurrent>
+        <div>TAREFAS ANTERIORES</div>
+        <div>TAREFA ATUAL</div>
+        <div>PRÓXIMAS TAREFAS</div>
+      </TaskIsCurrent>
+      <TaskContainer>
+        {statuses
+          ?.filter(
+            (tasks: any, index: number) =>
+              index >= task?.status?.orderindex - 2 &&
+              index <= task?.status?.orderindex + 2
+          )
+          .map((item: any) => (
+            <>
+              <CardTask
+                current={item.status === task?.status?.status}
+                client={isClientResponsibilitie.includes(item.orderindex)}
               >
-                {index + 1}
-              </Circle>
-              {index === task?.status.orderindex && <Pulsating></Pulsating>}
-            </div>
-          </>
-        ))}
-      </TasksContainer>
-      <DateBar>
-        {statuses?.map((item: any, index: number) =>
-          isMobile ? (
-            <>
-              {index === 0 && (
-                <span className="calendar">
-                  <AiOutlineCalendar size={15} style={{ marginRight: "5px" }} />
-                </span>
-              )}
-              <DateContainer customWidth={statuses?.length - 1}>
-                {/* <label>{item[3]?.slice(0, 5).split("/")[0]}/</label>
-                <label>{item[3]?.slice(0, 5).split("/")[1]}</label> */}
-              </DateContainer>
+                <label>DATA</label>
+                <div>{item.status?.toUpperCase()}</div>
+              </CardTask>
             </>
-          ) : (
-            <>
-              <DateContainer customWidth={statuses?.length - 1}>
-                {index === task?.status.orderindex && (
-                  <>
-                    <DateBackground
-                      color={isLate(addBusinessDays(task?.date_updated))}
-                      onMouseEnter={() => setShowTooltip(true)}
-                      onMouseLeave={() => setShowTooltip(false)}
-                    >
-                      {index === task?.status.orderindex && (
-                        <label>{dateFormatter(task.date_updated)}</label>
-                      )}
-                    </DateBackground>
+          ))}
+      </TaskContainer>
+      <Legend>
+        <div>
+          <span></span>
+          <label>Responsabilidade Integracomm</label>
+          <span></span>
+          <label>Responsabilidade Parceiro</label>
+        </div>
+      </Legend>
 
-                    {showTooltip && (
-                      <Tooltip>
-                        Data esperada para Conclusão:{" "}
-                        {dateFormatter(addBusinessDays(task?.date_updated))}
-                      </Tooltip>
-                    )}
-                  </>
-                )}
-              </DateContainer>
-            </>
-          )
-        )}
-      </DateBar>
-      {/* <ConcludedItem>
-        {statuses?.map((item: any, index: number) =>
-          isMobile ? (
-            <>
-              {index === 0 && (
-                <span className="done">
-                  <FiCheckSquare size={15} style={{ marginRight: "0.5px" }} />
-                </span>
-              )}
-              <DateContainer customWidth={statuses?.length - 1} isConcluded>
-                <DateBackground color={isLate(item[3], item[4])}>
-                  <label>
-                    {item[4]?.slice(0, 5).split("/")[0]}
-                    {item[4]?.slice(0, 5).split("/")[0] ? "/" : null}
-                  </label>
-                  <label>{item[4]?.slice(0, 5).split("/")[1]}</label>
-                </DateBackground>
-              </DateContainer>
-            </>
-          ) : (
-            <>
-              <DateContainer customWidth={statuses?.length - 1}>
-                {index === 0 && (
-                  <FiCheckSquare size={20} style={{ marginRight: "0.5px" }} />
-                )}
-                <DateBackground color={isLate(item[3], item[4])}>
-                  <label>{item[4]?.slice(0, 5)}</label>
-                </DateBackground>
-              </DateContainer>
-            </>
-          )
-        )}
-      </ConcludedItem> */}
-      <StandardText>
-        <label>Tarefa Atual:</label>
-        <span>{task?.status.status}</span>
-      </StandardText>
-      <StandardText>
-        <label>Próxima Tarefa:</label>
-        <span>{statuses?.[task?.status?.orderindex + 1]?.status}</span>
-      </StandardText>
-      <StandardText>
-        <label>Vou precisar de você:</label>
-        <span>
-          {clientResponsabilitiesObject
-            .filter((item: any) => item.id >= task?.status.orderindex)
-            .map((value: any) => value.name)
-            .join(", ")}
-        </span>
-      </StandardText>
       <Button onClick={() => setShowLabel(!showLabel)}>
-        {showLabel ? "Esconder" : "Tarefas"}
+        <IoIosArrowDown />
+        TODAS AS TAREFAS
       </Button>
       {showLabel && (
         <LabelContainer>
           {statuses?.map((item: any, index: number) => (
             <div>
               <Circle
-                opaco={index <= task?.status.orderindex}
+                opaco={index <= task?.status?.orderindex}
                 color={
                   clientResponsabilities.includes(item.status)
                     ? "black"
@@ -325,14 +230,6 @@ export const Home = () => {
           ))}
         </LabelContainer>
       )}
-      <Legend>
-        <div>
-          <span></span>
-          <label>Responsabilidade Integracomm</label>
-          <span></span>
-          <label>Responsabilidade Parceiro</label>
-        </div>
-      </Legend>
     </MainDiv>
   );
 };
