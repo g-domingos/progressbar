@@ -34,24 +34,6 @@ export const Home = () => {
 
   let taskId = pathname.split("/").slice(2)[0];
 
-  const clientResponsabilities = [
-    "integração marketplaces",
-    "importação de anúncios",
-    "características",
-    "criação de kits",
-  ];
-
-  const clientResponsabilitiesObject = [
-    { id: 3, name: "integração marketplaces" },
-    { id: 5, name: "importação de anúncios" },
-    { id: 7, name: "características" },
-    { id: 11, name: "criação de kits" },
-  ];
-
-  const isClientResponsibilitie = clientResponsabilitiesObject.map(
-    (item: any) => item.id
-  );
-
   const getHistory = () => {
     axios
       .get(url.ENDPOINT + `/history/${taskId}`)
@@ -175,6 +157,7 @@ export const Home = () => {
     return "";
   };
 
+  console.log("filteredStatus", filteredStatus);
   const getDate = ({ itemOrderIndex, taskOrderIndex }: any) => {
     if (itemOrderIndex > taskOrderIndex) {
       const duration =
@@ -239,7 +222,7 @@ export const Home = () => {
           <>
             <CardTask
               current={item.status === task?.statusName}
-              client={isClientResponsibilitie.includes(item.orderindex)}
+              client={item.client_responsabilitie}
             >
               <label>
                 {getDate({
@@ -271,11 +254,7 @@ export const Home = () => {
             <div>
               <Circle
                 opaco={index <= task?.orderIndex}
-                color={
-                  clientResponsabilities.includes(item.status)
-                    ? "black"
-                    : "#f1c233"
-                }
+                color={item.client_responsabilitie ? "black" : "#f1c233"}
               >
                 {index + 1}
               </Circle>
