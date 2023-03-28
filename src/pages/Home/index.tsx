@@ -27,7 +27,7 @@ export const Home = () => {
   const [task, setTask] = useState<any>();
   const [showLabel, setShowLabel] = useState<boolean>(false);
   const [processing, setProcessing] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [history, setHistory] = useState<any>();
 
   const location = useLocation();
   const { pathname } = location;
@@ -52,12 +52,22 @@ export const Home = () => {
     (item: any) => item.id
   );
 
+  const getHistory = () => {
+    axios
+      .get(url.ENDPOINT + `/history/${taskId}`)
+      .then((response) => {
+        setHistory(JSON.parse(response.data.body));
+        setProcessing(false);
+      })
+      .catch((err: any) => console.log(err));
+  };
+
   const getStatusesList = () => {
     setProcessing(true);
     axios
       .get(url.ENDPOINT + "/statuses")
       .then((response) => {
-        setStatuses(response.data.body);
+        setStatuses(JSON.parse(response.data.body));
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
@@ -67,7 +77,7 @@ export const Home = () => {
     axios
       .get(url.ENDPOINT + `/task/${taskId}`)
       .then((response) => {
-        setTask(response.data.body);
+        setTask(JSON.parse(response.data.body));
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
@@ -76,9 +86,21 @@ export const Home = () => {
   useEffect(() => {
     getStatusesList();
     getStatusByClient();
+    getHistory();
   }, [pathname]);
 
-  console.log("task", task);
+  const filteredStatus = statuses?.filter(
+    (tasks: any, index: number) =>
+      index >= task?.orderIndex - 2 && index <= task?.orderIndex + 2
+  );
+
+  const currentTaskDuration = statuses?.filter(
+    (item: any) => item.orderindex === task?.orderIndex
+  )[0]?.duration;
+
+  const lastTaskDuration =
+    statuses?.filter((item: any) => item.orderindex === task?.orderIndex + 1)[0]
+      ?.duration + currentTaskDuration;
 
   const getFormattedDate = (dateInput: any) => {
     var date = new Date(dateInput);
@@ -94,7 +116,7 @@ export const Home = () => {
   };
 
   const getStatusColor = (index: number | any) => {
-    if (index <= task?.status?.orderindex) {
+    if (index <= task?.orderIndex) {
       return "#FFFF00";
     }
   };
@@ -108,10 +130,10 @@ export const Home = () => {
     }
   };
 
-  function addBusinessDays(date: number) {
+  function addBusinessDays(date: number, duration: number) {
     const currentDate = new Date(+date);
 
-    for (let i = 1; i <= 2; i++) {
+    for (let i = 1; i <= duration; i++) {
       currentDate.setDate(currentDate.getDate() + 1);
       if (currentDate.getDay() === 6) {
         currentDate.setDate(currentDate.getDate() + 2);
@@ -125,20 +147,51 @@ export const Home = () => {
 
   const getPercentageProgress = (array: any[]) => {
     const amountActivity = array?.length;
-    const completed = task?.status?.orderindex;
+    const completed = task?.orderIndex;
 
     return ((completed / amountActivity) * 100).toFixed();
   };
 
+  const getDueDate = (index: number) => {
+    const dueDate = history?.filter(
+      (item: any) => item.orderIndex === index
+    )[0];
+
+    return dateFormatter(dueDate?.date_conclusion);
+  };
+
   const dateFormatter = (epoch: number) => {
-    const date = new Intl.DateTimeFormat("pt-BR").format(epoch);
+    if (epoch) {
+      const date = new Intl.DateTimeFormat("pt-BR").format(epoch);
 
-    const dateWithoutYear = date
-      .split("/")
-      .slice(0, date.split("/").length - 1)
-      .join("/");
+      const dateWithoutYear = date
+        .split("/")
+        .slice(0, date.split("/").length - 1)
+        .join("/");
 
-    return dateWithoutYear;
+      return dateWithoutYear;
+    }
+
+    return "";
+  };
+
+  const getDate = ({ itemOrderIndex, taskOrderIndex }: any) => {
+    if (itemOrderIndex > taskOrderIndex) {
+      const duration =
+        itemOrderIndex === filteredStatus[filteredStatus.length - 1].orderindex
+          ? lastTaskDuration
+          : currentTaskDuration;
+
+      const nextTaskDueDate = dateFormatter(
+        addBusinessDays(+task?.due_date, duration)
+      );
+
+      return nextTaskDueDate;
+    } else if (itemOrderIndex === taskOrderIndex) {
+      return dateFormatter(+task?.due_date);
+    } else {
+      return getDueDate(itemOrderIndex);
+    }
   };
 
   return (
@@ -159,18 +212,20 @@ export const Home = () => {
       ) : (
         <div className="div">
           {statuses?.map((item: any, index: number) => (
-            <Span
-              isFirst={index === 0}
-              isLast={index === task?.status?.orderindex}
-              customWidth={statuses?.length - 1}
-              statusColor={getStatusColor(index)}
-            >
-              {index === task?.status?.orderindex ? (
-                <span>
-                  {statuses?.length && getPercentageProgress(statuses)}%
-                </span>
-              ) : null}
-            </Span>
+            <>
+              <Span
+                isFirst={index === 0}
+                isLast={index === task?.orderIndex}
+                customWidth={statuses?.length - 1}
+                statusColor={getStatusColor(index)}
+              >
+                {index === task?.orderIndex ? (
+                  <span>
+                    {statuses?.length && getPercentageProgress(statuses)}%
+                  </span>
+                ) : null}
+              </Span>
+            </>
           ))}
         </div>
       )}
@@ -180,23 +235,22 @@ export const Home = () => {
         <div>PRÓXIMAS TAREFAS</div>
       </TaskIsCurrent>
       <TaskContainer>
-        {statuses
-          ?.filter(
-            (tasks: any, index: number) =>
-              index >= task?.status?.orderindex - 2 &&
-              index <= task?.status?.orderindex + 2
-          )
-          .map((item: any) => (
-            <>
-              <CardTask
-                current={item.status === task?.status?.status}
-                client={isClientResponsibilitie.includes(item.orderindex)}
-              >
-                <label>DATA</label>
-                <div>{item.status?.toUpperCase()}</div>
-              </CardTask>
-            </>
-          ))}
+        {filteredStatus?.map((item: any, index: number) => (
+          <>
+            <CardTask
+              current={item.status === task?.statusName}
+              client={isClientResponsibilitie.includes(item.orderindex)}
+            >
+              <label>
+                {getDate({
+                  itemOrderIndex: item.orderindex,
+                  taskOrderIndex: task?.orderIndex,
+                })}
+              </label>
+              <div>{item.status?.toUpperCase()}</div>
+            </CardTask>
+          </>
+        ))}
       </TaskContainer>
       <Legend>
         <div>
@@ -216,7 +270,7 @@ export const Home = () => {
           {statuses?.map((item: any, index: number) => (
             <div>
               <Circle
-                opaco={index <= task?.status?.orderindex}
+                opaco={index <= task?.orderIndex}
                 color={
                   clientResponsabilities.includes(item.status)
                     ? "black"

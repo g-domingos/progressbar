@@ -214,6 +214,7 @@ export const CardTask = styled.div<{ current?: boolean; client?: boolean }>`
   flex-direction: column;
   align-items: center;
   box-shadow: 0 0 15px lightgray;
+  opacity: ${(props) => !props.current && "0.7"};
 
   & > label {
     background: ${(props) => (props.client ? "#5D5757" : "#FFFF00")};
