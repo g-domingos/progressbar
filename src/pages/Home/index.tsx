@@ -157,7 +157,6 @@ export const Home = () => {
     return "";
   };
 
-  console.log("filteredStatus", filteredStatus);
   const getDate = ({ itemOrderIndex, taskOrderIndex }: any) => {
     if (itemOrderIndex > taskOrderIndex) {
       const duration =
@@ -221,7 +220,7 @@ export const Home = () => {
         {filteredStatus?.map((item: any, index: number) => (
           <>
             <CardTask
-              current={item.status === task?.statusName}
+              current={item.orderindex === task?.orderIndex}
               client={item.client_responsabilitie}
             >
               <label>
