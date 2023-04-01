@@ -33,8 +33,8 @@ export const MainDiv = styled.div`
   }
 
   @media screen and (max-width: 767px) {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
   }
 `;
 
@@ -121,7 +121,7 @@ export const LabelContainer = styled.div`
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 90%;
+  width: 50%;
   height: 110px;
 
   & > div {
@@ -137,11 +137,38 @@ export const LabelContainer = styled.div`
   }
 
   @media screen and (max-width: 767px) {
-    width: 100%;
-    flex-wrap: wrap;
-    height: 15rem;
+    display: flex;
+    flex-direction: row;
+    min-height: 10rem;
+    max-height: 50rem;
+    width: 23rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    justify-content: center;
     gap: 0.5rem;
     margin-top: 2rem;
+
+    & > div {
+      display: flex;
+      justify-content: space-between;
+      width: 95%;
+    }
+  }
+`;
+
+export const HistoryDate = styled.label<{ color?: string; current?: boolean }>`
+  background: ${({ color }) => color};
+  padding: 5px;
+  border-radius: 1rem;
+  animation: ${({ current }) => current && "oscilate 1s alternate infinite"};
+
+  @keyframes oscilate {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.2);
+    }
   }
 `;
 
@@ -164,7 +191,7 @@ export const Legend = styled.div`
 
   & > div {
     & > span:first-child {
-      background: #f1c233 !important;
+      background: #f1c233;
     }
 
     height: 30px;
@@ -203,6 +230,14 @@ export const TaskContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media screen and (max-width: 767px) {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-around;
+    height: 18rem;
+    flex-direction: column;
+  }
 `;
 
 export const CardTask = styled.div<{ current?: boolean; client?: boolean }>`
@@ -234,12 +269,21 @@ export const CardTask = styled.div<{ current?: boolean; client?: boolean }>`
     font-weight: 700;
     font-family: Roboto;
   }
+
+  @media screen and (max-width: 767px) {
+    width: ${(props) => (props.current ? "20rem" : "15rem")};
+    height: ${(props) => (props.current ? "35%" : "25%")};
+
+    & > label {
+      height: 2rem;
+    }
+  }
 `;
 
 export const TaskIsCurrent = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 10px 140px 0 140px;
+  padding: 1rem 10rem 0 10rem;
   margin-top: 1rem;
   font-weight: 600;
   font-size: 18px;
@@ -250,5 +294,38 @@ export const TaskIsCurrent = styled.div`
 
   & > div:nth-child(3) {
     font-size: 14px;
+  }
+`;
+
+export const LegendTwo = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  gap: 20px;
+  font-weight: 800;
+  font-family: Roboto;
+  font-size: 12px;
+
+  span {
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+  }
+
+  & > div {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px lightgray;
+  }
+
+  @media screen and (max-width: 767px) {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+
   }
 `;
