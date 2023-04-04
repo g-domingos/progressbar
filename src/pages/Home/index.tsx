@@ -50,7 +50,7 @@ export const Home = () => {
     axios
       .get(url.ENDPOINT + "/statuses")
       .then((response) => {
-        setStatuses(JSON.parse(response.data.body));
+        setStatuses(response.data.body);
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
@@ -76,11 +76,16 @@ export const Home = () => {
   }, [pathname]);
 
   const numberOfTasks = isMobile ? 1 : 2;
+
   const filteredStatus = statuses?.filter(
     (tasks: any, index: number) =>
+      tasks.visible &&
       index >= task?.orderIndex - numberOfTasks &&
       index <= task?.orderIndex + numberOfTasks
   );
+
+  if (filteredStatus.length)
+  console.log("filteredStatus", filteredStatus);
 
   const currentTaskDuration = statuses?.filter(
     (item: any) => item.orderindex === task?.orderIndex
@@ -263,7 +268,7 @@ export const Home = () => {
               <div>
                 <Circle
                   opaco={index <= task?.orderIndex}
-                  color={item.client_responsabilitie ? "black" : "#f1c233"}
+                  color={item.client_responsabilitie ? "black" : "#FFFF00"}
                 >
                   {index + 1}
                 </Circle>

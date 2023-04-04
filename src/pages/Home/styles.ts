@@ -76,9 +76,9 @@ export const Circle = styled.div<{ opaco?: boolean; color?: string }>`
   align-items: center;
   width: 30px;
   height: 30px;
-  background: ${(props) => (props.color ? props.color : "#f1c233")};
+  background: ${(props) => (props.color ? props.color : "#FFFF00")};
   border-radius: 100%;
-  color: ${(props) => (props.color === "black" ? "#f1c233" : "black")};
+  color: ${(props) => (props.color === "black" ? "#FFFF00" : "black")};
   font-weight: 700;
   font-size: 17px;
 
@@ -327,6 +327,5 @@ export const LegendTwo = styled.div`
   @media screen and (max-width: 767px) {
     margin-top: 2rem;
     margin-bottom: 2rem;
-
   }
 `;
