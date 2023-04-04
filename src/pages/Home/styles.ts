@@ -231,6 +231,7 @@ export const TaskContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 
   @media screen and (max-width: 767px) {
     margin-top: 1rem;
@@ -328,4 +329,9 @@ export const LegendTwo = styled.div`
     margin-top: 2rem;
     margin-bottom: 2rem;
   }
+`;
+
+export const TaskLabel = styled.div<{ isCurrent?: boolean }>`
+  position: absolute;
+  top: ${({ isCurrent }) => (isCurrent ? "-35px" : "0px")};
 `;

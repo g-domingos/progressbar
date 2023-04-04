@@ -14,6 +14,7 @@ import {
   SpinnerDiv,
   TaskContainer,
   TaskIsCurrent,
+  TaskLabel,
   TextBox,
 } from "./styles";
 
@@ -83,9 +84,6 @@ export const Home = () => {
       index >= task?.orderIndex - numberOfTasks &&
       index <= task?.orderIndex + numberOfTasks
   );
-
-  if (filteredStatus.length)
-  console.log("filteredStatus", filteredStatus);
 
   const currentTaskDuration = statuses?.filter(
     (item: any) => item.orderindex === task?.orderIndex
@@ -188,6 +186,16 @@ export const Home = () => {
     }
   };
 
+  const renderText = ({ taskId, currentItem }: any) => {
+    if (+taskId === +currentItem) {
+      return "TAREFA ATUAL";
+    } else if (+taskId < +currentItem) {
+      return "PRÓX.";
+    } else if (+taskId > +currentItem) {
+      return "ANTERIOR";
+    }
+  };
+
   return (
     <MainDiv>
       <TextBox>
@@ -225,9 +233,9 @@ export const Home = () => {
       )}
       {!isMobile && (
         <TaskIsCurrent>
-          <div>TAREFAS ANTERIORES</div>
+          {/* <div>TAREFAS ANTERIORES</div>
           <div>TAREFA ATUAL</div>
-          <div>PRÓXIMAS TAREFAS</div>
+          <div>PRÓXIMAS TAREFAS</div> */}
         </TaskIsCurrent>
       )}
       <TaskContainer>
@@ -237,6 +245,12 @@ export const Home = () => {
               current={item.orderindex === task?.orderIndex}
               client={item.client_responsabilitie}
             >
+              <TaskLabel isCurrent={item.orderindex === task?.orderIndex}>
+                {renderText({
+                  taskId: task?.orderIndex,
+                  currentItem: item.orderindex,
+                })}
+              </TaskLabel>
               <label>
                 {getDate({
                   itemOrderIndex: item.orderindex,
