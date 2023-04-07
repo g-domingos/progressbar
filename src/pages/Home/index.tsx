@@ -94,9 +94,6 @@ export const Home = () => {
       tasks.orderindex <= task?.orderIndex + numberOfTasks
   );
 
-  console.log("statyses", statuses);
-  console.log("filteredStatus", filteredStatus);
-
   const currentTaskDuration = statuses?.filter(
     (item: any) => item.orderindex === task?.orderIndex
   )[0]?.duration;
