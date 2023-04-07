@@ -192,7 +192,7 @@ export const Legend = styled.div`
 
   & > div {
     & > span:first-child {
-      background: #f1c233;
+      background: #FFFF00;
     }
 
     height: 30px;

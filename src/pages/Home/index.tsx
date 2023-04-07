@@ -254,7 +254,7 @@ export const Home = () => {
               current={item.orderindex === task?.orderIndex}
               client={item.client_responsabilitie}
             >
-              {isMobile && (
+              {!isMobile && (
                 <TaskLabel isCurrent={item.orderindex === task?.orderIndex}>
                   {renderText({
                     taskId: task?.orderIndex,
