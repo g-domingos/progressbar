@@ -14,7 +14,7 @@ export const Teste = styled.div`
 
 export const Main = styled.div`
   width: 90%;
-  height: 90vh;
+  height: 200vh;
   background: white;
   border-radius: 0.7rem;
   margin-top: 1rem;
