@@ -2,15 +2,26 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { url } from "../../env";
 import { Circle } from "../Home/styles";
-import { Button, Container, Main, TaskDetails, TaskDetailsBar } from "./styles";
+import {
+  Button,
+  ClientCard,
+  ClientsPannel,
+  Container,
+  Main,
+  Painnel,
+  TaskDetails,
+  TaskDetailsBar,
+} from "./styles";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { success } from "../../toast";
 
 export const Backoffice = () => {
   const [processing, setProcessing] = useState<boolean>(false);
   const [expand, setExpand] = useState<boolean>(false);
+  const [expandClients, setExpandClients] = useState<boolean>(false);
 
   const [statuses, setStatuses] = useState<any>();
+  const [clientsList, setClientsList] = useState<any>();
 
   const getStatusesList = () => {
     setProcessing(true);
@@ -78,8 +89,6 @@ export const Backoffice = () => {
     );
   };
 
-  console.log("statuses", statuses);
-
   const handleUpdateTaskInformation = () => {
     axios
       .put(url.ENDPOINT + "/statuses", statuses)
@@ -93,9 +102,31 @@ export const Backoffice = () => {
       });
   };
 
+  const getClientLinks = () => {
+    axios
+      .get(url.ENDPOINT + "/clients-links")
+      .then((response) => {
+        setClientsList(response?.data.body);
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     getStatusesList();
+    getClientLinks();
   }, []);
+
+  const handleOpenDash = ({ taskId }: any) => {
+    const currentUrl = window.location.href;
+
+    const url = currentUrl.split("#")[0];
+
+    const goToUrl = url + `#/client-id/${taskId}`;
+
+    window.open(goToUrl);
+  };
 
   return (
     <Container>
@@ -195,6 +226,26 @@ export const Backoffice = () => {
             </>
           )}
         </TaskDetails>
+        <ClientsPannel>
+          <div onClick={() => setExpandClients(!expandClients)}>
+            {!expandClients ? <IoIosArrowDown /> : <IoIosArrowUp />}
+            <label>PAINEL DE CLIENTES</label>
+          </div>
+          {expandClients && (
+            <Painnel>
+              {clientsList?.map((client: any) => (
+                <ClientCard
+                  onClick={() => handleOpenDash({ taskId: client.taskId })}
+                >
+                  <label>{client?.clientName}</label>
+                  <div>
+                    <span>{client?.status?.status.toUpperCase()}</span>
+                  </div>
+                </ClientCard>
+              ))}
+            </Painnel>
+          )}
+        </ClientsPannel>
       </Main>
     </Container>
   );

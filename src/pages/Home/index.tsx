@@ -76,14 +76,26 @@ export const Home = () => {
     getStatusByClient();
   }, [pathname]);
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      getStatusesList();
+      getStatusByClient();
+    }, 6 * 60 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, [pathname]);
+
   const numberOfTasks = isMobile ? 1 : 2;
 
   const filteredStatus = statuses?.filter(
     (tasks: any, index: number) =>
       tasks.visible &&
-      index >= task?.orderIndex - numberOfTasks &&
-      index <= task?.orderIndex + numberOfTasks
+      tasks.orderindex >= task?.orderIndex - numberOfTasks &&
+      tasks.orderindex <= task?.orderIndex + numberOfTasks
   );
+
+  console.log("statyses", statuses);
+  console.log("filteredStatus", filteredStatus);
 
   const currentTaskDuration = statuses?.filter(
     (item: any) => item.orderindex === task?.orderIndex
@@ -245,12 +257,14 @@ export const Home = () => {
               current={item.orderindex === task?.orderIndex}
               client={item.client_responsabilitie}
             >
-              <TaskLabel isCurrent={item.orderindex === task?.orderIndex}>
-                {renderText({
-                  taskId: task?.orderIndex,
-                  currentItem: item.orderindex,
-                })}
-              </TaskLabel>
+              {isMobile && (
+                <TaskLabel isCurrent={item.orderindex === task?.orderIndex}>
+                  {renderText({
+                    taskId: task?.orderIndex,
+                    currentItem: item.orderindex,
+                  })}
+                </TaskLabel>
+              )}
               <label>
                 {getDate({
                   itemOrderIndex: item.orderindex,

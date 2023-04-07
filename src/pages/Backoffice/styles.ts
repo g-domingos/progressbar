@@ -129,6 +129,61 @@ export const Button = styled.button`
   border: none;
   padding: 0.9rem;
   margin-bottom: 5rem;
+`;
 
+export const ClientsPannel = styled.div`
+  position: relative;
+  width: 100%;
+  height: 3rem !important;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px lightgray;
 
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+
+  svg {
+    margin-right: 0.5rem;
+
+    :hover {
+      cursor: pointer;
+    }
+  }
+`;
+
+export const Painnel = styled.div`
+  width: 100%;
+  position: absolute;
+  top: 4rem;
+  transition: opacity 3s ease-in-out;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+`;
+
+export const ClientCard = styled.div`
+  width: 300px;
+  height: 110px;
+  border: 1px solid lightgray;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  box-shadow: 0 0 20px lightgray;
+
+  & > label {
+    background: #ffff00;
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+  }
 `;
