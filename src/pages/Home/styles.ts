@@ -16,6 +16,7 @@ export const MainDiv = styled.div`
     height: 40px;
     display: flex;
     border-radius: 25px;
+    margin-bottom: 30px;
     box-shadow: 0 0 15px lightgray;
   }
 
@@ -192,7 +193,7 @@ export const Legend = styled.div`
 
   & > div {
     & > span:first-child {
-      background: #FFFF00;
+      background: #ffff00;
     }
 
     height: 30px;
@@ -225,10 +226,11 @@ export const Button = styled.button`
   gap: 0.5rem;
 `;
 
-export const TaskContainer = styled.div`
-  width: 100%;
+export const TaskContainer = styled.div<{ width?: string }>`
+  width: ${(props) => (props.width ? props.width : "100%")};
   height: 180px;
   display: flex;
+  margin: auto;
   justify-content: space-between;
   align-items: center;
   position: relative;

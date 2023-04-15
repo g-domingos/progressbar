@@ -51,7 +51,8 @@ export const Home = () => {
     axios
       .get(url.ENDPOINT + "/statuses")
       .then((response) => {
-        setStatuses(response.data.body);
+
+        setStatuses(response.data.body.slice(4));
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
@@ -147,7 +148,7 @@ export const Home = () => {
   }
 
   const getPercentageProgress = (array: any[]) => {
-    const amountActivity = array?.length;
+    const amountActivity = array?.length - 1;
     const completed = task?.orderIndex;
 
     return ((completed / amountActivity) * 100).toFixed();
@@ -195,14 +196,37 @@ export const Home = () => {
     }
   };
 
-  const renderText = ({ taskId, currentItem }: any) => {
-    if (+taskId === +currentItem) {
+  const renderText = ({ taskId, currentItem, item }: any) => {
+    if (+taskId === +currentItem || returnIfIsCurrent(item)) {
       return "TAREFA ATUAL";
     } else if (+taskId < +currentItem) {
       return "PRÓX.";
     } else if (+taskId > +currentItem) {
       return "ANTERIOR";
     }
+  };
+
+  const getTaskContainerWidth = () => {
+    if (filteredStatus?.length > 3) {
+      return "100%";
+    }
+    if (filteredStatus?.length <= 2) {
+      return "40%";
+    }
+    return "60%";
+  };
+
+  const returnIfIsCurrent = (item: any) => {
+    const array = filteredStatus.map((item: any) => {
+      return item.orderindex;
+    });
+    if (item.orderindex === task?.orderIndex) {
+      return true;
+    }
+    if (item.orderindex === 17 && !array.includes(task?.orderIndex)) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -240,25 +264,19 @@ export const Home = () => {
           ))}
         </div>
       )}
-      {!isMobile && (
-        <TaskIsCurrent>
-          {/* <div>TAREFAS ANTERIORES</div>
-          <div>TAREFA ATUAL</div>
-          <div>PRÓXIMAS TAREFAS</div> */}
-        </TaskIsCurrent>
-      )}
-      <TaskContainer>
+      <TaskContainer width={getTaskContainerWidth()}>
         {filteredStatus?.map((item: any, index: number) => (
           <>
             <CardTask
-              current={item.orderindex === task?.orderIndex}
+              current={returnIfIsCurrent(item)}
               client={item.client_responsabilitie}
             >
               {!isMobile && (
-                <TaskLabel isCurrent={item.orderindex === task?.orderIndex}>
+                <TaskLabel isCurrent={returnIfIsCurrent(item)}>
                   {renderText({
                     taskId: task?.orderIndex,
                     currentItem: item.orderindex,
+                    item,
                   })}
                 </TaskLabel>
               )}

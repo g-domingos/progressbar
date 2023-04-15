@@ -186,4 +186,8 @@ export const ClientCard = styled.div`
     flex-direction: column;
     margin-left: 1rem;
   }
+
+  :hover {
+    cursor: pointer;
+  }
 `;

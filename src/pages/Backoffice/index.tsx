@@ -167,7 +167,6 @@ export const Backoffice = () => {
                               event: e,
                             })
                           }
-                          onKeyDown={(e) => console.log(e.key)}
                         />
                         <p>dias</p>
                       </div>
