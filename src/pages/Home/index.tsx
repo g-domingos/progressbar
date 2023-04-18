@@ -76,15 +76,6 @@ export const Home = () => {
     getStatusByClient();
   }, [pathname]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      getStatusesList();
-      getStatusByClient();
-    }, 6 * 60 * 60 * 1000);
-
-    return () => clearInterval(intervalId);
-  }, [pathname]);
-
   const numberOfTasks = isMobile ? 1 : 2;
 
   const filteredStatus = statuses?.filter(
@@ -306,49 +297,46 @@ export const Home = () => {
       {showLabel && (
         <>
           <LabelContainer>
-            {history?.map((item: any, index: number) => (
-              <div>
-                <Circle
-                  opaco={index <= task?.orderIndex}
-                  color={item.client_responsabilitie ? "black" : "#FFFF00"}
-                >
-                  {index + 1}
-                </Circle>
-                <label>
-                  {item.statusName ||
-                    statuses?.filter(
-                      (item: any) => item.orderindex === task?.orderIndex
-                    )[0].status}
-                </label>
-                <HistoryDate
-                  current={item.orderIndex === task?.orderIndex}
-                  color={
-                    item.orderIndex === task?.orderIndex
-                      ? isLate({
-                          dueDate: task?.due_date,
-                          dateConcluded: new Date().getTime(),
-                        })
-                      : isLate({
-                          dueDate: item.due_date,
-                          dateConcluded: item.date_conclusion,
-                        })
-                  }
-                >
-                  {item.orderIndex === task?.orderIndex
-                    ? dateFormatter(task?.due_date)
-                    : dateFormatter(item.date_conclusion)}
-                </HistoryDate>
-              </div>
-            ))}
+            {statuses
+              ?.filter((stats: any) => stats.visible)
+              .map((item: any, index: number) => (
+                <div>
+                  <Circle
+                    opaco={index <= task?.orderIndex}
+                    color={item.client_responsabilitie ? "black" : "#FFFF00"}
+                  >
+                    {index + 1}
+                  </Circle>
+                  <label>{item.status}</label>
+                  {/* <HistoryDate
+                    current={item.orderIndex === task?.orderIndex}
+                    color={
+                      item.orderIndex === task?.orderIndex
+                        ? isLate({
+                            dueDate: task?.due_date,
+                            dateConcluded: new Date().getTime(),
+                          })
+                        : isLate({
+                            dueDate: item.due_date,
+                            dateConcluded: item.date_conclusion,
+                          })
+                    }
+                  >
+                    {item.orderIndex === task?.orderIndex
+                      ? dateFormatter(task?.due_date)
+                      : dateFormatter(item.date_conclusion)}
+                  </HistoryDate> */}
+                </div>
+              ))}
           </LabelContainer>
-          <LegendTwo>
+          {/* <LegendTwo>
             <div>
               <span style={{ backgroundColor: "#ff1317" }}></span>
               <label>Em atraso</label>
               <span style={{ backgroundColor: "#00e408" }}></span>
               <label>Dentro do Prazo</label>
             </div>
-          </LegendTwo>
+          </LegendTwo> */}
         </>
       )}
     </MainDiv>

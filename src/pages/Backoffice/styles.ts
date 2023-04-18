@@ -179,6 +179,10 @@ export const ClientCard = styled.div`
     background: #ffff00;
     padding: 1rem;
     border-radius: 1rem;
+    height: 3.4rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;    
   }
 
   & > div {

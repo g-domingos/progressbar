@@ -122,14 +122,15 @@ export const LabelContainer = styled.div`
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 50%;
-  height: 130px;
-
+  width: 90%;
+  height: 150px;
+  gap: 0.5rem;
+  
   & > div {
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 40%;
+    width: 20%;
 
     & > label {
       margin-left: 5px;
