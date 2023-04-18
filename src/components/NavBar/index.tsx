@@ -1,7 +1,7 @@
 import { NavBarContainer, UserArea } from "./styles";
-import Logo from "../../images/Logo.png";
+import Logo from "../../images/whiteLogo.png";
+
 import { AiOutlineUser } from "react-icons/ai";
-import { NavLink } from "react-router-dom";
 
 export const NavBar = () => {
   return (

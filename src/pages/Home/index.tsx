@@ -51,7 +51,6 @@ export const Home = () => {
     axios
       .get(url.ENDPOINT + "/statuses")
       .then((response) => {
-
         setStatuses(response.data.body.slice(4));
         setProcessing(false);
       })

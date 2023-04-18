@@ -11,8 +11,8 @@ export const NavBarContainer = styled.header`
   padding: 30px;
 
   img {
-    height: 30px;
-    width: 80px;
+    height: 8rem;
+    width: 8rem;
   }
 
   label {
