@@ -132,7 +132,7 @@ export const Button = styled.button`
 `;
 
 export const ClientsPannel = styled.div`
-  position: relative;
+  /* position: relative; */
   width: 100%;
   height: 3rem !important;
   margin-bottom: 2rem;
@@ -157,12 +157,11 @@ export const ClientsPannel = styled.div`
 
 export const Painnel = styled.div`
   width: 100%;
-  position: absolute;
-  top: 4rem;
   transition: opacity 3s ease-in-out;
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
+  margin-bottom: 20px;
 `;
 
 export const ClientCard = styled.div`
@@ -174,6 +173,7 @@ export const ClientCard = styled.div`
   flex-direction: column;
   gap: 0.8rem;
   box-shadow: 0 0 20px lightgray;
+  font-weight: 800;
 
   & > label {
     background: #ffff00;

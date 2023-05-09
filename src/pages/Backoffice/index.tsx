@@ -22,6 +22,9 @@ export const Backoffice = () => {
 
   const [statuses, setStatuses] = useState<any>();
   const [clientsList, setClientsList] = useState<any>();
+  const [clientsAssessory, setClientsAssessory] = useState<any>();
+  const [expandClientsAssessory, setExpandClientsAssessory] =
+    useState<boolean>(false);
 
   const getStatusesList = () => {
     setProcessing(true);
@@ -29,6 +32,21 @@ export const Backoffice = () => {
       .get(url.ENDPOINT + "/statuses")
       .then((response) => {
         setStatuses(response.data.body);
+        setProcessing(false);
+      })
+      .catch((err: any) => console.log(err));
+  };
+
+  const getClientsAssessory = () => {
+    setProcessing(true);
+    axios
+      .get(url.ENDPOINT + "/clients/tasks")
+      .then((response) => {
+        setClientsAssessory(
+          JSON.parse(response.data.body).sort((a: any, b: any) =>
+            a.name.localeCompare(b.name)
+          )
+        );
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
@@ -106,7 +124,11 @@ export const Backoffice = () => {
     axios
       .get(url.ENDPOINT + "/clients-links")
       .then((response) => {
-        setClientsList(response?.data.body);
+        setClientsList(
+          response?.data.body.sort((a: any, b: any) =>
+            a.clientName.localeCompare(b.clientName)
+          )
+        );
       })
       .catch((err: any) => {
         console.log(err);
@@ -116,14 +138,19 @@ export const Backoffice = () => {
   useEffect(() => {
     getStatusesList();
     getClientLinks();
+    getClientsAssessory();
   }, []);
 
-  const handleOpenDash = ({ taskId }: any) => {
+  const handleOpenDash = ({ taskId, isAssessory }: any) => {
     const currentUrl = window.location.href;
 
     const url = currentUrl.split("#")[0];
 
-    const goToUrl = url + `#/client-id/${taskId}`;
+    let goToUrl = url + `#/client-id/${taskId}`;
+
+    if (isAssessory) {
+      goToUrl = url + `#/clients/${taskId}`;
+    }
 
     window.open(goToUrl);
   };
@@ -228,23 +255,47 @@ export const Backoffice = () => {
         <ClientsPannel>
           <div onClick={() => setExpandClients(!expandClients)}>
             {!expandClients ? <IoIosArrowDown /> : <IoIosArrowUp />}
-            <label>PAINEL DE CLIENTES</label>
+            <label>IMPLANTAÇÃO</label>
           </div>
-          {expandClients && (
-            <Painnel>
-              {clientsList?.map((client: any) => (
-                <ClientCard
-                  onClick={() => handleOpenDash({ taskId: client.taskId })}
-                >
-                  <label>{client?.clientName}</label>
-                  <div>
-                    <span>{client?.status?.status.toUpperCase()}</span>
-                  </div>
-                </ClientCard>
-              ))}
-            </Painnel>
-          )}
         </ClientsPannel>
+        {expandClients && (
+          <Painnel>
+            {clientsList?.map((client: any) => (
+              <ClientCard
+                onClick={() => handleOpenDash({ taskId: client.taskId })}
+              >
+                <label>{client?.clientName}</label>
+                <div>
+                  <span>{client?.status?.status.toUpperCase()}</span>
+                </div>
+              </ClientCard>
+            ))}
+          </Painnel>
+        )}
+        <ClientsPannel>
+          <div
+            onClick={() => setExpandClientsAssessory(!expandClientsAssessory)}
+          >
+            {!expandClientsAssessory ? <IoIosArrowDown /> : <IoIosArrowUp />}
+            <label>CLIENTES</label>
+          </div>
+        </ClientsPannel>
+        {expandClientsAssessory && (
+          <Painnel>
+            {clientsAssessory?.map((client: any) => (
+              <ClientCard
+                onClick={() =>
+                  handleOpenDash({ taskId: client.id, isAssessory: true })
+                }
+              >
+                <label>{client?.name}</label>
+                <div>
+                  <span>{client?.status?.status.toUpperCase()}</span>
+                </div>
+              </ClientCard>
+            ))}
+          </Painnel>
+        )}
       </Main>
     </Container>
   );

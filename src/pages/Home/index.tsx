@@ -219,6 +219,8 @@ export const Home = () => {
     return false;
   };
 
+  
+
   return (
     <MainDiv>
       <TextBox>
