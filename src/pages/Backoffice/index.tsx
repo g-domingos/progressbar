@@ -14,6 +14,8 @@ import {
 } from "./styles";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { success } from "../../toast";
+import { LoadingDiv } from "../Clients/styles";
+import { LoadingSpinner } from "../../components/LoadingSpinning";
 
 export const Backoffice = () => {
   const [processing, setProcessing] = useState<boolean>(false);
@@ -53,13 +55,13 @@ export const Backoffice = () => {
   };
 
   const handleChangeDuration = ({ taskDuration, id, event }: any) => {
-    const currentTask = statuses.filter(
+    const currentTask = statuses?.filter(
       (item: any) => item.orderindex === id
     )[0];
 
     currentTask.duration = +event.target.value;
 
-    const statusesWithoutCurrentTask = statuses.filter(
+    const statusesWithoutCurrentTask = statuses?.filter(
       (item: any) => item.orderindex !== id
     );
 
@@ -71,11 +73,11 @@ export const Backoffice = () => {
   };
 
   const handleClientResponsabilitie = ({ e, id }: any) => {
-    const currentTask = statuses.filter(
+    const currentTask = statuses?.filter(
       (item: any) => item.orderindex === id
     )[0];
 
-    const statusesWithoutCurrentTask = statuses.filter(
+    const statusesWithoutCurrentTask = statuses?.filter(
       (item: any) => item.orderindex !== id
     );
 
@@ -90,11 +92,11 @@ export const Backoffice = () => {
   };
 
   const handleIsTaskVisibleForClient = ({ e, id }: any) => {
-    const currentTask = statuses.filter(
+    const currentTask = statuses?.filter(
       (item: any) => item.orderindex === id
     )[0];
 
-    const statusesWithoutCurrentTask = statuses.filter(
+    const statusesWithoutCurrentTask = statuses?.filter(
       (item: any) => item.orderindex !== id
     );
 
@@ -157,6 +159,11 @@ export const Backoffice = () => {
 
   return (
     <Container>
+      {processing && (
+        <LoadingDiv>
+          <LoadingSpinner />
+        </LoadingDiv>
+      )}
       <Main>
         <label>Backoffice Progressbar</label>
         <TaskDetails>

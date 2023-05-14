@@ -170,7 +170,7 @@ export const Home = () => {
   const getDate = ({ itemOrderIndex, taskOrderIndex }: any) => {
     if (itemOrderIndex > taskOrderIndex) {
       const duration =
-        itemOrderIndex === filteredStatus[filteredStatus.length - 1].orderindex
+        itemOrderIndex === filteredStatus[filteredStatus?.length - 1].orderindex
           ? lastTaskDuration
           : currentTaskDuration;
 
