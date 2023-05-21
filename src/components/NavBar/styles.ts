@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-export const NavBarContainer = styled.header`
+export const NavBarContainer = styled.header<{ opacity?: boolean }>`
   height: 50px;
   background: black;
   display: flex;
@@ -9,6 +9,7 @@ export const NavBarContainer = styled.header`
   justify-content: space-between;
   color: white;
   padding: 30px;
+  opacity: ${(props) => (props.opacity ? "1" : "0.1")};
 
   img {
     height: 8rem;

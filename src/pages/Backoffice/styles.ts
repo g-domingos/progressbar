@@ -135,7 +135,7 @@ export const ClientsPannel = styled.div`
   /* position: relative; */
   width: 100%;
   height: 3rem !important;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 0 20px lightgray;
 
@@ -182,7 +182,7 @@ export const ClientCard = styled.div`
     height: 3.4rem;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;    
+    white-space: nowrap;
   }
 
   & > div {
@@ -193,5 +193,16 @@ export const ClientCard = styled.div`
 
   :hover {
     cursor: pointer;
+    transform: scale(1.1);
+  }
+  transition: transform 0.15s ease-in;
+`;
+
+export const SearchBar = styled.div`
+  & > input {
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid lightslategrey;
+    padding: 4px 10px;
   }
 `;
