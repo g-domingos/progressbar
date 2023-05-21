@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { url } from "../../env";
 import { Circle } from "../Home/styles";
 import {
@@ -18,6 +18,7 @@ import { error, success } from "../../toast";
 import { LoadingDiv } from "../Clients/styles";
 import { LoadingSpinner } from "../../components/LoadingSpinning";
 import { Login } from "../Login";
+import { UserContext } from "../../App";
 
 export const Backoffice = () => {
   const [processing, setProcessing] = useState<boolean>(false);
@@ -33,6 +34,7 @@ export const Backoffice = () => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(
     localStorage.getItem("isAuthorized") === "true"
   );
+  const { setUpdate, update } = useContext(UserContext);
 
   const getStatusesList = () => {
     setProcessing(true);
@@ -184,6 +186,7 @@ export const Backoffice = () => {
       getStatusesList();
       getClientLinks();
       getClientsAssessory();
+      setUpdate(true);
     }
   }, [isAuthorized]);
 

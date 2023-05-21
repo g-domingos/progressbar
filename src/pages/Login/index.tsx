@@ -38,7 +38,7 @@ export const Login = ({ setIsAuthorized }: any) => {
   };
 
   const handleLogin = () => {
-    if (loginInfo.login === "admin" && loginInfo.password === "123") {
+    if (loginInfo.login === "admin" && loginInfo.password === "#integracomm2023") {
       localStorage.setItem("isAuthorized", "true");
       setIsAuthorized(true);
       setUpdate(true);
@@ -86,7 +86,7 @@ export const Login = ({ setIsAuthorized }: any) => {
         </InputContent>
 
         <ErrorContainer error={error}>
-          <label>Credencias incorretas. Corrija-as e tente novamente.</label>
+          <label>Login e/ou Senha incorretas. Tente novamente.</label>
         </ErrorContainer>
 
         <Button onClick={handleLogin}>Entre</Button>
