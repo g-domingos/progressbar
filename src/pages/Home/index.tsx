@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Button,
@@ -23,6 +23,7 @@ import Spinner from "react-bootstrap/Spinner";
 import { isMobile } from "react-device-detect";
 import { url } from "../../env";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { UserContext } from "../../App";
 
 export const Home = () => {
   const [statuses, setStatuses] = useState<any>();
@@ -35,6 +36,8 @@ export const Home = () => {
   const { pathname } = location;
 
   let taskId = pathname.split("/").slice(2)[0];
+  const { setUpdate, update } = useContext(UserContext);
+  
 
   const getHistory = () => {
     axios
@@ -69,6 +72,7 @@ export const Home = () => {
 
   useEffect(() => {
     getHistory();
+    setUpdate(true)
   }, [task]);
 
   useEffect(() => {

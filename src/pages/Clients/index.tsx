@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { url } from "../../env";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
@@ -17,6 +17,7 @@ import {
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { LoadingSpinner } from "../../components/LoadingSpinning";
 import { CardDetails } from "../../components/CardDetails";
+import { UserContext } from "../../App";
 
 export const Clients = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ export const Clients = () => {
     show: true,
   });
   const [showDetails, setShowDetails] = useState<any>({ id: "", status: "" });
+  const { setUpdate, update } = useContext(UserContext);
 
   const getClientDetails = () => {
     setProcessing(true);
@@ -53,6 +55,7 @@ export const Clients = () => {
 
   useEffect(() => {
     getClientDetails();
+    setUpdate(true)
   }, []);
 
   return (
