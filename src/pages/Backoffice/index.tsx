@@ -36,7 +36,6 @@ export const Backoffice = () => {
   );
   const { setUpdate, update } = useContext(UserContext);
 
-  
   const getStatusesList = () => {
     setProcessing(true);
     axios
@@ -230,7 +229,7 @@ export const Backoffice = () => {
                       </span>
                       <div>
                         <label>TAREFA</label>
-                        <p>{(task?.status).toUpperCase()}</p>
+                        <p>{task?.statusName?.toUpperCase()}</p>
                       </div>
                       <div>
                         <label>DURAÇÃO DA TAREFA</label>

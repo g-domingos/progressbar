@@ -12,8 +12,7 @@ export const NavBar = () => {
   const { setUpdate, update } = useContext(UserContext);
   const params = useParams();
 
-  console.log("UPDATE", update);
-  
+
   useEffect(() => {
     if (update) {
       setOpacity(true);
@@ -21,7 +20,7 @@ export const NavBar = () => {
   }, [update]);
 
   return (
-    <NavBarContainer opacity={opacitiy}>
+    <NavBarContainer opacity={!!opacitiy}>
       <img src={Logo} />
 
       <UserArea
