@@ -37,7 +37,6 @@ export const Home = () => {
 
   let taskId = pathname.split("/").slice(2)[0];
   const { setUpdate, update } = useContext(UserContext);
-  
 
   const getHistory = () => {
     axios
@@ -48,7 +47,6 @@ export const Home = () => {
       })
       .catch((err: any) => console.log(err));
   };
-
   const getStatusesList = () => {
     setProcessing(true);
     axios
@@ -72,7 +70,7 @@ export const Home = () => {
 
   useEffect(() => {
     getHistory();
-    setUpdate(true)
+    setUpdate(true);
   }, [task]);
 
   useEffect(() => {
@@ -223,7 +221,7 @@ export const Home = () => {
     return false;
   };
 
-  
+  console.log("STATUS", statuses);
 
   return (
     <MainDiv>
@@ -282,7 +280,7 @@ export const Home = () => {
                   taskOrderIndex: task?.orderIndex,
                 })}
               </label>
-              <div>{item.status?.toUpperCase()}</div>
+              <div>{item.statusName?.toUpperCase()}</div>
             </CardTask>
           </>
         ))}
@@ -313,7 +311,7 @@ export const Home = () => {
                   >
                     {index + 1}
                   </Circle>
-                  <label>{item.status}</label>
+                  <label>{item.statusName}</label>
                   {/* <HistoryDate
                     current={item.orderIndex === task?.orderIndex}
                     color={

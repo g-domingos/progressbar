@@ -101,7 +101,7 @@ export const TaskDetails = styled.div`
 export const TaskDetailsBar = styled.div`
   width: 100%;
   height: 3rem !important;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 0 20px lightgray;
 
