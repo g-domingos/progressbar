@@ -47,12 +47,14 @@ export const Home = () => {
       })
       .catch((err: any) => console.log(err));
   };
+
+  console.log("HISTORY", history);
   const getStatusesList = () => {
     setProcessing(true);
     axios
       .get(url.ENDPOINT + "/statuses")
       .then((response) => {
-        setStatuses(response.data.body.slice(4));
+        setStatuses(response.data.body);
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
@@ -154,8 +156,8 @@ export const Home = () => {
     return dateFormatter(dueDate?.date_conclusion);
   };
 
-  const dateFormatter = (epoch: number) => {
-    if (epoch) {
+  const dateFormatter = (epoch: any) => {
+    if (typeof epoch === "number") {
       const date = new Intl.DateTimeFormat("pt-BR").format(epoch);
 
       const dateWithoutYear = date
@@ -165,6 +167,8 @@ export const Home = () => {
 
       return dateWithoutYear;
     }
+
+    console.log("EPOCH", epoch);
 
     return "";
   };
@@ -220,8 +224,6 @@ export const Home = () => {
     }
     return false;
   };
-
-  console.log("STATUS", statuses);
 
   return (
     <MainDiv>
@@ -303,7 +305,7 @@ export const Home = () => {
           <LabelContainer>
             {statuses
               ?.filter((stats: any) => stats.visible)
-              .map((item: any, index: number) => (
+              ?.map((item: any, index: number) => (
                 <div>
                   <Circle
                     opaco={index <= task?.orderIndex}
@@ -312,24 +314,33 @@ export const Home = () => {
                     {index + 1}
                   </Circle>
                   <label>{item.statusName}</label>
-                  {/* <HistoryDate
-                    current={item.orderIndex === task?.orderIndex}
-                    color={
-                      item.orderIndex === task?.orderIndex
-                        ? isLate({
-                            dueDate: task?.due_date,
-                            dateConcluded: new Date().getTime(),
-                          })
-                        : isLate({
-                            dueDate: item.due_date,
-                            dateConcluded: item.date_conclusion,
-                          })
-                    }
-                  >
-                    {item.orderIndex === task?.orderIndex
-                      ? dateFormatter(task?.due_date)
-                      : dateFormatter(item.date_conclusion)}
-                  </HistoryDate> */}
+                  {item.orderindex <= task.orderIndex &&
+                    history?.filter(
+                      (hist: any) => hist.orderIndex === index
+                    )?.[0]?.date_conclusion && (
+                      <HistoryDate
+                        current={item.orderindex === task?.orderIndex}
+                        color={
+                          item.orderindex === task?.orderIndex
+                            ? isLate({
+                                dueDate: task?.due_date,
+                                dateConcluded: new Date().getTime(),
+                              })
+                            : isLate({
+                                dueDate: item.due_date,
+                                dateConcluded: item.date_conclusion,
+                              })
+                        }
+                      >
+                        {item.orderindex === task?.orderIndex
+                          ? dateFormatter(task?.due_date)
+                          : dateFormatter(
+                              history?.filter(
+                                (hist: any) => hist.orderIndex === index
+                              )?.[0]?.date_conclusion
+                            )}
+                      </HistoryDate>
+                    )}
                 </div>
               ))}
           </LabelContainer>

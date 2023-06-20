@@ -53,9 +53,10 @@ export const Clients = () => {
     }
   };
 
+
   useEffect(() => {
     getClientDetails();
-    setUpdate(true)
+    setUpdate(true);
   }, []);
 
   return (

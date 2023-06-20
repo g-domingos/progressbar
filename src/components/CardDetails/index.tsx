@@ -16,6 +16,20 @@ export const CardDetails = ({ details }: any) => {
     return `${hours}:${minutes}:${seconds}`;
   }
 
+  const makeLinkClickable = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlRegex).map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a href={part} key={index} target="_blank" rel="noopener noreferrer">
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <Details>
       <div>
@@ -28,22 +42,26 @@ export const CardDetails = ({ details }: any) => {
         </Item>
         <Item>
           <label>DESCRIÇÃO</label>
-          {details.description && <p>{details.description}</p>}
+          {details.description && (
+            <p>{makeLinkClickable(details.description)}</p>
+          )}
         </Item>
         <Item>
           <label>CHECKLIST</label>
-          {details.checklists[0]?.items?.sort((a: any, b: any) => a.resolved - b.resolved).map((item: any, index: number) => (
-            <CheckListContainer isChecked={item.resolved}>
-              <div>
-                {item.resolved ? (
-                  <ImCheckboxChecked />
-                ) : (
-                  <ImCheckboxUnchecked />
-                )}
-              </div>
-              <p>{item.name}</p>
-            </CheckListContainer>
-          ))}
+          {details.checklists[0]?.items
+            ?.sort((a: any, b: any) => a.resolved - b.resolved)
+            .map((item: any, index: number) => (
+              <CheckListContainer isChecked={item.resolved}>
+                <div>
+                  {item.resolved ? (
+                    <ImCheckboxChecked />
+                  ) : (
+                    <ImCheckboxUnchecked />
+                  )}
+                </div>
+                <p>{item.name}</p>
+              </CheckListContainer>
+            ))}
         </Item>
         <Item>
           <label>RESPONSÁVEIS</label>
