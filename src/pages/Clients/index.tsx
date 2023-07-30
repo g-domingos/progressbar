@@ -26,6 +26,7 @@ export const Clients = () => {
 
   const [processing, setProcessing] = useState<boolean>(false);
   const [task, setTask] = useState<any>();
+  const [subtaskDetail, setSubtaskDetail] = useState<any>();
   const [showTooltip, setShowTooltip] = useState<any>({ id: "", show: true });
   const [showTooltipDone, setShowTooltipDone] = useState<any>({
     id: "",
@@ -34,25 +35,36 @@ export const Clients = () => {
   const [showDetails, setShowDetails] = useState<any>({ id: "", status: "" });
   const { setUpdate, update } = useContext(UserContext);
 
-  const getClientDetails = () => {
+  const getClientDetails = (subtask?: boolean, subtaskId?: string) => {
     setProcessing(true);
+
+    let urlLink = url.ENDPOINT + "/clients/tasks/" + taskId;
+
+    if (subtask) {
+      urlLink = url.ENDPOINT + "/clients/tasks/" + subtaskId;
+    }
+
     axios
-      .get(url.ENDPOINT + "/clients/tasks/" + taskId)
+      .get(urlLink, { params: { dev: true } })
       .then((response: any) => {
-        setTask(JSON.parse(response.data.body || "[]"));
+        if (subtask) {
+          setSubtaskDetail(JSON.parse(response.data.body || "[]"));
+        } else {
+          setTask(JSON.parse(response.data.body || "[]"));
+        }
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
   };
 
-  const handleExpand = (index: number, status: string) => {
+  const handleExpand = (index: number, status: string, taskId: any) => {
     if (showDetails.id === index && showDetails.status === status) {
       setShowDetails({});
     } else {
       setShowDetails({ id: index, status: status });
+      getClientDetails(true, taskId);
     }
   };
-
 
   useEffect(() => {
     getClientDetails();
@@ -112,7 +124,9 @@ export const Clients = () => {
                         </label>
                       </div>
                       <ButtonShowDetails
-                        onClick={() => handleExpand(index, "unconcluded")}
+                        onClick={() =>
+                          handleExpand(index, "unconcluded", item.id)
+                        }
                       >
                         {showDetails.id !== index ? (
                           <IoIosArrowDown />
@@ -168,7 +182,9 @@ export const Clients = () => {
                         <Tooltip>{item.status.status.toUpperCase()}</Tooltip>
                       )}
                       <ButtonShowDetails
-                        onClick={() => handleExpand(index, "concluded")}
+                        onClick={() =>
+                          handleExpand(index, "concluded", item.id)
+                        }
                       >
                         {showDetails.id !== index ? (
                           <IoIosArrowDown />
@@ -179,7 +195,9 @@ export const Clients = () => {
                     </Task>
                     {showDetails.id === index &&
                       showDetails.status === "concluded" && (
-                        <CardDetails details={item}></CardDetails>
+                        <CardDetails
+                          details={subtaskDetail?.data}
+                        ></CardDetails>
                       )}
                   </>
                 ))}
