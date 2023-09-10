@@ -40,7 +40,11 @@ export const CardDetails = ({ details }: any) => {
       <InfoContainer>
         <Item>
           <label>TEMPO GASTO</label>
-          {<p>{formatTimeSpent(details?.time_spent)}</p>}
+          {
+            <p>
+              {details?.time_spent ? formatTimeSpent(details?.time_spent) : "-"}
+            </p>
+          }
         </Item>
         <Item>
           <label>DESCRIÇÃO</label>
