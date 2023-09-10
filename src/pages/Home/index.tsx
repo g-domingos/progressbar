@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Button,
@@ -8,12 +8,12 @@ import {
   HistoryDate,
   LabelContainer,
   Legend,
-  LegendTwo,
   MainDiv,
+  SessionContainer,
+  SessionsHistoryContainer,
   Span,
   SpinnerDiv,
   TaskContainer,
-  TaskIsCurrent,
   TaskLabel,
   TextBox,
 } from "./styles";
@@ -24,6 +24,8 @@ import { isMobile } from "react-device-detect";
 import { url } from "../../env";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { UserContext } from "../../App";
+import { format, parseISO } from "date-fns";
+import { MessagesModal } from "../../components/MessagesModal";
 
 export const Home = () => {
   const [statuses, setStatuses] = useState<any>();
@@ -31,12 +33,24 @@ export const Home = () => {
   const [showLabel, setShowLabel] = useState<boolean>(false);
   const [processing, setProcessing] = useState(false);
   const [history, setHistory] = useState<any>();
+  const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
+  const [sessions, setSessions] = useState<any>([]);
+  const [showMessagesModal, setShowMessagesModal] = useState<any>({
+    show: false,
+    parameters: {},
+  });
 
   const location = useLocation();
   const { pathname } = location;
 
   let taskId = pathname.split("/").slice(2)[0];
   const { setUpdate, update } = useContext(UserContext);
+
+  function formatDate(inputDate: string) {
+    const parsedDate = parseISO(inputDate);
+    const formattedDate = format(parsedDate, "dd/MM/yyyy");
+    return formattedDate;
+  }
 
   const getHistory = () => {
     axios
@@ -59,6 +73,18 @@ export const Home = () => {
       .catch((err: any) => console.log(err));
   };
 
+  const getSessionsHistory = () => {
+    setProcessing(true);
+    axios
+      .get(url.ENDPOINT + `/client/sessions?phone=${task?.phone}`)
+      .then((response) => {
+        const parsedResponse = JSON.parse(response.data.body);
+        setSessions(parsedResponse);
+        setProcessing(false);
+      })
+      .catch((err: any) => console.log(err));
+  };
+
   const getStatusByClient = () => {
     axios
       .get(url.ENDPOINT + `/task/${taskId}`)
@@ -69,9 +95,19 @@ export const Home = () => {
       .catch((err: any) => console.log(err));
   };
 
+  const handleShowSessionsHistory = () => {
+    setShowSessionHistory(!showSessionHistory);
+  };
+
   useEffect(() => {
     getHistory();
     setUpdate(true);
+  }, [task]);
+
+  useEffect(() => {
+    if (!!task) {
+      getSessionsHistory();
+    }
   }, [task]);
 
   useEffect(() => {
@@ -81,12 +117,14 @@ export const Home = () => {
 
   const numberOfTasks = isMobile ? 1 : 2;
 
-  const filteredStatus = statuses?.filter(
-    (tasks: any, index: number) =>
-      tasks.visible &&
-      tasks.orderindex >= task?.orderIndex - numberOfTasks &&
-      tasks.orderindex <= task?.orderIndex + numberOfTasks
-  );
+  const filteredStatus = useMemo(() => {
+    return statuses?.filter(
+      (tasks: any, index: number) =>
+        tasks.visible &&
+        tasks.orderindex >= task?.orderIndex - numberOfTasks &&
+        tasks.orderindex <= task?.orderIndex + numberOfTasks
+    );
+  }, [statuses]);
 
   const currentTaskDuration = statuses?.filter(
     (item: any) => item.orderindex === task?.orderIndex
@@ -168,8 +206,6 @@ export const Home = () => {
       return dateWithoutYear;
     }
 
-    console.log("EPOCH", epoch);
-
     return "";
   };
 
@@ -223,6 +259,22 @@ export const Home = () => {
       return true;
     }
     return false;
+  };
+
+  const RenderSessionsList = () => {
+    return (
+      <>
+        {sessions?.map((item: any) => (
+          <SessionContainer
+            onClick={() =>
+              setShowMessagesModal({ show: true, parameters: item })
+            }
+          >
+            <span>{formatDate(item.created_at)}</span>
+          </SessionContainer>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -354,6 +406,25 @@ export const Home = () => {
             </div>
           </LegendTwo> */}
         </>
+      )}
+      <Button onClick={() => handleShowSessionsHistory()}>
+        {!showSessionHistory ? <IoIosArrowDown /> : <IoIosArrowUp />}
+        ATENDIMENTOS
+      </Button>
+      {showSessionHistory && (
+        <SessionsHistoryContainer>
+          <label>Data</label>
+          <RenderSessionsList />
+        </SessionsHistoryContainer>
+      )}
+      {showMessagesModal?.show && (
+        <MessagesModal
+          created_at={showMessagesModal?.parameters.created_at}
+          session_id={showMessagesModal?.parameters.session_id}
+          finished_at={showMessagesModal?.parameters.finished_at}
+          show={true}
+          handleClose={() => setShowMessagesModal({ show: false })}
+        />
       )}
     </MainDiv>
   );
