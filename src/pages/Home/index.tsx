@@ -9,6 +9,7 @@ import {
   LabelContainer,
   Legend,
   MainDiv,
+  NoData,
   SessionContainer,
   SessionsHistoryContainer,
   Span,
@@ -19,6 +20,7 @@ import {
 } from "./styles";
 
 import { BsNut } from "react-icons/bs";
+import { CiCloudOff } from "react-icons/ci";
 import Spinner from "react-bootstrap/Spinner";
 import { isMobile } from "react-device-detect";
 import { url } from "../../env";
@@ -105,7 +107,7 @@ export const Home = () => {
   }, [task]);
 
   useEffect(() => {
-    if (!!task) {
+    if (!!task && !!task?.phone?.length) {
       getSessionsHistory();
     }
   }, [task]);
@@ -262,6 +264,15 @@ export const Home = () => {
   };
 
   const RenderSessionsList = () => {
+    if (!sessions?.length || !task?.phone) {
+      return (
+        <NoData>
+          <CiCloudOff size={27} />
+          <label>Não há dados a serem mostrados</label>
+        </NoData>
+      );
+    }
+
     return (
       <>
         {sessions?.map((item: any) => (
@@ -413,7 +424,7 @@ export const Home = () => {
       </Button>
       {showSessionHistory && (
         <SessionsHistoryContainer>
-          <label>Data</label>
+          {!!sessions?.length && <label>Data</label>}
           <RenderSessionsList />
         </SessionsHistoryContainer>
       )}

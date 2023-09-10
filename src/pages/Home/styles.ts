@@ -382,3 +382,13 @@ export const SessionContainer = styled.div`
     transform: scale(1.03);
   }
 `;
+
+export const NoData = styled.div`
+  box-shadow: 0 0 25px lightgray;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+`;
