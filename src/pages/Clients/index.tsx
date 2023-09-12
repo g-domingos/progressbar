@@ -18,12 +18,26 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { LoadingSpinner } from "../../components/LoadingSpinning";
 import { CardDetails } from "../../components/CardDetails";
 import { UserContext } from "../../App";
+import {
+  Button,
+  NoData,
+  SessionContainer,
+  SessionsHistoryContainer,
+} from "../Home/styles";
+import { MessagesModal } from "../../components/MessagesModal";
+import { CiCloudOff } from "react-icons/ci";
+import { format, parseISO } from "date-fns";
 
 export const Clients = () => {
   const location = useLocation();
 
   const taskId = location.pathname.split("/")[2];
-
+  const [showMessagesModal, setShowMessagesModal] = useState<any>({
+    show: false,
+    parameters: {},
+  });
+  const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
+  const [sessions, setSessions] = useState<any>([]);
   const [processing, setProcessing] = useState<boolean>(false);
   const [task, setTask] = useState<any>();
   const [subtaskDetail, setSubtaskDetail] = useState<any>();
@@ -34,6 +48,18 @@ export const Clients = () => {
   });
   const [showDetails, setShowDetails] = useState<any>({ id: "", status: "" });
   const { setUpdate, update } = useContext(UserContext);
+
+  const getSessionsHistory = () => {
+    setProcessing(true);
+    axios
+      .get(url.ENDPOINT + `/client/sessions?phone=${task?.phone}`)
+      .then((response) => {
+        const parsedResponse = JSON.parse(response.data.body);
+        setSessions(parsedResponse);
+        setProcessing(false);
+      })
+      .catch((err: any) => console.log(err));
+  };
 
   const getClientDetails = (subtask?: boolean, subtaskId?: string) => {
     setProcessing(true);
@@ -66,10 +92,51 @@ export const Clients = () => {
     }
   };
 
+  function formatDate(inputDate: string) {
+    const parsedDate = parseISO(inputDate);
+    const formattedDate = format(parsedDate, "dd/MM/yyyy");
+    return formattedDate;
+  }
+
   useEffect(() => {
     getClientDetails();
     setUpdate(true);
   }, []);
+
+  useEffect(() => {
+    if (!!task && !!task?.phone?.length) {
+      getSessionsHistory();
+    }
+  }, [task]);
+
+  const handleShowSessionsHistory = () => {
+    setShowSessionHistory(!showSessionHistory);
+  };
+
+  const RenderSessionsList = () => {
+    if (!sessions?.length || !task?.phone) {
+      return (
+        <NoData>
+          <CiCloudOff size={27} />
+          <label>Não há dados a serem mostrados</label>
+        </NoData>
+      );
+    }
+
+    return (
+      <>
+        {sessions?.map((item: any) => (
+          <SessionContainer
+            onClick={() =>
+              setShowMessagesModal({ show: true, parameters: item })
+            }
+          >
+            <span>{formatDate(item.created_at)}</span>
+          </SessionContainer>
+        ))}
+      </>
+    );
+  };
 
   return (
     <>
@@ -204,6 +271,25 @@ export const Clients = () => {
             </TasksContainer>
           </div>
         </ColumnsDivs>
+        <Button onClick={() => handleShowSessionsHistory()}>
+          {!showSessionHistory ? <IoIosArrowDown /> : <IoIosArrowUp />}
+          ATENDIMENTOS
+        </Button>
+        {showSessionHistory && (
+          <SessionsHistoryContainer>
+            {!!sessions?.length && <label>Data</label>}
+            <RenderSessionsList />
+          </SessionsHistoryContainer>
+        )}
+        {showMessagesModal?.show && (
+          <MessagesModal
+            created_at={showMessagesModal?.parameters.created_at}
+            session_id={showMessagesModal?.parameters.session_id}
+            finished_at={showMessagesModal?.parameters.finished_at}
+            show={true}
+            handleClose={() => setShowMessagesModal({ show: false })}
+          />
+        )}
       </MainDiv>
     </>
   );
