@@ -118,31 +118,6 @@ export const Clients = () => {
     setShowSessionHistory(!showSessionHistory);
   };
 
-  const RenderSessionsList = () => {
-    if (!sessions?.length || !task?.phone) {
-      return (
-        <NoData>
-          <CiCloudOff size={27} />
-          <label>Não há dados a serem mostrados</label>
-        </NoData>
-      );
-    }
-
-    return (
-      <>
-        {sessions?.map((item: any) => (
-          <SessionContainerClient
-            onClick={() =>
-              setShowMessagesModal({ show: true, parameters: item })
-            }
-          >
-            <span>{item.name}</span>
-          </SessionContainerClient>
-        ))}
-      </>
-    );
-  };
-
   return (
     <>
       {processing && (
@@ -280,12 +255,7 @@ export const Clients = () => {
           {!showSessionHistory ? <IoIosArrowDown /> : <IoIosArrowUp />}
           ATENDIMENTOS
         </Button>
-        {showSessionHistory && (
-          <SessionsHistoryContainerClient>
-            {!!sessions?.length && <label>Data</label>}
-            <RenderSessionsList />
-          </SessionsHistoryContainerClient>
-        )}
+
         {showSessionHistory && (
           <MessagesModal
             show={showSessionHistory}
