@@ -6,7 +6,7 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 500px;
+  max-height: 500px;
   padding: 20px;
   background: #f3ecec;
   border-radius: 8px;
@@ -50,11 +50,11 @@ export const Message = styled.div<{ isClient?: boolean }>`
     props.isClient
       ? css`
           border-top-right-radius: 0px;
-          background: #ede2e2;
+          background: #a7b0c9;
         `
       : css`
           border-top-left-radius: 0px;
-          background: #FFFF00;
+          background: #ffff00;
         `}
 
   & > span {
@@ -64,4 +64,123 @@ export const Message = styled.div<{ isClient?: boolean }>`
     font-size: 10px;
     margin-bottom: 2px;
   }
+`;
+
+export const AgentsContainer = styled.div`
+  border: 5px solid lightgray;
+  border-radius: 10px;
+  width: 100%;
+  height: 430px !important;
+  display: flex;
+  gap: 10px;
+  background: lightgray;
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
+`;
+
+export const RightSide = styled.div`
+  position: relative;
+  border: 3px solid lightgray;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-radius: 8px;
+  background: lightgray;
+
+  @media screen and (max-width: 767px) {
+    height: 100%;
+  }
+`;
+
+export const LeftSide = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 3px solid lightgray;
+  border-radius: 8px;
+  width: 30%;
+  overflow-y: auto;
+  gap: 10px;
+  padding: 5px;
+  background: #f3ecec;
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    height: 30%;
+  }
+`;
+
+export const Employee = styled.div<{ selected?: boolean }>`
+  border-radius: 6px;
+  background-color: ${(props) => props.selected && "#FFFF00"};
+  padding: 8px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: 0.2s ease-in-out;
+  font-weight: 500;
+  transform: ${(props) => props.selected && "scale(1.04)"};
+  box-shadow: 0 0 8px lightgray;
+
+  :hover {
+    cursor: pointer;
+    transform: scale(1.04);
+  }
+`;
+
+export const Sessions = styled.div`
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid lightgray;
+  background: #f3ecec;
+  text-transform: none;
+  transition: 0.2s ease-in-out;
+
+  :hover {
+    cursor: pointer;
+    transform: scale(1.01);
+  }
+`;
+
+export const LoadingDiv = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const Header = styled.div`
+  width: 100%;
+  background: #f3ecec;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  font-weight: 500;
+
+  & > button {
+    border: none;
+    padding: 4px;
+    border-radius: 8px;
+
+    :hover {
+      background: white;
+      transform: scale(1.1);
+    }
+  }
+`;
+
+export const Empty = styled.div`
+  width: 100%;
+  height: 430px !important;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;

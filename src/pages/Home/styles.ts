@@ -375,7 +375,9 @@ export const SessionContainer = styled.div`
   align-items: center;
   text-transform: uppercase !important;
 
-  & > span {
+  & > span:last-child {
+    font-size: 14px;
+    font-weight: 400;
   }
 
   :hover {
@@ -391,4 +393,31 @@ export const NoData = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 16px;
+`;
+
+export const TitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 15px;
+`;
+
+export const InputContainer = styled.div`
+  width: 60%;
+  position: relative;
+
+  & > input {
+    width: 100%;
+    box-shadow: 0 0 20px lightgray;
+    border-radius: 6px;
+    height: 2.5rem;
+    padding: 10px;
+    border: 1px solid lightgray;
+  }
+
+  & > svg {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+  }
 `;

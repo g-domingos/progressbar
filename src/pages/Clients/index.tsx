@@ -7,6 +7,8 @@ import {
   ColumnsDivs,
   LoadingDiv,
   MainDiv,
+  SessionContainerClient,
+  SessionsHistoryContainerClient,
   Span,
   Task,
   TasksContainer,
@@ -52,7 +54,10 @@ export const Clients = () => {
   const getSessionsHistory = () => {
     setProcessing(true);
     axios
-      .get(url.ENDPOINT + `/client/sessions?phone=${task?.phone}`)
+      .get(
+        url.ENDPOINT +
+          `/client/sessions?phone=${task?.phone}&name=${task?.name}`
+      )
       .then((response) => {
         const parsedResponse = JSON.parse(response.data.body);
         setSessions(parsedResponse);
@@ -126,13 +131,13 @@ export const Clients = () => {
     return (
       <>
         {sessions?.map((item: any) => (
-          <SessionContainer
+          <SessionContainerClient
             onClick={() =>
               setShowMessagesModal({ show: true, parameters: item })
             }
           >
-            <span>{formatDate(item.created_at)}</span>
-          </SessionContainer>
+            <span>{item.name}</span>
+          </SessionContainerClient>
         ))}
       </>
     );
@@ -276,18 +281,16 @@ export const Clients = () => {
           ATENDIMENTOS
         </Button>
         {showSessionHistory && (
-          <SessionsHistoryContainer>
+          <SessionsHistoryContainerClient>
             {!!sessions?.length && <label>Data</label>}
             <RenderSessionsList />
-          </SessionsHistoryContainer>
+          </SessionsHistoryContainerClient>
         )}
-        {showMessagesModal?.show && (
+        {showSessionHistory && (
           <MessagesModal
-            created_at={showMessagesModal?.parameters.created_at}
-            session_id={showMessagesModal?.parameters.session_id}
-            finished_at={showMessagesModal?.parameters.finished_at}
-            show={true}
-            handleClose={() => setShowMessagesModal({ show: false })}
+            show={showSessionHistory}
+            handleClose={() => setShowSessionHistory(false)}
+            sessions={sessions}
           />
         )}
       </MainDiv>

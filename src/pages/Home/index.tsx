@@ -6,6 +6,7 @@ import {
   CardTask,
   Circle,
   HistoryDate,
+  InputContainer,
   LabelContainer,
   Legend,
   MainDiv,
@@ -17,8 +18,9 @@ import {
   TaskContainer,
   TaskLabel,
   TextBox,
+  TitleContainer,
 } from "./styles";
-
+import { TfiSearch } from "react-icons/tfi";
 import { BsNut } from "react-icons/bs";
 import { CiCloudOff } from "react-icons/ci";
 import Spinner from "react-bootstrap/Spinner";
@@ -41,6 +43,7 @@ export const Home = () => {
     show: false,
     parameters: {},
   });
+  const [searchAgent, setSearchAgent] = useState<string>("");
 
   const location = useLocation();
   const { pathname } = location;
@@ -78,7 +81,10 @@ export const Home = () => {
   const getSessionsHistory = () => {
     setProcessing(true);
     axios
-      .get(url.ENDPOINT + `/client/sessions?phone=${task?.phone}`)
+      .get(
+        url.ENDPOINT +
+          `/client/sessions?phone=${task?.phone}&name=${task?.name}`
+      )
       .then((response) => {
         const parsedResponse = JSON.parse(response.data.body);
         setSessions(parsedResponse);
@@ -100,6 +106,16 @@ export const Home = () => {
   const handleShowSessionsHistory = () => {
     setShowSessionHistory(!showSessionHistory);
   };
+
+  const historySessions = useMemo(() => {
+    if (!!searchAgent.length) {
+      return sessions.filter((item: any) =>
+        item.agent_name.toLowerCase().includes(searchAgent)
+      );
+    }
+
+    return sessions;
+  }, [searchAgent, sessions]);
 
   useEffect(() => {
     getHistory();
@@ -263,31 +279,6 @@ export const Home = () => {
     return false;
   };
 
-  const RenderSessionsList = () => {
-    if (!sessions?.length || !task?.phone) {
-      return (
-        <NoData>
-          <CiCloudOff size={27} />
-          <label>Não há dados a serem mostrados</label>
-        </NoData>
-      );
-    }
-
-    return (
-      <>
-        {sessions?.map((item: any) => (
-          <SessionContainer
-            onClick={() =>
-              setShowMessagesModal({ show: true, parameters: item })
-            }
-          >
-            <span>{formatDate(item.created_at)}</span>
-          </SessionContainer>
-        ))}
-      </>
-    );
-  };
-
   return (
     <MainDiv>
       <TextBox>
@@ -358,7 +349,6 @@ export const Home = () => {
           <label>Responsabilidade Parceiro</label>
         </div>
       </Legend>
-
       <Button onClick={() => setShowLabel(!showLabel)}>
         {!showLabel ? <IoIosArrowDown /> : <IoIosArrowUp />}
         TODAS AS TAREFAS
@@ -422,19 +412,12 @@ export const Home = () => {
         {!showSessionHistory ? <IoIosArrowDown /> : <IoIosArrowUp />}
         ATENDIMENTOS
       </Button>
+
       {showSessionHistory && (
-        <SessionsHistoryContainer>
-          {!!sessions?.length && <label>Data</label>}
-          <RenderSessionsList />
-        </SessionsHistoryContainer>
-      )}
-      {showMessagesModal?.show && (
         <MessagesModal
-          created_at={showMessagesModal?.parameters.created_at}
-          session_id={showMessagesModal?.parameters.session_id}
-          finished_at={showMessagesModal?.parameters.finished_at}
-          show={true}
-          handleClose={() => setShowMessagesModal({ show: false })}
+          show={showSessionHistory}
+          handleClose={() => setShowSessionHistory(false)}
+          sessions={sessions}
         />
       )}
     </MainDiv>

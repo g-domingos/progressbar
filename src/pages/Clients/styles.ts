@@ -163,3 +163,47 @@ export const LoadingDiv = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+export const SessionContainerClient = styled.div`
+  box-shadow: 0 0 5px lightgray;
+  display: flex;
+  padding: 5px;
+  padding-left: 15px;
+  gap: 15px;
+  border-radius: 8px;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500 !important;
+  align-items: center;
+  text-transform: uppercase !important;
+
+  & > span {
+  }
+
+  :hover {
+    transform: scale(1.03);
+  }
+`;
+
+export const SessionsHistoryContainerClient = styled.div`
+  box-shadow: 0 0 15px lightgray;
+  margin-top: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  height: 150px;
+  max-height: 500px;
+  gap: 0.5rem;
+  height: 200px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 16px;
+  text-transform: uppercase !important;
+
+  & > label {
+    padding-left: 15px;
+    font-weight: 500;
+  }
+`;
