@@ -184,7 +184,7 @@ export const Clients = () => {
                     </Task>
                     {showDetails.id === index &&
                       showDetails.status === "unconcluded" && (
-                        <CardDetails details={item}></CardDetails>
+                        <CardDetails details={subtaskDetail?.data}></CardDetails>
                       )}
                   </>
                 ))}
@@ -263,6 +263,7 @@ export const Clients = () => {
             sessions={sessions}
           />
         )}
+        <div style={{ height: "100px" }}></div>
       </MainDiv>
     </>
   );

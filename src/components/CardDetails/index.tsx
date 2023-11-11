@@ -16,8 +16,6 @@ export const CardDetails = ({ details }: any) => {
     return `${hours}:${minutes}:${seconds}`;
   }
 
-  console.log(details);
-
   const makeLinkClickable = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, index) => {
@@ -54,7 +52,7 @@ export const CardDetails = ({ details }: any) => {
         </Item>
         <Item>
           <label>CHECKLIST</label>
-          {details?.checklists[0]?.items
+          {details?.checklists?.[0]?.items
             ?.sort((a: any, b: any) => a.resolved - b.resolved)
             .map((item: any, index: number) => (
               <CheckListContainer isChecked={item.resolved}>
@@ -71,7 +69,7 @@ export const CardDetails = ({ details }: any) => {
         </Item>
         <Item>
           <label>RESPONSÁVEIS</label>
-          {details?.assignees.map((resp: any, index: number) => (
+          {details?.assignees?.map((resp: any, index: number) => (
             <Responsible key={index}>
               <img src={resp.profilePicture} />
               <label>{resp.username}</label>

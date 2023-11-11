@@ -105,6 +105,7 @@ export const LeftSide = styled.div`
   border-radius: 8px;
   width: 30%;
   overflow-y: auto;
+  overflow-x: hidden;
   gap: 10px;
   padding: 5px;
   background: #f3ecec;
@@ -119,13 +120,16 @@ export const Employee = styled.div<{ selected?: boolean }>`
   border-radius: 6px;
   background-color: ${(props) => props.selected && "#FFFF00"};
   padding: 8px;
-  overflow-x: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+
   transition: 0.2s ease-in-out;
   font-weight: 500;
   transform: ${(props) => props.selected && "scale(1.04)"};
   box-shadow: 0 0 8px lightgray;
+
+  & > label {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 
   :hover {
     cursor: pointer;

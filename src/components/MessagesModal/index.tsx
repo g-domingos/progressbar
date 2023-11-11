@@ -116,7 +116,7 @@ export const MessagesModal = ({
                     setMessages("");
                   }}
                 >
-                  {item.name}
+                  <label>{item.name}</label>
                 </Employee>
               ))}
             </LeftSide>
@@ -159,7 +159,7 @@ export const MessagesModal = ({
           </AgentsContainer>
         ) : (
           <Empty>
-            <CiCloudOff size={40}/>
+            <CiCloudOff size={40} />
             <label>Não há dados a serem mostrados</label>
           </Empty>
         )}
