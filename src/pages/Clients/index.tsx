@@ -109,7 +109,7 @@ export const Clients = () => {
   }, []);
 
   useEffect(() => {
-    if (!!task && !!task?.phone?.length) {
+    if (!!task) {
       getSessionsHistory();
     }
   }, [task]);
@@ -184,7 +184,9 @@ export const Clients = () => {
                     </Task>
                     {showDetails.id === index &&
                       showDetails.status === "unconcluded" && (
-                        <CardDetails details={subtaskDetail?.data}></CardDetails>
+                        <CardDetails
+                          details={subtaskDetail?.data}
+                        ></CardDetails>
                       )}
                   </>
                 ))}
