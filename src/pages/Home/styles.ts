@@ -226,6 +226,10 @@ export const Button = styled.button`
   padding-left: 2rem;
   gap: 0.5rem;
   position: relative;
+
+  :hover {
+    background: #dfdada;
+  }
 `;
 
 export const TaskContainer = styled.div<{ width?: string }>`

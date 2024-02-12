@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import {
   ButtonShowDetails,
   ColumnsDivs,
+  ContainerLegend,
   Footer,
   LoadingDiv,
   MainDiv,
@@ -293,39 +294,54 @@ export const Clients = () => {
                       <label>CONCLUÍDO</label>
                     </div>
                   </Task>
-                  {concludedTaskMemo
-                    ?.filter((sub: any) => sub.status.status === "concluído")
-                    .map((item: any, index: number) => (
-                      <>
-                        <Task
-                          key={index}
-                          onClick={() =>
-                            handleExpand(index, "concluded", item.id)
-                          }
-                        >
-                          <div>
-                            <Span color={item.status.color}>
-                              <div></div>
-                            </Span>
-                            <label>{item.name.toUpperCase()}</label>
-                          </div>
-                          <div>
-                            <label>
-                              {new Intl.DateTimeFormat("pt-BR").format(
-                                item.date_updated
-                              )}
-                            </label>
-                          </div>
-                        </Task>
-                        {showDetails.id === index &&
-                          showDetails.status === "concluded" && (
-                            <CardDetails
-                              details={subtaskDetail?.data}
-                              processing={processing.subtask}
-                            ></CardDetails>
-                          )}
-                      </>
-                    ))}
+                  {concludedTaskMemo?.length ? (
+                    concludedTaskMemo
+                      ?.filter((sub: any) => sub.status.status === "concluído")
+                      .map((item: any, index: number) => (
+                        <>
+                          <Task
+                            key={index}
+                            onClick={() =>
+                              handleExpand(index, "concluded", item.id)
+                            }
+                          >
+                            <div>
+                              <Span color={item.status.color}>
+                                <div></div>
+                              </Span>
+                              <label>{item.name.toUpperCase()}</label>
+                            </div>
+                            <div>
+                              <label>
+                                {new Intl.DateTimeFormat("pt-BR").format(
+                                  item.date_updated
+                                )}
+                              </label>
+                            </div>
+                          </Task>
+                          {showDetails.id === index &&
+                            showDetails.status === "concluded" && (
+                              <CardDetails
+                                details={subtaskDetail?.data}
+                                processing={processing.subtask}
+                              ></CardDetails>
+                            )}
+                        </>
+                      ))
+                  ) : (
+                    <div
+                      style={{
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        color: "lightgray",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Sem tarefas
+                    </div>
+                  )}
                   <Footer>
                     <button
                       onClick={handlePreviousPage}
@@ -353,6 +369,17 @@ export const Clients = () => {
           {!showSessionHistory ? <IoIosArrowDown /> : <IoIosArrowUp />}
           ATENDIMENTOS
         </Button>
+        <ContainerLegend>
+          <label>LEGENDA</label>
+          {concludedTask?.legend?.map((item: any, index: number) => (
+            <div key={index}>
+              <Span color={item.color}>
+                <div></div>
+              </Span>
+              {item.status}
+            </div>
+          ))}
+        </ContainerLegend>
 
         {showSessionHistory && (
           <MessagesModal

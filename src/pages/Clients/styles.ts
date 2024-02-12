@@ -103,7 +103,7 @@ export const Task = styled.div<{ color?: string }>`
 
   :hover {
     cursor: pointer;
-    background: #d3d3d3;
+    background: #dfdada;
     border-radius: 4px;
   }
 
@@ -277,5 +277,28 @@ export const MenuContainer = styled.div`
     :hover {
       background: #ebe5e5;
     }
+  }
+`;
+
+export const ContainerLegend = styled.div`
+  box-shadow: 0 0 5px lightgray;
+  margin-top: 10px;
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  & > label {
+    font-weight: 700;
+    color: black;
+    font-size: 14px;
+  }
+
+  & > div {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: flex;
+    gap: 5px;
   }
 `;
