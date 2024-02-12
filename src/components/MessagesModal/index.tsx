@@ -18,10 +18,8 @@ import {
 import axios from "axios";
 import { url } from "../../env";
 import { useEffect, useRef, useState } from "react";
-import { format, parseISO } from "date-fns";
 import { BsFillFileImageFill } from "react-icons/bs";
 import { LoadingSpinner } from "../LoadingSpinning";
-import { NoData } from "../../pages/Home/styles";
 import { CiCloudOff } from "react-icons/ci";
 
 interface MessagesModalInterface {
@@ -41,9 +39,7 @@ export const MessagesModal = ({
   const ref = useRef<any>();
 
   function formatDate(inputDate: string) {
-    const parsedDate = parseISO(inputDate);
-    const formattedDate = format(parsedDate, "dd/MM/yyyy HH:mm");
-    return formattedDate;
+    return new Date(inputDate).toLocaleString();
   }
 
   useEffect(() => {
@@ -108,8 +104,9 @@ export const MessagesModal = ({
         {!!sessions?.length ? (
           <AgentsContainer>
             <LeftSide>
-              {sessions.map((item, index) => (
+              {sessions?.map((item, index) => (
                 <Employee
+                  key={index}
                   selected={employeeSelected.name === item.name}
                   onClick={() => {
                     setEmployeeSelected(item);
@@ -126,9 +123,10 @@ export const MessagesModal = ({
               </LoadingDiv>
             ) : (
               <RightSide>
-                {!messages?.original?.length ? (
-                  employeeSelected?.result.map((msgs: any) => (
+                {!messages?.length ? (
+                  employeeSelected?.result?.map((msgs: any, index: number) => (
                     <Sessions
+                      key={index}
                       onClick={() => getMessagesFromSession({ ...msgs })}
                     >
                       <strong>{formatDate(msgs?.created_at)}</strong>- Atendente
@@ -139,13 +137,16 @@ export const MessagesModal = ({
                   <>
                     <Header>
                       Mensagens da Sessão -{" "}
-                      {formatDate(messages?.original?.[0].created_at) || ""}
+                      {formatDate(messages?.[0].created_at) || ""}
                       <button onClick={() => setMessages([])}>
                         <IoReturnUpBack size={20} />
                       </button>
                     </Header>
-                    {messages?.original.map((msg: any) => (
-                      <MessageContainer isClient={msg.origin === "channel"}>
+                    {messages?.map((msg: any, index: number) => (
+                      <MessageContainer
+                        isClient={msg.origin === "channel"}
+                        key={index}
+                      >
                         <Message isClient={msg.origin === "channel"}>
                           {renderMessageContent(msg.type, msg.message)}
                           <span>{formatDate(msg.created_at)}</span>

@@ -1,3 +1,5 @@
+import { LoadingDiv } from "../../pages/Clients/styles";
+import { LoadingSpinner } from "../LoadingSpinning";
 import {
   CheckListContainer,
   Details,
@@ -7,7 +9,7 @@ import {
 } from "./styles";
 
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
-export const CardDetails = ({ details }: any) => {
+export const CardDetails = ({ details, processing }: any) => {
   function formatTimeSpent(time: number) {
     const date = new Date(time);
     const hours = date.getUTCHours().toString().padStart(2, "0");
@@ -32,51 +34,61 @@ export const CardDetails = ({ details }: any) => {
 
   return (
     <Details>
-      <div>
-        <label>DETALHES</label>
-      </div>
-      <InfoContainer>
-        <Item>
-          <label>TEMPO GASTO</label>
-          {
-            <p>
-              {details?.time_spent ? formatTimeSpent(details?.time_spent) : "-"}
-            </p>
-          }
-        </Item>
-        <Item>
-          <label>DESCRIÇÃO</label>
-          {details?.description && (
-            <p>{makeLinkClickable(details?.description)}</p>
-          )}
-        </Item>
-        <Item>
-          <label>CHECKLIST</label>
-          {details?.checklists?.[0]?.items
-            ?.sort((a: any, b: any) => a.resolved - b.resolved)
-            .map((item: any, index: number) => (
-              <CheckListContainer isChecked={item.resolved}>
-                <div>
-                  {item.resolved ? (
-                    <ImCheckboxChecked />
-                  ) : (
-                    <ImCheckboxUnchecked />
-                  )}
-                </div>
-                <p>{item.name}</p>
-              </CheckListContainer>
-            ))}
-        </Item>
-        <Item>
-          <label>RESPONSÁVEIS</label>
-          {details?.assignees?.map((resp: any, index: number) => (
-            <Responsible key={index}>
-              <img src={resp.profilePicture} />
-              <label>{resp.username}</label>
-            </Responsible>
-          ))}
-        </Item>
-      </InfoContainer>
+      {processing ? (
+        <LoadingDiv>
+          <LoadingSpinner />
+        </LoadingDiv>
+      ) : (
+        <>
+          <div>
+            <label>DETALHES</label>
+          </div>
+          <InfoContainer>
+            <Item>
+              <label>TEMPO GASTO</label>
+              {
+                <p>
+                  {details?.time_spent
+                    ? formatTimeSpent(details?.time_spent)
+                    : "-"}
+                </p>
+              }
+            </Item>
+            <Item>
+              <label>DESCRIÇÃO</label>
+              {details?.description && (
+                <p>{makeLinkClickable(details?.description)}</p>
+              )}
+            </Item>
+            <Item>
+              <label>CHECKLIST</label>
+              {details?.checklists?.[0]?.items
+                ?.sort((a: any, b: any) => a.resolved - b.resolved)
+                .map((item: any, index: number) => (
+                  <CheckListContainer isChecked={item.resolved}>
+                    <div>
+                      {item.resolved ? (
+                        <ImCheckboxChecked />
+                      ) : (
+                        <ImCheckboxUnchecked />
+                      )}
+                    </div>
+                    <p>{item.name}</p>
+                  </CheckListContainer>
+                ))}
+            </Item>
+            <Item>
+              <label>RESPONSÁVEIS</label>
+              {details?.assignees?.map((resp: any, index: number) => (
+                <Responsible key={index}>
+                  <img src={resp.profilePicture} />
+                  <label>{resp.username}</label>
+                </Responsible>
+              ))}
+            </Item>
+          </InfoContainer>
+        </>
+      )}
     </Details>
   );
 };

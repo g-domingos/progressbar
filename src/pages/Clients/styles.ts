@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const MainDiv = styled.div<{ processing?: boolean }>`
-  height: 100vh;
+  height: 89vh;
   position: relative;
   padding-left: 40px;
   padding-right: 40px;
@@ -20,11 +20,11 @@ export const TextBox = styled.div`
   color: black;
   gap: 10px;
   font-weight: 1000;
-  font-size: 25px;
+  font-size: 20px;
   font-family: Roboto;
   padding-left: 15px;
-  padding-top: 35px;
-  padding-bottom: 20px;
+  padding-top: 15px;
+  padding-bottom: 10px;
 
   & > div:last-child {
     display: flex;
@@ -37,38 +37,59 @@ export const TextBox = styled.div`
 export const ColumnsDivs = styled.div`
   display: flex;
   flex-direction: row;
-  margin-bottom: 30px;
   justify-content: space-between;
+  height: 65vh;
 
   & > div {
-    padding: 10px;
-    width: 48%;
+    height: 100%;
+    width: 49%;
   }
 
   @media screen and (max-width: 767px) {
     flex-direction: column;
+    height: 100vh;
 
     & > div {
       width: 100%;
+      height: 100%;
+      overflow: auto;
     }
   }
 `;
 
 export const Title = styled.h4`
   font-weight: 700;
-  font-size: 20px;
+  font-size: 16px;
   font-family: "Roboto";
   color: black;
-  padding: 1rem;
+  padding: 0.8rem;
   border-radius: 1rem;
-  box-shadow: 0 0 20px lightgray;
-  margin-bottom: 1.5rem;
+  box-shadow: 0 0 5px lightgray;
 `;
 
 export const TasksContainer = styled.div`
+  box-shadow: 0 0 3px lightgray;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 10px 10px 12px 12px;
+  height: 80%;
+
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: lightgray;
+    border-radius: 24px;
+  }
 `;
 
 export const Task = styled.div<{ color?: string }>`
@@ -78,14 +99,17 @@ export const Task = styled.div<{ color?: string }>`
   font-size: 12px;
   position: relative;
   justify-content: space-between;
+  padding: 0px 5px;
+
+  :hover {
+    cursor: pointer;
+    background: #d3d3d3;
+    border-radius: 4px;
+  }
 
   & > div:first-child {
     display: flex;
     gap: 0.8rem;
-  }
-
-  & > div:last-child {
-    color: #807d7d;
   }
 
   & > img {
@@ -141,7 +165,6 @@ export const Tooltip = styled.div`
 `;
 
 export const ButtonShowDetails = styled.button`
-  position: absolute;
   transform: scale(1);
   right: -1.2rem;
   background: none;
@@ -156,12 +179,12 @@ export const ButtonShowDetails = styled.button`
 `;
 
 export const LoadingDiv = styled.div`
-  position: absolute;
   display: flex;
   width: 100%;
   height: 100%;
   justify-content: center;
   align-items: center;
+  padding: 20px;
 `;
 
 export const SessionContainerClient = styled.div`
@@ -205,5 +228,54 @@ export const SessionsHistoryContainerClient = styled.div`
   & > label {
     padding-left: 15px;
     font-weight: 500;
+  }
+`;
+
+export const Footer = styled.footer`
+  padding: 8px;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+
+  & > button {
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 100%;
+    background: transparent;
+
+    :hover {
+      background: lightgray;
+    }
+
+    :focus {
+      border: none;
+    }
+  }
+`;
+
+export const MenuContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  height: 2rem;
+  padding: 0 15px 2px 0px;
+  margin-bottom: 2px;
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 100%;
+    padding: 4px;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+
+    :hover {
+      background: #ebe5e5;
+    }
   }
 `;

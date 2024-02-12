@@ -4,7 +4,6 @@ export const Details = styled.div`
   padding: 5px;
   border-radius: 4px;
   background: #f1f1f1;
-  /* animation: scale-up-ver-top 0.4s cubic-bezier(0.39, 0.575, 0.565, 1) both; */
   animation: slide-bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 
   & > div:first-child {

@@ -1,255 +1,351 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { url } from "../../env";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import {
   ButtonShowDetails,
   ColumnsDivs,
+  Footer,
   LoadingDiv,
   MainDiv,
-  SessionContainerClient,
-  SessionsHistoryContainerClient,
+  MenuContainer,
   Span,
   Task,
   TasksContainer,
   TextBox,
   Title,
-  Tooltip,
 } from "./styles";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp, IoIosRefresh } from "react-icons/io";
 import { LoadingSpinner } from "../../components/LoadingSpinning";
 import { CardDetails } from "../../components/CardDetails";
 import { UserContext } from "../../App";
-import {
-  Button,
-  NoData,
-  SessionContainer,
-  SessionsHistoryContainer,
-} from "../Home/styles";
+
 import { MessagesModal } from "../../components/MessagesModal";
-import { CiCloudOff } from "react-icons/ci";
-import { format, parseISO } from "date-fns";
+
+import {
+  FaChevronRight,
+  FaChevronLeft,
+  FaSortAmountDown,
+} from "react-icons/fa";
+import { Button } from "../Home/styles";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { DatePickerComponent } from "../../components/DatePickerComponent";
 
 export const Clients = () => {
   const location = useLocation();
 
   const taskId = location.pathname.split("/")[2];
-  const [showMessagesModal, setShowMessagesModal] = useState<any>({
-    show: false,
-    parameters: {},
-  });
+
+  const subtasksQuantityperPage = 20;
+
+  const [shouldReverseOrder, setShouldReverseOrder] = useState<boolean>(false);
+
+  const [subtasksQuantityToDisplay, setSubtasksQuantityToDisplay] =
+    useState<number>(20);
+
   const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
   const [sessions, setSessions] = useState<any>([]);
-  const [processing, setProcessing] = useState<boolean>(false);
-  const [task, setTask] = useState<any>();
-  const [subtaskDetail, setSubtaskDetail] = useState<any>();
-  const [showTooltip, setShowTooltip] = useState<any>({ id: "", show: true });
-  const [showTooltipDone, setShowTooltipDone] = useState<any>({
-    id: "",
-    show: true,
+  const [processing, setProcessing] = useState<{
+    concluded: boolean;
+    ongoing: boolean;
+    session: boolean;
+    subtask: boolean;
+  }>({
+    concluded: false,
+    ongoing: false,
+    session: false,
+    subtask: false,
   });
+  const [task, setTask] = useState<any>();
+
+  const [concludedTask, setConcludedTask] = useState<any>();
+  const [onGoingTask, setOnGoingTask] = useState<any>();
+
+  const [subtaskDetail, setSubtaskDetail] = useState<any>();
   const [showDetails, setShowDetails] = useState<any>({ id: "", status: "" });
   const { setUpdate, update } = useContext(UserContext);
 
   const getSessionsHistory = () => {
-    setProcessing(true);
+    setProcessing({ ...processing, session: true });
     axios
       .get(
         url.ENDPOINT +
-          `/client/sessions?phone=${task?.phone}&name=${task?.name}`
+          `/client/sessions?phone=${concludedTask?.phone}&name=${concludedTask?.name}`
       )
       .then((response) => {
         const parsedResponse = JSON.parse(response.data.body);
         setSessions(parsedResponse);
-        setProcessing(false);
+        setProcessing({ ...processing, session: false });
       })
       .catch((err: any) => console.log(err));
   };
 
-  const getClientDetails = (subtask?: boolean, subtaskId?: string) => {
-    setProcessing(true);
-
-    let urlLink = url.ENDPOINT + "/clients/tasks/" + taskId;
-
-    if (subtask) {
-      urlLink = url.ENDPOINT + "/clients/tasks/" + subtaskId;
-    }
-
+  const fetchSubtask = (subtaskId: string) => {
+    const urlLink = url.ENDPOINT + "/clients/tasks/" + subtaskId;
+    setProcessing({ ...processing, subtask: true });
     axios
       .get(urlLink, { params: { dev: true } })
       .then((response: any) => {
-        if (subtask) {
-          setSubtaskDetail(JSON.parse(response.data.body || "[]"));
-        } else {
-          setTask(JSON.parse(response.data.body || "[]"));
-        }
-        setProcessing(false);
+        setSubtaskDetail(JSON.parse(response.data.body));
+        setProcessing({ ...processing, subtask: false });
       })
       .catch((err: any) => console.log(err));
   };
+
+  const fetchConcludedSubtasks = (queryStringParameters?: any) => {
+    setProcessing({ ...processing, concluded: true });
+    const urlLink = url.ENDPOINT + "/clients/tasks/" + taskId;
+    axios
+      .get(urlLink, {
+        params: {
+          taskStatus: "true",
+          ...(queryStringParameters || {}),
+        },
+      })
+      .then((response: any) => {
+        setConcludedTask(JSON.parse(response.data.body || "[]"));
+      })
+      .catch((err: any) => console.log(err))
+      .finally(() => setProcessing({ ...processing, concluded: false }));
+  };
+
+  const fetchOngoingSubtasks = () => {
+    setProcessing({ ...processing, ongoing: true });
+    const urlLink = url.ENDPOINT + "/clients/tasks/" + taskId;
+    axios
+      .get(urlLink, { params: { dev: true } })
+      .then((response: any) => {
+        setOnGoingTask(JSON.parse(response.data.body || "[]"));
+        setProcessing({ ...processing, ongoing: false });
+      })
+      .catch((err: any) => console.log(err));
+  };
+
+  const handleOrder = () => {
+    setShouldReverseOrder((prev) => !prev);
+  };
+
+  useEffect(() => {
+    fetchConcludedSubtasks(shouldReverseOrder ? { reverseOrder: "true" } : {});
+  }, [shouldReverseOrder]);
 
   const handleExpand = (index: number, status: string, taskId: any) => {
     if (showDetails.id === index && showDetails.status === status) {
       setShowDetails({});
     } else {
       setShowDetails({ id: index, status: status });
-      getClientDetails(true, taskId);
+      fetchSubtask(taskId);
     }
   };
 
-  function formatDate(inputDate: string) {
-    const parsedDate = parseISO(inputDate);
-    const formattedDate = format(parsedDate, "dd/MM/yyyy");
-    return formattedDate;
-  }
-
   useEffect(() => {
-    getClientDetails();
+    fetchOngoingSubtasks();
     setUpdate(true);
   }, []);
 
   useEffect(() => {
-    if (!!task) {
+    if (!!concludedTask) {
       getSessionsHistory();
     }
-  }, [task]);
+  }, [concludedTask]);
 
   const handleShowSessionsHistory = () => {
     setShowSessionHistory(!showSessionHistory);
   };
 
+  const handleNextPage = () => {
+    if (subtasksQuantityToDisplay <= concludedTask?.subtasks?.length) {
+      setSubtasksQuantityToDisplay((prev) => prev + subtasksQuantityperPage);
+    }
+  };
+
+  const handlePreviousPage = useCallback(() => {
+    if (subtasksQuantityToDisplay > 20) {
+      setSubtasksQuantityToDisplay((prev) => prev - subtasksQuantityperPage);
+    }
+  }, [subtasksQuantityToDisplay]);
+
+  const concludedTaskMemo = useMemo(() => {
+    return concludedTask?.subtasks.slice(
+      subtasksQuantityToDisplay - subtasksQuantityperPage,
+      subtasksQuantityToDisplay
+    );
+  }, [concludedTask, subtasksQuantityToDisplay]);
+
   return (
     <>
-      {processing && (
-        <LoadingDiv>
-          <LoadingSpinner />
-        </LoadingDiv>
-      )}
-      <MainDiv processing={processing}>
+      <MainDiv>
         <TextBox>
-          <div>{task?.name}</div>
+          <div>{concludedTask?.name}</div>
         </TextBox>
         <ColumnsDivs>
           <div>
             <Title>TAREFAS PENDENTES</Title>
+            <MenuContainer></MenuContainer>
             <TasksContainer>
-              <Task>
-                <div className="date">
-                  <label>PREVISTO</label>
-                </div>
-              </Task>
-              {task?.subtasks
-                ?.filter((sub: any) => sub.status.status !== "concluído")
-                .map((item: any, index: number) => (
-                  <>
-                    <Task key={index}>
-                      <div>
-                        <Span
-                          color={item.status.color}
-                          onMouseEnter={() =>
-                            setShowTooltipDone({ id: index, show: true })
-                          }
-                          onMouseLeave={() =>
-                            setShowTooltipDone({ id: "", show: false })
-                          }
-                        >
-                          <div></div>
-                        </Span>
-                        <label>{item.name.toUpperCase()}</label>
-                      </div>
-                      {showTooltipDone?.id === index &&
-                        showTooltipDone.show && (
-                          <Tooltip>{item.status.status.toUpperCase()}</Tooltip>
-                        )}
-                      <div>
-                        <label>
-                          {item.due_date
-                            ? new Intl.DateTimeFormat("pt-BR").format(
-                                item.due_date
-                              )
-                            : "-"}
-                        </label>
-                      </div>
-                      <ButtonShowDetails
+              {processing.ongoing ? (
+                <LoadingDiv>
+                  <LoadingSpinner />
+                </LoadingDiv>
+              ) : (
+                <>
+                  <Task>
+                    <div className="date">
+                      <label>PREVISTO</label>
+                    </div>
+                  </Task>
+                  {onGoingTask?.subtasks.map((item: any, index: number) => (
+                    <>
+                      <Task
+                        key={index}
                         onClick={() =>
                           handleExpand(index, "unconcluded", item.id)
                         }
                       >
-                        {showDetails.id !== index ? (
-                          <IoIosArrowDown />
-                        ) : (
-                          <IoIosArrowUp />
+                        <div>
+                          <Span color={item.status.color}>
+                            <div></div>
+                          </Span>
+                          <label>{item.name.toUpperCase()}</label>
+                        </div>
+
+                        <div>
+                          <label>
+                            {item.due_date
+                              ? new Intl.DateTimeFormat("pt-BR").format(
+                                  item.due_date
+                                )
+                              : "-"}
+                          </label>
+                        </div>
+                      </Task>
+                      {showDetails.id === index &&
+                        showDetails.status === "unconcluded" && (
+                          <CardDetails
+                            details={subtaskDetail}
+                            processing={processing.subtask}
+                          ></CardDetails>
                         )}
-                      </ButtonShowDetails>
-                    </Task>
-                    {showDetails.id === index &&
-                      showDetails.status === "unconcluded" && (
-                        <CardDetails
-                          details={subtaskDetail?.data}
-                        ></CardDetails>
-                      )}
-                  </>
-                ))}
+                    </>
+                  ))}
+                </>
+              )}
             </TasksContainer>
           </div>
           <div>
             <Title>TAREFAS CONCLUÍDAS</Title>
+            <MenuContainer>
+              <OverlayTrigger
+                overlay={
+                  <div
+                    style={{
+                      background: "black",
+                      borderRadius: "5px",
+                      color: "white",
+                      padding: "2px",
+                    }}
+                  >
+                    Atualizar
+                  </div>
+                }
+              >
+                <button onClick={fetchConcludedSubtasks}>
+                  <IoIosRefresh />
+                </button>
+              </OverlayTrigger>
+              <OverlayTrigger
+                overlay={
+                  <div
+                    style={{
+                      background: "black",
+                      borderRadius: "5px",
+                      color: "white",
+                      padding: "2px",
+                    }}
+                  >
+                    Ordenar Data
+                  </div>
+                }
+              >
+                <button
+                  onClick={handleOrder}
+                  style={{
+                    background: shouldReverseOrder
+                      ? "lightgray"
+                      : "transparent",
+                  }}
+                >
+                  <FaSortAmountDown size={13} />
+                </button>
+              </OverlayTrigger>
+
+              <DatePickerComponent request={fetchConcludedSubtasks} />
+            </MenuContainer>
             <TasksContainer>
-              <Task>
-                <div className="date">
-                  <label>CONCLUÍDO</label>
-                </div>
-              </Task>
-              {task?.subtasks
-                ?.sort((a: any, b: any) => b.date_updated - a.date_updated)
-                ?.filter((sub: any) => sub.status.status === "concluído")
-                .map((item: any, index: number) => (
-                  <>
-                    <Task key={index}>
-                      <div>
-                        <Span
-                          color={item.status.color}
-                          onMouseEnter={() =>
-                            setShowTooltip({ id: index, show: true })
-                          }
-                          onMouseLeave={() =>
-                            setShowTooltip({ id: "", show: false })
+              {processing.concluded || processing.ongoing ? (
+                <LoadingDiv>
+                  <LoadingSpinner />
+                </LoadingDiv>
+              ) : (
+                <>
+                  <Task>
+                    <div className="date">
+                      <label>CONCLUÍDO</label>
+                    </div>
+                  </Task>
+                  {concludedTaskMemo
+                    ?.filter((sub: any) => sub.status.status === "concluído")
+                    .map((item: any, index: number) => (
+                      <>
+                        <Task
+                          key={index}
+                          onClick={() =>
+                            handleExpand(index, "concluded", item.id)
                           }
                         >
-                          <div></div>
-                        </Span>
-                        <label>{item.name.toUpperCase()}</label>
-                      </div>
-                      <div>
-                        <label>
-                          {new Intl.DateTimeFormat("pt-BR").format(
-                            item.date_updated
+                          <div>
+                            <Span color={item.status.color}>
+                              <div></div>
+                            </Span>
+                            <label>{item.name.toUpperCase()}</label>
+                          </div>
+                          <div>
+                            <label>
+                              {new Intl.DateTimeFormat("pt-BR").format(
+                                item.date_updated
+                              )}
+                            </label>
+                          </div>
+                        </Task>
+                        {showDetails.id === index &&
+                          showDetails.status === "concluded" && (
+                            <CardDetails
+                              details={subtaskDetail?.data}
+                              processing={processing.subtask}
+                            ></CardDetails>
                           )}
-                        </label>
-                      </div>
-                      {showTooltip?.id === index && showTooltip.show && (
-                        <Tooltip>{item.status.status.toUpperCase()}</Tooltip>
-                      )}
-                      <ButtonShowDetails
-                        onClick={() =>
-                          handleExpand(index, "concluded", item.id)
-                        }
-                      >
-                        {showDetails.id !== index ? (
-                          <IoIosArrowDown />
-                        ) : (
-                          <IoIosArrowUp />
-                        )}
-                      </ButtonShowDetails>
-                    </Task>
-                    {showDetails.id === index &&
-                      showDetails.status === "concluded" && (
-                        <CardDetails
-                          details={subtaskDetail?.data}
-                        ></CardDetails>
-                      )}
-                  </>
-                ))}
+                      </>
+                    ))}
+                  <Footer>
+                    <button
+                      onClick={handlePreviousPage}
+                      disabled={subtasksQuantityToDisplay === 20}
+                    >
+                      <FaChevronLeft />
+                    </button>
+
+                    <button
+                      onClick={handleNextPage}
+                      disabled={
+                        subtasksQuantityToDisplay >=
+                        concludedTask?.subtasks?.length
+                      }
+                    >
+                      <FaChevronRight />
+                    </button>
+                  </Footer>
+                </>
+              )}
             </TasksContainer>
           </div>
         </ColumnsDivs>
@@ -265,7 +361,6 @@ export const Clients = () => {
             sessions={sessions}
           />
         )}
-        <div style={{ height: "100px" }}></div>
       </MainDiv>
     </>
   );

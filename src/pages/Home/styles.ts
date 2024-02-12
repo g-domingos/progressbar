@@ -212,12 +212,12 @@ export const Legend = styled.div`
 `;
 
 export const Button = styled.button`
-  margin-top: 2rem;
+  margin-top: 10px;
   padding: 0.5rem;
   border: none;
   border-radius: 0.5rem;
   background: white;
-  box-shadow: 0 0 20px lightgray;
+  box-shadow: 0 0 5px lightgray;
   width: 100%;
   font-weight: 700;
   display: flex;
