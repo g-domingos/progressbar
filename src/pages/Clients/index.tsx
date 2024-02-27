@@ -366,7 +366,6 @@ export const Clients = () => {
           </div>
         </ColumnsDivs>
         <Button onClick={() => handleShowSessionsHistory()}>
-          {!showSessionHistory ? <IoIosArrowDown /> : <IoIosArrowUp />}
           ATENDIMENTOS
         </Button>
         <ContainerLegend>

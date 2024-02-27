@@ -1,10 +1,10 @@
-import { MdAudiotrack } from "react-icons/md";
-import { Modal } from "react-bootstrap";
+import { RiDownloadCloud2Line } from "react-icons/ri";
+import { Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { IoReturnUpBack } from "react-icons/io5";
 import {
   AgentsContainer,
   Container,
-  ConversationContainer,
+  DownloadButton,
   Employee,
   Empty,
   Header,
@@ -18,7 +18,6 @@ import {
 import axios from "axios";
 import { url } from "../../env";
 import { useEffect, useRef, useState } from "react";
-import { BsFillFileImageFill } from "react-icons/bs";
 import { LoadingSpinner } from "../LoadingSpinning";
 import { CiCloudOff } from "react-icons/ci";
 
@@ -78,12 +77,48 @@ export const MessagesModal = ({
       .finally(() => setProcessing(false));
   };
 
-  const renderMessageContent = (type: string, message: string) => {
+  const renderMessageContent = (
+    type: string,
+    message: string,
+    storage_id?: string
+  ) => {
     switch (type) {
       case "sounds":
-        return <MdAudiotrack />;
+        return (
+          <audio
+            preload="auto"
+            controls
+            src={
+              "https://integracomm.syngoo-talk.app/config/storage/view/" +
+              storage_id
+            }
+          />
+        );
       case "images":
-        return <BsFillFileImageFill />;
+        return (
+          <img
+            src={
+              "https://integracomm.syngoo-talk.app/config/storage/view/" +
+              storage_id
+            }
+          />
+        );
+
+      case "files":
+        return (
+          <DownloadButton
+            onClick={() =>
+              window.open(
+                "https://integracomm.syngoo-talk.app/config/storage/view/" +
+                  storage_id,
+                "_blank"
+              )
+            }
+          >
+            <RiDownloadCloud2Line size={25} />
+            <label style={{ fontWeight: 500 }}>Arquivo</label>
+          </DownloadButton>
+        );
       default:
         return <label>{message}</label>;
     }
@@ -148,7 +183,11 @@ export const MessagesModal = ({
                         key={index}
                       >
                         <Message isClient={msg.origin === "channel"}>
-                          {renderMessageContent(msg.type, msg.message)}
+                          {renderMessageContent(
+                            msg.type,
+                            msg.message,
+                            msg.storage_id
+                          )}
                           <span>{formatDate(msg.created_at)}</span>
                         </Message>
                       </MessageContainer>

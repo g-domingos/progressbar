@@ -42,7 +42,7 @@ export const Message = styled.div<{ isClient?: boolean }>`
   box-shadow: 0 0 4px lightgray;
   display: flex;
   flex-direction: column;
-  padding: 15px 15px 0 15px;
+  padding: 15px 15px 5px 15px;
   width: 92%;
   border-radius: 8px;
 
@@ -187,4 +187,12 @@ export const Empty = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+export const DownloadButton = styled.button`
+  width: 4rem;
+  border: none;
+  background: none;
+
+  cursor: pointer;
 `;

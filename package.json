@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "aws:deploy": "aws s3 sync dist/  s3://progressbar-integracomm-app --profile integracomm"
+    "aws:deploy": "aws s3 sync dist/  s3://progressbar-integracomm-app --profile integracomm",
+    "full:deploy": "tsc && vite build && aws s3 sync dist/  s3://progressbar-integracomm-app --profile integracomm"
   },
   "dependencies": {
     "@types/node": "^18.11.19",
