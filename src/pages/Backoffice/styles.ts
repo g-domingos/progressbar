@@ -6,6 +6,7 @@ export const Container = styled.main`
   margin-bottom: 1rem;
   font-family: Roboto;
   background: #f1f4ea;
+  width: 100%;
 `;
 
 export const Teste = styled.div`
@@ -173,7 +174,7 @@ export const ClientCard = styled.div`
   flex-direction: column;
   gap: 0.8rem;
   box-shadow: 0 0 20px lightgray;
-  font-weight: 800;
+  font-weight: 600;
 
   & > label {
     background: #ffff00;
@@ -193,7 +194,7 @@ export const ClientCard = styled.div`
 
   :hover {
     cursor: pointer;
-    transform: scale(1.1);
+    transform: scale(1.06);
   }
   transition: transform 0.15s ease-in;
 `;

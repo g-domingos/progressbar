@@ -51,25 +51,6 @@ export const Backoffice = () => {
       });
   };
 
-  const getClientsAssessory = () => {
-    setProcessing(true);
-    axios
-      .get(url.ENDPOINT + "/clients/tasks")
-      .then((response) => {
-        setClientsAssessory(
-          JSON.parse(response.data.body).sort((a: any, b: any) =>
-            a.name.localeCompare(b.name)
-          )
-        );
-        setProcessing(false);
-      })
-      .catch((err: any) => {
-        console.log(err);
-        setProcessing(false);
-        error("Erro ao carregar informações!");
-      });
-  };
-
   const handleChangeDuration = ({ taskDuration, id, event }: any) => {
     const currentTask = statuses?.filter(
       (item: any) => item.orderindex === id
@@ -185,7 +166,6 @@ export const Backoffice = () => {
     if (isAuthorized) {
       getStatusesList();
       getClientLinks();
-      getClientsAssessory();
       setUpdate(true);
     }
   }, [isAuthorized]);
@@ -334,43 +314,6 @@ export const Backoffice = () => {
                     onClick={() => handleOpenDash({ taskId: client.taskId })}
                   >
                     <label>{client?.clientName}</label>
-                    <div>
-                      <span>{client?.status?.status.toUpperCase()}</span>
-                    </div>
-                  </ClientCard>
-                ))}
-              </Painnel>
-            </>
-          )}
-          <ClientsPannel>
-            <div
-              onClick={() => {
-                setExpandClientsAssessory(!expandClientsAssessory);
-                setExpandClients(false);
-                setSearchName("");
-              }}
-            >
-              {!expandClientsAssessory ? <IoIosArrowDown /> : <IoIosArrowUp />}
-              <label>CLIENTES</label>
-            </div>
-          </ClientsPannel>
-          {expandClientsAssessory && (
-            <>
-              <SearchBar>
-                <input
-                  onChange={(e) => handleFilter(e.target.value)}
-                  placeholder="Pesquisar..."
-                  autoFocus
-                />
-              </SearchBar>
-              <Painnel>
-                {dataArrayMemo?.map((client: any) => (
-                  <ClientCard
-                    onClick={() =>
-                      handleOpenDash({ taskId: client.id, isAssessory: true })
-                    }
-                  >
-                    <label>{client?.name}</label>
                     <div>
                       <span>{client?.status?.status.toUpperCase()}</span>
                     </div>

@@ -32,8 +32,7 @@ export const CardDetails = ({ details, processing }: any) => {
     });
   };
 
-  console.log("details", details);
-
+  console.log("DETRAILS", details);
   return (
     <Details>
       {processing ? (

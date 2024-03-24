@@ -7,6 +7,7 @@ export const Container = styled.body`
 
 export const MainDiv = styled.div`
   height: 100vh;
+  width: 100%;
   position: relative;
   padding-left: 40px;
   padding-right: 40px;

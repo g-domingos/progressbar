@@ -116,7 +116,16 @@ export const Clients = () => {
     axios
       .get(urlLink, { params: { dev: true } })
       .then((response: any) => {
-        setOnGoingTask(JSON.parse(response.data.body || "[]"));
+        const taskInfo = JSON.parse(response.data.body || "[]");
+
+        const { subtasks = [] } = taskInfo;
+
+        const filtered = (subtasks || []).filter(
+          (sub: any) => sub?.status?.status !== "concluído"
+        );
+
+        setOnGoingTask(filtered);
+
         setProcessing({ ...processing, ongoing: false });
       })
       .catch((err: any) => console.log(err));
@@ -144,6 +153,7 @@ export const Clients = () => {
     setUpdate(true);
   }, []);
 
+  console.log("onGoingTask", onGoingTask);
   useEffect(() => {
     if (!!concludedTask) {
       getSessionsHistory();
@@ -184,7 +194,7 @@ export const Clients = () => {
             <Title>TAREFAS PENDENTES</Title>
             <MenuContainer></MenuContainer>
             <TasksContainer>
-              {processing.ongoing ? (
+              {processing.concluded ? (
                 <LoadingDiv>
                   <LoadingSpinner />
                 </LoadingDiv>
@@ -195,7 +205,7 @@ export const Clients = () => {
                       <label>PREVISTO</label>
                     </div>
                   </Task>
-                  {onGoingTask?.subtasks.map((item: any, index: number) => (
+                  {onGoingTask?.map((item: any, index: number) => (
                     <>
                       <Task
                         key={index}
