@@ -133,77 +133,77 @@ export const MessagesModal = ({
   });
 
   return (
-    <Modal show={show} size="xl">
-      <Container ref={ref}>
-        <label>Histórico de Atendimento</label>
-        {!!sessions?.length ? (
-          <AgentsContainer>
-            <LeftSide>
-              {sessions?.map((item, index) => (
-                <Employee
-                  key={index}
-                  selected={employeeSelected.name === item.name}
-                  onClick={() => {
-                    setEmployeeSelected(item);
-                    setMessages("");
-                  }}
-                >
-                  <label>{item.name}</label>
-                </Employee>
-              ))}
-            </LeftSide>
-            {processing ? (
-              <LoadingDiv>
-                <LoadingSpinner />
-              </LoadingDiv>
-            ) : (
-              <RightSide>
-                {!messages?.length ? (
-                  employeeSelected?.result?.map((msgs: any, index: number) => (
-                    <Sessions
+    // <Modal show={show} size="xl">
+    <Container ref={ref}>
+      <label>Histórico de Atendimento</label>
+      {!!sessions?.length ? (
+        <AgentsContainer>
+          <LeftSide>
+            {(sessions || [])?.map((item, index) => (
+              <Employee
+                key={index}
+                selected={employeeSelected.name === item.name}
+                onClick={() => {
+                  setEmployeeSelected(item);
+                  setMessages("");
+                }}
+              >
+                <label>{item.name}</label>
+              </Employee>
+            ))}
+          </LeftSide>
+          {processing ? (
+            <LoadingDiv>
+              <LoadingSpinner />
+            </LoadingDiv>
+          ) : (
+            <RightSide>
+              {!messages?.length ? (
+                employeeSelected?.result?.map((msgs: any, index: number) => (
+                  <Sessions
+                    key={index}
+                    onClick={() => getMessagesFromSession({ ...msgs })}
+                  >
+                    <strong>{formatDate(msgs?.created_at)}</strong>- Atendente
+                    Integracomm : {(msgs?.agent_name || "").toUpperCase()}
+                  </Sessions>
+                ))
+              ) : (
+                <>
+                  <Header>
+                    Mensagens da Sessão -{" "}
+                    {formatDate(messages?.[0].created_at) || ""}
+                    <button onClick={() => setMessages([])}>
+                      <IoReturnUpBack size={20} />
+                    </button>
+                  </Header>
+                  {messages?.map((msg: any, index: number) => (
+                    <MessageContainer
+                      isClient={msg.origin === "channel"}
                       key={index}
-                      onClick={() => getMessagesFromSession({ ...msgs })}
                     >
-                      <strong>{formatDate(msgs?.created_at)}</strong>- Atendente
-                      Integracomm : {(msgs?.agent_name || "").toUpperCase()}
-                    </Sessions>
-                  ))
-                ) : (
-                  <>
-                    <Header>
-                      Mensagens da Sessão -{" "}
-                      {formatDate(messages?.[0].created_at) || ""}
-                      <button onClick={() => setMessages([])}>
-                        <IoReturnUpBack size={20} />
-                      </button>
-                    </Header>
-                    {messages?.map((msg: any, index: number) => (
-                      <MessageContainer
-                        isClient={msg.origin === "channel"}
-                        key={index}
-                      >
-                        <Message isClient={msg.origin === "channel"}>
-                          {renderMessageContent(
-                            msg.type,
-                            msg.message,
-                            msg.storage_id
-                          )}
-                          <span>{formatDate(msg.created_at)}</span>
-                        </Message>
-                      </MessageContainer>
-                    ))}
-                  </>
-                )}
-              </RightSide>
-            )}
-          </AgentsContainer>
-        ) : (
-          <Empty>
-            <CiCloudOff size={40} />
-            <label>Não há dados a serem mostrados</label>
-          </Empty>
-        )}
-      </Container>
-    </Modal>
+                      <Message isClient={msg.origin === "channel"}>
+                        {renderMessageContent(
+                          msg.type,
+                          msg.message,
+                          msg.storage_id
+                        )}
+                        <span>{formatDate(msg.created_at)}</span>
+                      </Message>
+                    </MessageContainer>
+                  ))}
+                </>
+              )}
+            </RightSide>
+          )}
+        </AgentsContainer>
+      ) : (
+        <Empty>
+          <CiCloudOff size={40} />
+          <label>Não há dados a serem mostrados</label>
+        </Empty>
+      )}
+    </Container>
+    // </Modal>
   );
 };

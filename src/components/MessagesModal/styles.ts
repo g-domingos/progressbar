@@ -11,8 +11,10 @@ export const Container = styled.div`
   background: #f3ecec;
   border-radius: 8px;
   border: none;
+  width: 100% !important;
 
   & > label {
+    
     width: 100%;
     margin-bottom: 15px;
     font-weight: 700;
@@ -70,7 +72,7 @@ export const AgentsContainer = styled.div`
   border: 5px solid lightgray;
   border-radius: 10px;
   width: 100%;
-  height: 430px !important;
+  height: 100%;
   display: flex;
   gap: 10px;
   background: lightgray;
@@ -83,7 +85,7 @@ export const AgentsContainer = styled.div`
 export const RightSide = styled.div`
   position: relative;
   border: 3px solid lightgray;
-  width: 100%;
+  width: 70%;
   overflow-y: auto;
   overflow-x: hidden;
 

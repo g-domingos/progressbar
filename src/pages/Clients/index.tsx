@@ -1,9 +1,8 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { url } from "../../env";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
-  ButtonShowDetails,
   ColumnsDivs,
   ContainerLegend,
   Footer,
@@ -33,9 +32,8 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DatePickerComponent } from "../../components/DatePickerComponent";
 
 export const Clients = () => {
-  const location = useLocation();
-
-  const taskId = location.pathname.split("/")[2];
+  const params = useParams();
+  const taskId = params?.id;
 
   const subtasksQuantityperPage = 20;
 
@@ -153,7 +151,6 @@ export const Clients = () => {
     setUpdate(true);
   }, []);
 
-  console.log("onGoingTask", onGoingTask);
   useEffect(() => {
     if (!!concludedTask) {
       getSessionsHistory();
@@ -375,9 +372,7 @@ export const Clients = () => {
             </TasksContainer>
           </div>
         </ColumnsDivs>
-        <Button onClick={() => handleShowSessionsHistory()}>
-          ATENDIMENTOS
-        </Button>
+
         <ContainerLegend>
           <label>LEGENDA</label>
           {concludedTask?.legend?.map((item: any, index: number) => (
@@ -389,14 +384,6 @@ export const Clients = () => {
             </div>
           ))}
         </ContainerLegend>
-
-        {showSessionHistory && (
-          <MessagesModal
-            show={showSessionHistory}
-            handleClose={() => setShowSessionHistory(false)}
-            sessions={sessions}
-          />
-        )}
       </MainDiv>
     </>
   );

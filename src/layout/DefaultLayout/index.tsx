@@ -1,19 +1,24 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import { NavBar } from "../../components/NavBar";
-import { Sidebar } from "../../components/Sidebar";
+
 import { Flex } from "@chakra-ui/react";
+import { Sidebar } from "../../components/Sidebar";
 
 export const DefaultLayout = () => {
   const location = useLocation();
+  const params = useParams();
 
   const { pathname } = location;
 
-  const showSidebar = pathname.includes("admin");
+  const isAdmin = pathname.includes("admin");
+
+  const clientId = params?.id;
+
   return (
     <div>
       <NavBar />
       <Flex>
-        {showSidebar && <Sidebar />}
+        <Sidebar isAdmin={isAdmin} clientId={clientId} />
         <Outlet />
       </Flex>
     </div>

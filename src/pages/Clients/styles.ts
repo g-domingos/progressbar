@@ -21,7 +21,7 @@ export const TextBox = styled.div`
   color: black;
   gap: 10px;
   font-weight: 1000;
-  font-size: 20px;
+  font-size: 16px;
   font-family: Roboto;
   padding-left: 15px;
   padding-top: 15px;
@@ -60,7 +60,7 @@ export const ColumnsDivs = styled.div`
 
 export const Title = styled.h4`
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   font-family: "Roboto";
   color: black;
   padding: 0.8rem;
@@ -97,7 +97,7 @@ export const Task = styled.div<{ color?: string }>`
   display: flex;
   gap: 0.8rem;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
   position: relative;
   justify-content: space-between;
   padding: 0px 5px;
@@ -284,7 +284,7 @@ export const MenuContainer = styled.div`
 export const ContainerLegend = styled.div`
   box-shadow: 0 0 5px lightgray;
   margin-top: 10px;
-  padding: 20px 30px;
+  padding: 10px 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;

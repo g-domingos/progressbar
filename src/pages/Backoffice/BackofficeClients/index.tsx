@@ -56,7 +56,7 @@ export const BackofficeClients = () => {
     let goToUrl = url + `#/client-id/${taskId}`;
 
     if (isAssessory) {
-      goToUrl = url + `#/clients/${taskId}`;
+      goToUrl = url + `#/clients/dashboard/${taskId}`;
     }
 
     window.open(goToUrl);
@@ -74,8 +74,8 @@ export const BackofficeClients = () => {
         </SearchBar>
         <Flex
           overflow={"auto"}
-          height={"100%"}
           flexWrap={"wrap"}
+          height={"90%"}
           gap="1rem"
           css={{
             "&::-webkit-scrollbar": {
