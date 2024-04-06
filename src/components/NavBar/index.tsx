@@ -22,13 +22,13 @@ export const NavBar = () => {
     <NavBarContainer opacity={true}>
       <img src={Logo} />
 
-      <UserArea
+      {/* <UserArea
         to="https://integracomm.com.br/area-do-cliente/"
         style={{ textDecoration: "none" }}
       >
         <AiOutlineUser />
         Área do Cliente
-      </UserArea>
+      </UserArea> */}
     </NavBarContainer>
   );
 };

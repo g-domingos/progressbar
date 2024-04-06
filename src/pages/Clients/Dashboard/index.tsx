@@ -12,7 +12,7 @@ const beforeMock: any = [
     data: [
       {
         name: "Mercado Livre",
-        value: 40000.0,
+        value: 120000.0,
         color: colors.mercadolivre,
       },
       { name: "Shopee", value: 40000.0, color: colors.shopee },
@@ -23,44 +23,58 @@ const beforeMock: any = [
       },
     ],
   },
-  {
-    document: "72.739.818/0001-31",
-    data: [
-      { name: "Shopee", value: 40000.0, color: colors.shopee },
-      {
-        name: "Mercado Livre",
-        value: 40000.0,
-        color: colors.mercadolivre,
-      },
-      {
-        name: "Magalu",
-        value: 40000.0,
-        color: colors.magalu,
-      },
-    ],
-  },
-  {
-    document: "72.739.818/0001-31",
-    data: [
-      {
-        name: "Mercado Livre",
-        value: 40000.23,
-        color: colors.mercadolivre,
-      },
-      {
-        name: "Magalu",
-        value: 40000.23,
-        color: colors.magalu,
-      },
-      { name: "Shopee", value: 10000.22, color: colors.shopee },
-    ],
-  },
+  // {
+  //   document: "72.739.818/0001-31",
+  //   data: [
+  //     { name: "Shopee", value: 40000.0, color: colors.shopee },
+  //     {
+  //       name: "Mercado Livre",
+  //       value: 40000.0,
+  //       color: colors.mercadolivre,
+  //     },
+  //     {
+  //       name: "Magalu",
+  //       value: 40000.0,
+  //       color: colors.magalu,
+  //     },
+  //   ],
+  // },
+  // {
+  //   document: "72.739.818/0001-31",
+  //   data: [
+  //     {
+  //       name: "Mercado Livre",
+  //       value: 40000.23,
+  //       color: colors.mercadolivre,
+  //     },
+  //     {
+  //       name: "Magalu",
+  //       value: 40000.23,
+  //       color: colors.magalu,
+  //     },
+  //     { name: "Shopee", value: 10000.22, color: colors.shopee },
+  //   ],
+  // },
 ];
 
 export const Dashboard = () => {
   return (
     <GenericPage title={"Dashboard"}>
       <Flex width={"100%"} fontSize={14} flexDirection={"column"}>
+        <Flex
+          borderTop={"1px solid lightgray"}
+          flex={1}
+          width={"100%"}
+          padding="2px"
+          flexDirection={"column"}
+          alignItems={"center"}
+          height={"40%"}
+        >
+          <Text fontWeight={700}>Como está suas vendas?</Text>
+          <Flex w={"90%"} height={"80%"}>
+            <LineChart />
+          </Flex>
+        </Flex>
         <Flex height={"60%"} w="100%">
           <Flex
             flex={"1"}
@@ -204,23 +218,6 @@ export const Dashboard = () => {
               <Text>Blog Link 3</Text>
               <Text>Blog Link 4</Text>
             </Flex>
-          </Flex>
-        </Flex>
-        <Flex
-          borderTop={"1px solid lightgray"}
-          flex={1}
-          width={"100%"}
-          padding="2px"
-          flexDirection={"column"}
-          alignItems={"center"}
-          height={"40%"}
-        >
-          <Text fontWeight={700}>Como está suas vendas?</Text>
-          <Flex
-            w={"90%"}
-            height={"80%"}
-          >
-            <LineChart />
           </Flex>
         </Flex>
       </Flex>
