@@ -15,12 +15,12 @@ export const DefaultLayout = () => {
   const clientId = params?.id;
 
   return (
-    <div>
+    <Flex flexDirection={"column"} height={"100vh"}>
       <NavBar />
-      <Flex>
+      <Flex height={"100%"}>
         <Sidebar isAdmin={isAdmin} clientId={clientId} />
         <Outlet />
       </Flex>
-    </div>
+    </Flex>
   );
 };

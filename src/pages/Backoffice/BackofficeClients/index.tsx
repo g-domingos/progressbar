@@ -4,36 +4,38 @@ import { url } from "../../../env";
 import axios from "axios";
 import { Flex, Spinner, useToast } from "@chakra-ui/react";
 import { ClientCard, SearchBar } from "../styles";
+import { useNavigate } from "react-router";
+import { useApi } from "../../../hooks/useApi";
+import { CardClients } from "../../../components/CardClients";
 
 export const BackofficeClients = () => {
   const [clientsAssessory, setClientsAssessory] = useState<any[]>();
-  const [processing, setProcessing] = useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const toast = useToast();
 
+  const { request, processing } = useApi({ path: "/clients/tasks" });
+
   const getClientsAssessory = () => {
-    setProcessing(true);
-    axios
-      .get(url.ENDPOINT + "/clients/tasks")
+    request({ method: "get" })
       .then((response: any) => {
         setClientsAssessory(
-          JSON.parse(response.data.body).sort((a: any, b: any) =>
-            a.name.localeCompare(b.name)
-          )
+          response.sort((a: any, b: any) => a.name.localeCompare(b.name))
         );
-        setProcessing(false);
       })
       .catch((err: any) => {
-        console.log(err);
-        setProcessing(false);
         toast({ description: "Erro ao carregar informações!" });
       });
   };
 
   useEffect(() => {
-    getClientsAssessory();
+    if (!processing) {
+      getClientsAssessory();
+    }
   }, []);
+
   const dataArrayMemo = useMemo(() => {
     if (searchName.length) {
       return clientsAssessory?.filter((item: any) =>
@@ -46,20 +48,6 @@ export const BackofficeClients = () => {
 
   const handleFilter = (name: string) => {
     setSearchName(name.toLowerCase());
-  };
-
-  const handleOpenDash = ({ taskId, isAssessory }: any) => {
-    const currentUrl = window.location.href;
-
-    const url = currentUrl.split("#")[0];
-
-    let goToUrl = url + `#/client-id/${taskId}`;
-
-    if (isAssessory) {
-      goToUrl = url + `#/clients/dashboard/${taskId}`;
-    }
-
-    window.open(goToUrl);
   };
 
   return (
@@ -76,6 +64,7 @@ export const BackofficeClients = () => {
           overflow={"auto"}
           flexWrap={"wrap"}
           height={"90%"}
+          padding="10px"
           gap="1rem"
           css={{
             "&::-webkit-scrollbar": {
@@ -100,19 +89,22 @@ export const BackofficeClients = () => {
               <Spinner />
             </Flex>
           ) : (
-            dataArrayMemo?.map((client: any, index: number) => (
-              <ClientCard
-                onClick={() =>
-                  handleOpenDash({ taskId: client.id, isAssessory: true })
-                }
-                key={index}
-              >
-                <label>{client?.name}</label>
-                <div>
-                  <span>{client?.status?.status.toUpperCase()}</span>
-                </div>
-              </ClientCard>
-            ))
+            dataArrayMemo?.map(
+              (
+                client: {
+                  id: string;
+                  name: string;
+                  status: { color: string; status: string };
+                },
+                index: number
+              ) => (
+                <CardClients
+                  title={client.name}
+                  id={client.id}
+                  status={client.status.status}
+                />
+              )
+            )
           )}
         </Flex>
       </Flex>

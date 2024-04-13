@@ -31,9 +31,7 @@ export const Backoffice = () => {
   const [expandClientsAssessory, setExpandClientsAssessory] =
     useState<boolean>(false);
   const [searchName, setSearchName] = useState<string>("");
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(
-    localStorage.getItem("isAuthorized") === "true"
-  );
+
   const { setUpdate, update } = useContext(UserContext);
 
   const getStatusesList = () => {
@@ -163,12 +161,10 @@ export const Backoffice = () => {
   }, [searchName, clientsList]);
 
   useEffect(() => {
-    if (isAuthorized) {
-      getStatusesList();
-      getClientLinks();
-      setUpdate(true);
-    }
-  }, [isAuthorized]);
+    getStatusesList();
+    getClientLinks();
+    setUpdate(true);
+  }, []);
 
   const handleOpenDash = ({ taskId, isAssessory }: any) => {
     const currentUrl = window.location.href;
@@ -183,148 +179,145 @@ export const Backoffice = () => {
 
     window.open(goToUrl);
   };
-  if (isAuthorized) {
-    return (
-      <Container>
-        {processing && (
-          <LoadingDiv>
-            <LoadingSpinner />
-          </LoadingDiv>
-        )}
-        <Main>
-          <label>Backoffice Progressbar</label>
-          <TaskDetails>
-            <TaskDetailsBar onClick={() => setExpand(!expand)}>
-              {!expand ? <IoIosArrowDown /> : <IoIosArrowUp />}
-              <label>CONFIGURAÇÕES DAS TAREFAS</label>
-            </TaskDetailsBar>
-            {expand && (
-              <>
-                {statuses
-                  ?.filter((task: any) => !task.dontShow)
-                  .map((task: any, index: number) => (
-                    <div key={index}>
-                      <span>
-                        <Circle opaco>{task?.orderindex}</Circle>
-                      </span>
-                      <div>
-                        <label>TAREFA</label>
-                        <p>{task?.statusName?.toUpperCase()}</p>
-                      </div>
-                      <div>
-                        <label>DURAÇÃO DA TAREFA</label>
-                        <div>
-                          <input
-                            min="0"
-                            max="100"
-                            step="1"
-                            pattern="\d*"
-                            type="number"
-                            value={task?.duration}
-                            onChange={(e) =>
-                              handleChangeDuration({
-                                taskDuration: task.duration,
-                                id: index,
-                                event: e,
-                              })
-                            }
-                          />
-                          <p>dias</p>
-                        </div>
-                      </div>
-                      <div>
-                        <label>RESP. DO CLIENTE</label>
-                        <div>
-                          <input
-                            type="checkbox"
-                            name="true"
-                            checked={task.client_responsabilitie}
-                            onChange={(e) =>
-                              handleClientResponsabilitie({ e, id: index })
-                            }
-                          />
-                          <p>Sim</p>
-                          <input
-                            type="checkbox"
-                            name="false"
-                            checked={!task.client_responsabilitie}
-                            onChange={(e) =>
-                              handleClientResponsabilitie({ e, id: index })
-                            }
-                          />
-                          <p>Não</p>
-                        </div>
-                      </div>
-                      <div>
-                        <label>VISÍVEL</label>
-                        <div>
-                          <input
-                            type="checkbox"
-                            checked={task.visible}
-                            name="true"
-                            onChange={(e) =>
-                              handleIsTaskVisibleForClient({ e, id: index })
-                            }
-                          />
-                          <p>Sim</p>
-                          <input
-                            type="checkbox"
-                            checked={!task.visible}
-                            name="false"
-                            onChange={(e) =>
-                              handleIsTaskVisibleForClient({ e, id: index })
-                            }
-                          />
-                          <p>Não</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                <Button onClick={() => handleUpdateTaskInformation()}>
-                  SALVAR
-                </Button>
-              </>
-            )}
-          </TaskDetails>
-          <ClientsPannel>
-            <div
-              onClick={() => {
-                setExpandClients(!expandClients);
-                setSearchName("");
-                setExpandClientsAssessory(false);
-              }}
-            >
-              {!expandClients ? <IoIosArrowDown /> : <IoIosArrowUp />}
-              <label>IMPLANTAÇÃO</label>
-            </div>
-          </ClientsPannel>
-
-          {expandClients && (
+  return (
+    <Container>
+      {processing && (
+        <LoadingDiv>
+          <LoadingSpinner />
+        </LoadingDiv>
+      )}
+      <Main>
+        <label>Backoffice Progressbar</label>
+        <TaskDetails>
+          <TaskDetailsBar onClick={() => setExpand(!expand)}>
+            {!expand ? <IoIosArrowDown /> : <IoIosArrowUp />}
+            <label>CONFIGURAÇÕES DAS TAREFAS</label>
+          </TaskDetailsBar>
+          {expand && (
             <>
-              <SearchBar>
-                <input
-                  onChange={(e) => handleFilter(e.target.value)}
-                  placeholder="Pesquisar..."
-                  autoFocus
-                />
-              </SearchBar>
-              <Painnel>
-                {implantationMemo?.map((client: any) => (
-                  <ClientCard
-                    onClick={() => handleOpenDash({ taskId: client.taskId })}
-                  >
-                    <label>{client?.clientName}</label>
+              {statuses
+                ?.filter((task: any) => !task.dontShow)
+                .map((task: any, index: number) => (
+                  <div key={index}>
+                    <span>
+                      <Circle opaco>{task?.orderindex}</Circle>
+                    </span>
                     <div>
-                      <span>{client?.status?.status.toUpperCase()}</span>
+                      <label>TAREFA</label>
+                      <p>{task?.statusName?.toUpperCase()}</p>
                     </div>
-                  </ClientCard>
+                    <div>
+                      <label>DURAÇÃO DA TAREFA</label>
+                      <div>
+                        <input
+                          min="0"
+                          max="100"
+                          step="1"
+                          pattern="\d*"
+                          type="number"
+                          value={task?.duration}
+                          onChange={(e) =>
+                            handleChangeDuration({
+                              taskDuration: task.duration,
+                              id: index,
+                              event: e,
+                            })
+                          }
+                        />
+                        <p>dias</p>
+                      </div>
+                    </div>
+                    <div>
+                      <label>RESP. DO CLIENTE</label>
+                      <div>
+                        <input
+                          type="checkbox"
+                          name="true"
+                          checked={task.client_responsabilitie}
+                          onChange={(e) =>
+                            handleClientResponsabilitie({ e, id: index })
+                          }
+                        />
+                        <p>Sim</p>
+                        <input
+                          type="checkbox"
+                          name="false"
+                          checked={!task.client_responsabilitie}
+                          onChange={(e) =>
+                            handleClientResponsabilitie({ e, id: index })
+                          }
+                        />
+                        <p>Não</p>
+                      </div>
+                    </div>
+                    <div>
+                      <label>VISÍVEL</label>
+                      <div>
+                        <input
+                          type="checkbox"
+                          checked={task.visible}
+                          name="true"
+                          onChange={(e) =>
+                            handleIsTaskVisibleForClient({ e, id: index })
+                          }
+                        />
+                        <p>Sim</p>
+                        <input
+                          type="checkbox"
+                          checked={!task.visible}
+                          name="false"
+                          onChange={(e) =>
+                            handleIsTaskVisibleForClient({ e, id: index })
+                          }
+                        />
+                        <p>Não</p>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </Painnel>
+              <Button onClick={() => handleUpdateTaskInformation()}>
+                SALVAR
+              </Button>
             </>
           )}
-        </Main>
-      </Container>
-    );
-  }
-  return <Login setIsAuthorized={setIsAuthorized} />;
+        </TaskDetails>
+        <ClientsPannel>
+          <div
+            onClick={() => {
+              setExpandClients(!expandClients);
+              setSearchName("");
+              setExpandClientsAssessory(false);
+            }}
+          >
+            {!expandClients ? <IoIosArrowDown /> : <IoIosArrowUp />}
+            <label>IMPLANTAÇÃO</label>
+          </div>
+        </ClientsPannel>
+
+        {expandClients && (
+          <>
+            <SearchBar>
+              <input
+                onChange={(e) => handleFilter(e.target.value)}
+                placeholder="Pesquisar..."
+                autoFocus
+              />
+            </SearchBar>
+            <Painnel>
+              {implantationMemo?.map((client: any) => (
+                <ClientCard
+                  onClick={() => handleOpenDash({ taskId: client.taskId })}
+                >
+                  <label>{client?.clientName}</label>
+                  <div>
+                    <span>{client?.status?.status.toUpperCase()}</span>
+                  </div>
+                </ClientCard>
+              ))}
+            </Painnel>
+          </>
+        )}
+      </Main>
+    </Container>
+  );
 };

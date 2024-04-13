@@ -31,6 +31,7 @@ export const NavItem = ({ link, name, icon }: INavItem) => {
       height={"3rem"}
       width={"100%"}
       transition={"0.2s ease-in-out"}
+      fontSize={12}
       _hover={{
         cursor: "pointer",
         background: "#fbfb47",

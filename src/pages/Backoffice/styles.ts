@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const Container = styled.main`
+export const Container = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
@@ -15,7 +15,7 @@ export const Teste = styled.div`
 
 export const Main = styled.div`
   width: 90%;
-  height: 200vh;
+  height: 100%;
   background: white;
   border-radius: 0.7rem;
   margin-top: 1rem;

@@ -8,6 +8,8 @@ import { Settings } from "./pages/Settings";
 import { BackofficeClients } from "./pages/Backoffice/BackofficeClients";
 import { Dashboard } from "./pages/Clients/Dashboard";
 import { Sessions } from "./pages/Clients/Sessions";
+import { LoginV2 } from "./pages/LoginV2";
+import { TaskSettings } from "./pages/TaskSettings";
 
 export const Router = () => {
   return (
@@ -16,14 +18,16 @@ export const Router = () => {
         <Route path="/client-id/:id" element={<Home />} />
         <Route path="/clients/:id" element={<Clients />} />
 
-        <Route path="/backoffice/admin" element={<Backoffice />} />
+        <Route path="/admin" element={<Backoffice />} />
         <Route path="/admin/settings" element={<Settings />} />
         <Route path="/admin/clients" element={<BackofficeClients />} />
+        <Route path="/admin/task-settings/:id" element={<TaskSettings />} />
 
         <Route path="/clients/dashboard/:id" element={<Dashboard />} />
         <Route path="/clients/progress/:id" element={<Clients />} />
         <Route path="/clients/messages/:id" element={<Sessions />} />
       </Route>
+      <Route path="/login" element={<LoginV2 />} />
     </Routes>
   );
 };

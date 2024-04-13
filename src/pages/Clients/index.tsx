@@ -30,6 +30,7 @@ import {
 import { Button } from "../Home/styles";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { DatePickerComponent } from "../../components/DatePickerComponent";
+import { useApi } from "../../hooks/useApi";
 
 export const Clients = () => {
   const params = useParams();

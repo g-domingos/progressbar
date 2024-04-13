@@ -1,10 +1,17 @@
-import { Text, Flex } from "@chakra-ui/react";
+import { Text, Flex, Spinner } from "@chakra-ui/react";
 
 interface IGenericPage {
   title: string;
   children: React.ReactNode;
+  action?: any;
+  processing?: boolean;
 }
-export const GenericPage = ({ title, children }: IGenericPage) => {
+export const GenericPage = ({
+  processing,
+  title,
+  children,
+  action,
+}: IGenericPage) => {
   return (
     <Flex
       flexDirection={"column"}
@@ -25,10 +32,14 @@ export const GenericPage = ({ title, children }: IGenericPage) => {
         },
       }}
     >
-      <Text fontWeight={600} fontSize={23}>
-        {title}
-      </Text>
-      <Flex width={"100%"} height={"92%"}>
+      <Flex gap="1rem" alignItems={"center"}>
+        <Text fontWeight={600} fontSize={23} mb="unset">
+          {title}
+        </Text>
+        {processing ? <Spinner /> : null}
+        {action ? action : null}
+      </Flex>
+      <Flex width={"100%"} height={"92%"} padding="0 10px 0 0">
         {children}
       </Flex>
     </Flex>
