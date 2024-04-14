@@ -13,6 +13,7 @@ import { Users } from "../Users";
 import { useApi } from "../../hooks/useApi";
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
+import { GeneralInfoTask } from "../GeneralInfoTask";
 
 export const TaskSettings = () => {
   const params = useParams();
@@ -42,9 +43,8 @@ export const TaskSettings = () => {
         <Flex w="100%">
           <Tabs position="relative" w={"100%"}>
             <TabList>
+              <Tab color="black">Geral</Tab>
               <Tab color="black">Usuários</Tab>
-              {/* <Tab>Two</Tab>
-              <Tab>Three</Tab> */}
             </TabList>
             <TabIndicator
               mt="-1.5px"
@@ -52,16 +52,13 @@ export const TaskSettings = () => {
               bg={colors.yellow}
               borderRadius="1px"
             />
-            <TabPanels w={"100%"}>
+            <TabPanels w={"100%"} height={"95%"}>
+              <TabPanel width={"100%"} height={"100%"}>
+                <GeneralInfoTask />
+              </TabPanel>
               <TabPanel width={"100%"}>
                 <Users />
               </TabPanel>
-              {/* <TabPanel>
-                <p>two!</p>
-              </TabPanel>
-              <TabPanel>
-                <p>three!</p>
-              </TabPanel> */}
             </TabPanels>
           </Tabs>
         </Flex>

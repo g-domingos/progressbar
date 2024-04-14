@@ -3,6 +3,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { IoMdOpen } from "react-icons/io";
 import { colors } from "../../styles/theme";
 import { useNavigate } from "react-router";
+import { IoSettingsOutline } from "react-icons/io5";
 
 interface ICardClients {
   title: string;
@@ -62,7 +63,7 @@ export const CardClients = ({ id, status, title, color }: ICardClients) => {
         }}
       >
         <Button onClick={handleOpenTaskSettings}>
-          <FaUserEdit />
+          <IoSettingsOutline />
         </Button>
         <Button onClick={handleOpenDash}>
           <IoMdOpen />

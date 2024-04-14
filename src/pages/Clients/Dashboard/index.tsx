@@ -23,38 +23,6 @@ const beforeMock: any = [
       },
     ],
   },
-  // {
-  //   document: "72.739.818/0001-31",
-  //   data: [
-  //     { name: "Shopee", value: 40000.0, color: colors.shopee },
-  //     {
-  //       name: "Mercado Livre",
-  //       value: 40000.0,
-  //       color: colors.mercadolivre,
-  //     },
-  //     {
-  //       name: "Magalu",
-  //       value: 40000.0,
-  //       color: colors.magalu,
-  //     },
-  //   ],
-  // },
-  // {
-  //   document: "72.739.818/0001-31",
-  //   data: [
-  //     {
-  //       name: "Mercado Livre",
-  //       value: 40000.23,
-  //       color: colors.mercadolivre,
-  //     },
-  //     {
-  //       name: "Magalu",
-  //       value: 40000.23,
-  //       color: colors.magalu,
-  //     },
-  //     { name: "Shopee", value: 10000.22, color: colors.shopee },
-  //   ],
-  // },
 ];
 
 export const Dashboard = () => {
@@ -100,7 +68,16 @@ export const Dashboard = () => {
                     padding={"20px"}
                     borderRadius={"10px"}
                   >
-                    <SummaryCard data={cnpj.data} document={cnpj.document} />
+                    <SummaryCard
+                      data={cnpj.data}
+                      document={cnpj.document}
+                      handleEdit={function () {
+                        throw new Error("Function not implemented.");
+                      }}
+                      handleDelete={function () {
+                        throw new Error("Function not implemented.");
+                      }}
+                    />
                   </Flex>
                 )
               )}
@@ -142,6 +119,12 @@ export const Dashboard = () => {
                         <SummaryCard
                           data={cnpj.data}
                           document={cnpj.document}
+                          handleEdit={function () {
+                            throw new Error("Function not implemented.");
+                          }}
+                          handleDelete={function () {
+                            throw new Error("Function not implemented.");
+                          }}
                         />
                       </Flex>
                       <Flex display={"block !important"}>

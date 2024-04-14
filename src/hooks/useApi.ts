@@ -78,11 +78,9 @@ export const useApi = ({ path }: IuseApi) => {
           const response = await data.response;
 
           setProcessing(false);
-
-          console.log("response", response);
-
           return response.body.json() as any;
         } catch (error: any) {
+          console.log("ERRO AQUI ", error);
           setProcessing(false);
           throw new Error(error.message);
         }

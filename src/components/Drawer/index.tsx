@@ -1,5 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import {
+  FormProvider,
+  useFieldArray,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
 import {
   Text,
   Button,
@@ -15,9 +20,80 @@ import {
   Flex,
   Spinner,
 } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { colors } from "../../styles/theme";
+import { MdAdd } from "react-icons/md";
+
+interface IDrawerArrayInput {
+  title: string;
+  name: string;
+}
+
+const DrawerArrayInput = ({ name, title }: IDrawerArrayInput) => {
+  const {
+    register,
+    getValues,
+    formState: { errors },
+  } = useFormContext();
+
+  useEffect(() => {}, []);
+
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
+    {
+      name: name,
+    }
+  );
+
+  return (
+    <Flex flexDirection={"column"} w={"100%"}>
+      <Flex
+        gap="1rem"
+        alignItems={"center"}
+        mt="10px"
+        justifyContent={"flex-end"}
+      >
+        <Text fontSize={12} mb="unset">
+          Marketplaces
+        </Text>
+        <Button
+          padding={"5px"}
+          minW="unset"
+          borderRadius={"100%"}
+          width={"1.5rem"}
+          height={"1.5rem"}
+          _hover={{
+            background: "lightgray",
+          }}
+          type="button"
+          onClick={() =>
+            append({ name: "", value: "", id: new Date().getTime() })
+          }
+          background={colors.yellow}
+        >
+          <MdAdd />
+        </Button>
+      </Flex>
+      {fields.map((field: any, index: number) => (
+        <Flex gap="5px" fontSize={12}>
+          <Text>
+            Marketplace
+            <Input key={field?.id} {...register(`${name}.${index}.name`)} />
+          </Text>
+          <Text>
+            Valor R$
+            <Input
+              key={field?.id}
+              {...register(`${name}.${index}.value`)}
+              type="number"
+              step={"0.01"}
+            />
+          </Text>
+        </Flex>
+      ))}
+    </Flex>
+  );
+};
 
 interface IDrawerInput {
   title: string;
@@ -53,6 +129,7 @@ interface IDrawer {
   onClose: () => void;
   onOpen: () => void;
   processing?: boolean;
+  ref?: any;
 }
 const Drawer = ({
   title,
@@ -65,18 +142,35 @@ const Drawer = ({
   onClose,
   onOpen,
   processing,
+  ref,
 }: IDrawer) => {
-  const btnRef = useRef<any>();
-
   const methods = useForm<any>({
     resolver: yupResolver(formValidationFields),
     values: formValues,
   });
 
+  const submitForm = (values: any) => {
+    handleSubmit(values);
+    methods.reset();
+  };
+
+  const handleClose = () => {
+    methods.reset({ data: [], document: "", id: null });
+    onClose();
+  };
+
+  useEffect(() => {
+    if (isOpen && formValues) {
+      const fields = Object.entries(formValues);
+
+      fields.forEach(([field, value]: any) => methods.setValue(field, value));
+    }
+  }, [isOpen]);
+
   return (
     <>
       <Button
-        ref={btnRef}
+        ref={ref}
         colorScheme="teal"
         onClick={onOpen}
         borderRadius={"100%"}
@@ -88,37 +182,34 @@ const Drawer = ({
       >
         {icon || <IoMdAdd size={18} color={"black"} />}
       </Button>
-      <DrawerC
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-      >
-        <FormProvider {...methods}>
-          <DrawerOverlay />
-          <form onSubmit={methods.handleSubmit(handleSubmit)}>
-            <DrawerContent>
-              <DrawerCloseButton />
-              <DrawerHeader>{title}</DrawerHeader>
+      {isOpen && (
+        <DrawerC isOpen={isOpen} placement="right" onClose={handleClose}>
+          <FormProvider {...methods}>
+            <DrawerOverlay />
+            <form onSubmit={methods.handleSubmit(submitForm)}>
+              <DrawerContent>
+                <DrawerCloseButton />
+                <DrawerHeader>{title}</DrawerHeader>
 
-              <DrawerBody>{children}</DrawerBody>
+                <DrawerBody>{children}</DrawerBody>
 
-              <DrawerFooter>
-                <Button mr={3} onClick={onClose} type="button">
-                  Cancelar
-                </Button>
-                <Button type="submit" background={colors.yellow}>
-                  {processing ? <Spinner /> : "Salvar"}
-                </Button>
-              </DrawerFooter>
-            </DrawerContent>
-          </form>
-        </FormProvider>
-      </DrawerC>
+                <DrawerFooter>
+                  <Button mr={3} onClick={handleClose} type="button">
+                    Cancelar
+                  </Button>
+                  <Button type="submit" background={colors.yellow}>
+                    {processing ? <Spinner /> : "Salvar"}
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </form>
+          </FormProvider>
+        </DrawerC>
+      )}
     </>
   );
 };
 
 Drawer.DrawerInput = DrawerInput;
-
+Drawer.DrawerArrayInput = DrawerArrayInput;
 export default Drawer;
