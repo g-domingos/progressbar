@@ -2,6 +2,7 @@ import { Text, Flex, Button } from "@chakra-ui/react";
 import { Tag } from "../Tag";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { RoundButton } from "../RoundButton";
+import { useMemo } from "react";
 
 export interface ICardDetail {
   name: string;
@@ -28,6 +29,10 @@ export const SummaryCard = ({
   const handleClick = () => {
     handleEdit && handleEdit();
   };
+
+  const sorted = useMemo(() => {
+    return data?.sort((a: any, b: any) => a.name.localeCompare(b.name));
+  }, [data]);
 
   return (
     <Flex
@@ -76,7 +81,7 @@ export const SummaryCard = ({
 
       <Flex overflow={"scroll"}>
         <Flex flexDirection={"column"} w={"100%"} gap="0.4rem">
-          {data.map((card: ICardDetail) => (
+          {sorted.map((card: ICardDetail) => (
             <Flex gap="1rem" justifyContent={"space-between"}>
               <Flex>
                 <Tag
