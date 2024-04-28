@@ -10,6 +10,7 @@ import { Dashboard } from "./pages/Clients/Dashboard";
 import { Sessions } from "./pages/Clients/Sessions";
 import { LoginV2 } from "./pages/LoginV2";
 import { TaskSettings } from "./pages/TaskSettings";
+import { TalkToUs } from "./pages/TalkToUs";
 
 export const Router = () => {
   return (
@@ -26,6 +27,7 @@ export const Router = () => {
         <Route path="/clients/dashboard/:id" element={<Dashboard />} />
         <Route path="/clients/progress/:id" element={<Clients />} />
         <Route path="/clients/messages/:id" element={<Sessions />} />
+        <Route path="/clients/contact/:id" element={<TalkToUs />} />
       </Route>
       <Route path="/login" element={<LoginV2 />} />
     </Routes>

@@ -23,21 +23,29 @@ import {
 import { useEffect, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { colors } from "../../styles/theme";
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdDelete } from "react-icons/md";
+import { RoundButton } from "../RoundButton";
 
 interface IDrawerArrayInput {
   title: string;
   name: string;
+  label?: string;
+  value?: string;
+  placeholder?: string;
 }
 
-const DrawerArrayInput = ({ name, title }: IDrawerArrayInput) => {
+const DrawerArrayInput = ({
+  name,
+  title,
+  label,
+  value,
+  placeholder,
+}: IDrawerArrayInput) => {
   const {
     register,
     getValues,
     formState: { errors },
   } = useFormContext();
-
-  useEffect(() => {}, []);
 
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
     {
@@ -54,7 +62,7 @@ const DrawerArrayInput = ({ name, title }: IDrawerArrayInput) => {
         justifyContent={"flex-end"}
       >
         <Text fontSize={12} mb="unset">
-          Marketplaces
+          {title}
         </Text>
         <Button
           padding={"5px"}
@@ -75,20 +83,24 @@ const DrawerArrayInput = ({ name, title }: IDrawerArrayInput) => {
         </Button>
       </Flex>
       {fields.map((field: any, index: number) => (
-        <Flex gap="5px" fontSize={12}>
+        <Flex gap="5px" fontSize={12} key={index} alignItems={"center"}>
           <Text>
-            Marketplace
-            <Input key={field?.id} {...register(`${name}.${index}.name`)} />
+            {label}
+            <Input
+              key={field?.id}
+              {...register(`${name}.${index}.name`)}
+              placeholder={placeholder}
+            />
           </Text>
           <Text>
-            Valor R$
+            {value}
             <Input
               key={field?.id}
               {...register(`${name}.${index}.value`)}
-              type="number"
               step={"0.01"}
             />
           </Text>
+          <RoundButton icon={<MdDelete />} handleClick={() => remove(index)} />
         </Flex>
       ))}
     </Flex>
@@ -183,7 +195,12 @@ const Drawer = ({
         {icon || <IoMdAdd size={18} color={"black"} />}
       </Button>
       {isOpen && (
-        <DrawerC isOpen={isOpen} placement="right" onClose={handleClose}>
+        <DrawerC
+          isOpen={isOpen}
+          placement="right"
+          onClose={handleClose}
+          size={"md"}
+        >
           <FormProvider {...methods}>
             <DrawerOverlay />
             <form onSubmit={methods.handleSubmit(submitForm)}>

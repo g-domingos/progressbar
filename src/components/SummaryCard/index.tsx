@@ -13,8 +13,9 @@ export interface ISummaryCard {
   id?: number;
   data: ICardDetail[];
   document: string;
-  handleEdit: () => any;
-  handleDelete: () => any;
+  handleEdit?: () => any;
+  handleDelete?: () => any;
+  hideActions?: boolean;
 }
 
 export const SummaryCard = ({
@@ -22,20 +23,21 @@ export const SummaryCard = ({
   document,
   handleEdit,
   handleDelete,
+  hideActions,
 }: ISummaryCard) => {
   const handleClick = () => {
-    handleEdit();
+    handleEdit && handleEdit();
   };
 
   return (
     <Flex
       flexDirection={"column"}
       gap="1rem"
-      w="12rem"
-      height={"13rem"}
+      w="14rem"
+      height={"14rem"}
       border={"1px solid lightgray"}
       borderRadius={"14px"}
-      padding={"1rem"}
+      padding={"0.6rem"}
       transition={"0.2s ease-in-out"}
       _hover={{
         transform: "scale(1.04)",
@@ -43,15 +45,26 @@ export const SummaryCard = ({
       }}
       position={"relative"}
     >
-      <Flex
-        justifyContent={"flex-end"}
-        position={"absolute"}
-        right={"0.3rem"}
-        top={"0.6rem"}
-      >
-        <RoundButton handleClick={handleDelete} icon={<MdDelete />} />
-        <RoundButton handleClick={handleClick} />
-      </Flex>
+      {!hideActions && (
+        <Flex
+          justifyContent={"flex-end"}
+          position={"absolute"}
+          right={"0.3rem"}
+          top={"0.6rem"}
+        >
+          <RoundButton
+            handleClick={() => {
+              handleDelete && handleDelete();
+            }}
+            icon={<MdDelete />}
+          />
+          <RoundButton
+            handleClick={() => {
+              handleClick && handleClick();
+            }}
+          />
+        </Flex>
+      )}
       <Flex flexDirection={"column"}>
         <Text fontSize={12} marginBottom={"unset"} fontWeight={600}>
           CNPJ:
@@ -64,11 +77,16 @@ export const SummaryCard = ({
       <Flex overflow={"scroll"}>
         <Flex flexDirection={"column"} w={"100%"} gap="0.4rem">
           {data.map((card: ICardDetail) => (
-            <Flex justifyContent={"space-between"}>
+            <Flex gap="1rem" justifyContent={"space-between"}>
               <Flex>
-                <Tag text={card.name} background={card.color} fontSize={10} />
+                <Tag
+                  text={card.name}
+                  background={card.color}
+                  fontSize={10}
+                  padding="2px 5px"
+                />
               </Flex>
-              <Flex fontWeight={700}>R${card.value}</Flex>
+              <Flex fontWeight={700}>R${(+card?.value || 0).toFixed(2)}</Flex>
             </Flex>
           ))}
         </Flex>

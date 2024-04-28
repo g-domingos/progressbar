@@ -1,52 +1,47 @@
 import { Text, Flex, useDisclosure, useToast, Spinner } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { colors } from "../../styles/theme";
-import {
-  ICardDetail,
-  ISummaryCard,
-  SummaryCard,
-} from "../../components/SummaryCard";
-import { RoundButton } from "../../components/RoundButton";
-import { CnpjForm, IBefore } from "../../components/CnpjForm";
+import { ISummaryCard, SummaryCard } from "../../components/SummaryCard";
+import { CnpjForm, IInfo } from "../../components/CnpjForm";
 import { useApi } from "../../hooks/useApi";
 import { useParams } from "react-router";
 import { CiCloudOff } from "react-icons/ci";
 
 export const GeneralInfoTask = () => {
-  const [cnpjs, setCnpjs] = useState<IBefore[]>([]);
-  const [editCnpj, setEditCnpj] = useState<IBefore | undefined>();
+  const [cnpjs, setCnpjs] = useState<IInfo[]>([]);
+  const [editCnpj, setEditCnpj] = useState<IInfo | undefined>();
 
   const toast = useToast();
   const params = useParams();
   const { request, processing } = useApi({ path: `/task/${params.id}` });
 
-  const fetchBeforeData = () => {
-    request({ method: "get", pathParameters: "/before" }).then(
-      (response: IBefore[]) => {
-        const sorted = response.sort((a: IBefore, b: IBefore) => a.id - b.id);
+  const fetchGeneralInfoByCNPJ = () => {
+    request({ method: "get", pathParameters: "/info" }).then(
+      (response: IInfo[]) => {
+        const sorted = response.sort((a: IInfo, b: IInfo) => a.id - b.id);
         setCnpjs(sorted);
       }
     );
   };
 
   useEffect(() => {
-    fetchBeforeData();
+    fetchGeneralInfoByCNPJ();
   }, []);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleEdit = ({ id }: { id: number | undefined }) => {
-    const cnpjToEdit = cnpjs.find((item: IBefore) => item.id === id);
+    const cnpjToEdit = cnpjs.find((item: IInfo) => item.id === id);
 
     setEditCnpj(cnpjToEdit);
     onOpen();
   };
 
   const handleDelete = ({ id }: { id: number | undefined }) => {
-    request({ method: "del", pathParameters: `/delete-before/${id}` })
+    request({ method: "del", pathParameters: `/delete-info/${id}` })
       .then(() => {
         toast({ description: "CNPJ excluído com sucesso!", status: "success" });
-        fetchBeforeData();
+        fetchGeneralInfoByCNPJ();
       })
       .catch(() => {
         toast({ description: "Erro ao excluir!", status: "error" });
@@ -63,13 +58,13 @@ export const GeneralInfoTask = () => {
       <Flex flexDirection={"column"} w="100%" height={"100%"}>
         <Flex alignItems={"center"} gap="1rem" mb="1rem">
           <Text mb="unset" fontWeight={600}>
-            Cenário Antes da Integracomm
+            Configuração por CNPJ
           </Text>
           <CnpjForm
             isOpen={isOpen}
             onClose={handleCloseForm}
             onOpen={onOpen}
-            refresh={fetchBeforeData}
+            refresh={fetchGeneralInfoByCNPJ}
             cnpj={editCnpj}
           />
         </Flex>
@@ -84,7 +79,7 @@ export const GeneralInfoTask = () => {
               <Spinner />
             </Flex>
           ) : cnpjs.length ? (
-            cnpjs.map((card: IBefore, index: number) => (
+            cnpjs.map((card: IInfo, index: number) => (
               <SummaryCard
                 key={index}
                 data={card.data}

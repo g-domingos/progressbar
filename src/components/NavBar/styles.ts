@@ -2,17 +2,17 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const NavBarContainer = styled.header<{ opacity?: boolean }>`
-  height: 50px;
+  height: 30px;
   background: black;
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: white;
-  padding: 30px;
+  padding: 26px;
   opacity: ${(props) => (props.opacity ? "1" : "0.1")};
 
   img {
-    height: 8rem;
+    /* height: 8rem; */
     width: 8rem;
   }
 

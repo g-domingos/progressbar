@@ -1,3 +1,5 @@
+import { TiMessages } from "react-icons/ti";
+import { BiMessage } from "react-icons/bi";
 import { Button, Flex } from "@chakra-ui/react";
 import { NavItem } from "../NavItem";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -73,12 +75,18 @@ export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
               icon={<FaUsers />}
             />
             <NavItem
-              name={"Atendimento"}
+              name={"Atendimentos"}
               link={`/clients/messages/${clientId}`}
-              icon={<FaUsers />}
+              icon={<TiMessages />}
             />
           </Flex>
-          <Flex>
+          <Flex flexDirection={"column"}>
+            <NavItem
+              name={"Fale conosco"}
+              link={`/clients/contact/${clientId}`}
+              icon={<BiMessage />}
+            />
+
             <Button
               fontSize={12}
               onClick={handleLogOut}

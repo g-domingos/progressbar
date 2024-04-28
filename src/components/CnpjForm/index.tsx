@@ -8,14 +8,14 @@ import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
 
 interface ICnpjForm {
-  cnpj?: IBefore;
+  cnpj?: IInfo;
   refresh: () => void;
   isOpen: boolean;
   onOpen: () => any;
   onClose: () => any;
 }
 
-export interface IBefore {
+export interface IInfo {
   id: number;
   document: string;
   data: ICardDetail[];
@@ -42,7 +42,7 @@ export const CnpjForm = ({
     if (cnpj) {
       request({
         method: "put",
-        pathParameters: "/edit-before",
+        pathParameters: "/edit-info",
         body: values,
       })
         .then(() => {
@@ -65,12 +65,12 @@ export const CnpjForm = ({
 
     request({
       method: "post",
-      pathParameters: "/create-before",
+      pathParameters: "/create-info",
       body: { ...values, id: new Date().getTime() },
     })
       .then(() => {
         toast({
-          description: "Cenário antes da Integracomm criado com sucesso!!",
+          description: "Novo CNPJ criado com sucesso!!",
           status: "success",
         });
         onClose();
@@ -96,7 +96,19 @@ export const CnpjForm = ({
       processing={processing}
     >
       <Drawer.DrawerInput title="CNPJ" name="document" />
-      <Drawer.DrawerArrayInput title="Informação" name="data" />
+      <Drawer.DrawerArrayInput
+        title="Adicionar vendas por marketplace antes da integracomm"
+        name="data"
+        label="Marketplace"
+        value="Valor R$"
+      />
+      <Drawer.DrawerArrayInput
+        title="Adicionar Chaves APIs"
+        name="api"
+        label="Plataforma"
+        value="Chave API"
+        placeholder="Bling ou Tiny"
+      />
     </Drawer>
   );
 };

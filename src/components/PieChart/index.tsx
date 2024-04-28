@@ -8,6 +8,7 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
   const colorPallete: string[] = data?.map((item: any) => {
     return item.color;
   });
+  
   const option = {
     title: {
       show: false,
@@ -37,7 +38,7 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
       {
         name: "",
         type: "pie",
-        radius: isMobile ? ["40%", "65%"] : ["34%", "55%"],
+        radius: isMobile ? ["40%", "65%"] : ["50%", "75%"],
         avoidLabelOverlap: true,
         padAngle: 5,
         itemStyle: {
@@ -56,7 +57,7 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
         },
         data: data,
         color: colorPallete,
-        center: isMobile ? ["50%", "45%"] : ["47%", "25%"],
+        center: isMobile ? ["50%", "45%"] : ["50%", "30%"],
       },
     ],
   };
@@ -106,11 +107,7 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
   };
 
   return (
-    <Flex
-      height={"8rem"}
-      display={"block"}
-      width="14rem"
-    >
+    <Flex height={"14rem"} display={"block"} width="10rem">
       {!isMobile && <ReactECharts option={option} />}
       {isMobile && <ReactECharts option={mobileOption} />}
     </Flex>

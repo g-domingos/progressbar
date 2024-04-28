@@ -1,10 +1,16 @@
-import { Flex, Input, Text } from "@chakra-ui/react";
+import { Flex, Input, Spinner, Text } from "@chakra-ui/react";
 import { GenericPage } from "../../../components/GenericPage";
 import { ICardDetail, SummaryCard } from "../../../components/SummaryCard";
 import { Tag } from "../../../components/Tag";
 import { colors } from "../../../styles/theme";
 import { PieChart } from "../../../components/PieChart";
 import { LineChart } from "../../../components/LineChart";
+import { useEffect, useState } from "react";
+import { useApi } from "../../../hooks/useApi";
+import { useParams } from "react-router-dom";
+import { IInfo } from "../../../components/CnpjForm";
+import { CiCloudOff } from "react-icons/ci";
+import { StackedLineChart } from "../../../components/StackedLineChart";
 
 const beforeMock: any = [
   {
@@ -26,29 +32,143 @@ const beforeMock: any = [
 ];
 
 export const Dashboard = () => {
+  const params = useParams();
+
+  const [cnpjs, setCnpjs] = useState<IInfo[]>([]);
+
+  const [summarybyCnpj, setSummaryByCnpj] = useState<any>([]);
+
+  const { request, processing } = useApi({ path: `/task/${params.id}` });
+
+  const fetchGeneralInfoByTask = () => {
+    request({ method: "get", pathParameters: "/info" }).then(
+      (response: IInfo[]) => {
+        const sorted = response.sort((a: IInfo, b: IInfo) => a.id - b.id);
+        setCnpjs(sorted);
+      }
+    );
+  };
+
+  const fetchSummaryByCNPJ = ({ cnpjId }: { cnpjId: string }) => {
+    request({ method: "get", pathParameters: `/sales-summary/${cnpjId}` }).then(
+      (response) => {
+        setSummaryByCnpj([...summarybyCnpj, response]);
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (!processing) {
+      fetchGeneralInfoByTask();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!cnpjs?.length || processing) return;
+
+    cnpjs.map((item: IInfo) => {
+      fetchSummaryByCNPJ({ cnpjId: String(item.id) });
+    });
+  }, [cnpjs]);
+
+  const gridTemplateColumns = "0.8fr 3fr";
+
   return (
     <GenericPage title={"Dashboard"}>
       <Flex width={"100%"} fontSize={14} flexDirection={"column"}>
         <Flex
-          borderTop={"1px solid lightgray"}
-          flex={1}
           width={"100%"}
-          padding="2px"
-          flexDirection={"column"}
-          alignItems={"center"}
-          height={"40%"}
+          display={"grid"}
+          gridTemplateColumns={gridTemplateColumns}
+          gap="1rem"
+          padding={"1rem 0"}
+          css={{ p: { marginBottom: "unset" } }}
         >
-          <Text fontWeight={700}>Como está suas vendas?</Text>
-          <Flex w={"90%"} height={"80%"}>
-            <LineChart />
+          <Flex>
+            <Text fontWeight={500}>
+              Cenário <strong>antes</strong> da <strong>Integracomm</strong>
+            </Text>
+          </Flex>
+          <Flex>
+            <Text>
+              Cenário <strong>com</strong> a{" "}
+              <strong style={{ fontSize: 14 }}>Integracomm</strong>
+            </Text>
           </Flex>
         </Flex>
-        <Flex height={"60%"} w="100%">
-          <Flex
+        <Flex
+          width={"100%"}
+          maxH={"100%"}
+          overflowY={"auto"}
+          flexDirection={"column"}
+        >
+          {processing ? (
+            <Flex
+              w="100%"
+              height={"10rem"}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Spinner />
+            </Flex>
+          ) : !summarybyCnpj.length ? (
+            <Flex
+              width={"100%"}
+              height={"100%"}
+              alignItems={"center"}
+              flexDirection={"column"}
+              opacity={"0.5"}
+              justifyContent={"center"}
+            >
+              <CiCloudOff size={30} />
+            </Flex>
+          ) : (
+            summarybyCnpj?.map((item: any, index: number) => (
+              <Flex
+                borderBottom="1px solid lightgray"
+                display={"grid"}
+                padding="1rem 0"
+                gap="1rem"
+                gridTemplateColumns={gridTemplateColumns}
+                key={index}
+              >
+                <Flex className="Antes" borderRight={"1px solid lightgray"}>
+                  <Flex transform={"scale(0.90)"}>
+                    <SummaryCard
+                      key={index}
+                      data={item?.currentCnpj?.data}
+                      document={item?.currentCnpj?.document}
+                      hideActions
+                    />
+                  </Flex>
+                </Flex>
+                <Flex className="Depois" maxH={"14rem"}>
+                  <Flex width={"40%"} justifyContent={"space-between"}>
+                    <SummaryCard
+                      key={index}
+                      data={item?.summaryData}
+                      document={item?.currentCnpj?.document}
+                      hideActions
+                    />
+                    <PieChart data={item?.summaryData} />
+                  </Flex>
+                  <Flex flex={1}>
+                    <StackedLineChart
+                      data={item?.lineChart}
+                      colors={item?.colorsByMarketPlace}
+                    />
+                  </Flex>
+                </Flex>
+              </Flex>
+            ))
+          )}
+        </Flex>
+        {/* <Flex
             flex={"1"}
             flexDirection={"column"}
             borderRight={"1px solid lightgray"}
             height={"100%"}
+            border="1px solid blue"
           >
             <Flex flexDirection={"column"}>
               <Text fontWeight={500}>
@@ -60,31 +180,47 @@ export const Dashboard = () => {
                 <Tag text={"Bling"} color="white" background={colors.bling} />
               </Flex>
             </Flex>
-            <Flex flexDirection={"column"} gap="1.3rem" overflow={"auto"}>
-              {beforeMock?.map(
-                (cnpj: { document: string; data: ICardDetail[] }) => (
-                  <Flex
-                    border={"1px solid lightgray"}
-                    padding={"20px"}
-                    borderRadius={"10px"}
-                  >
-                    <SummaryCard
-                      data={cnpj.data}
-                      document={cnpj.document}
-                      handleEdit={function () {
-                        throw new Error("Function not implemented.");
-                      }}
-                      handleDelete={function () {
-                        throw new Error("Function not implemented.");
-                      }}
-                    />
-                  </Flex>
-                )
+            <Flex
+              className="cardContainers"
+              gap="1rem"
+              w={"100%"}
+              // border="1px solid red"
+            >
+              {processing ? (
+                <Flex
+                  w="100%"
+                  height={"10rem"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
+                  <Spinner />
+                </Flex>
+              ) : cnpjs.length ? (
+                cnpjs.map((card: IInfo, index: number) => (
+                  <SummaryCard
+                    key={index}
+                    data={card.data}
+                    document={card.document}
+                    hideActions
+                  />
+                ))
+              ) : (
+                <Flex
+                  width={"100%"}
+                  height={"100%"}
+                  alignItems={"center"}
+                  flexDirection={"column"}
+                  opacity={"0.5"}
+                  justifyContent={"center"}
+                >
+                  <CiCloudOff size={30} />
+                  <Text>Ainda não há cenário cadastrado para esse cliente</Text>
+                </Flex>
               )}
             </Flex>
           </Flex>
           <Flex
-            width={"50%"}
+            width={"60%"}
             paddingLeft={"10px"}
             flexDirection={"column"}
             gap="0.2rem"
@@ -93,10 +229,10 @@ export const Dashboard = () => {
               Cenário <strong>com</strong> a{" "}
               <strong style={{ fontSize: 14 }}>Integracomm</strong>
             </Text>
-            {/* <Flex gap="0.4rem">
+            <Flex gap="0.4rem">
               <Text mb="unset">Período: </Text>
               <Input type="date" width={"20%"} height={"unset"} />
-            </Flex> */}
+            </Flex>
             <Flex gap="0.5rem">
               <Text marginBottom={"unset"}>Sistema: </Text>
               <Tag text={"Bling"} color="white" background={colors.bling} />
@@ -145,64 +281,7 @@ export const Dashboard = () => {
               </Flex>
             </Flex>
           </Flex>
-          <Flex
-            borderLeft={"1px solid lightgray"}
-            flex={"1"}
-            flexDirection={"column"}
-            paddingLeft="10px"
-          >
-            <Text fontWeight={500}>
-              Precisa falar <strong>conosco?</strong>
-            </Text>
-            <Flex
-              flexDirection={"column"}
-              css={{
-                p: {
-                  marginBottom: "unset",
-                  fontWeight: 700,
-                  padding: "3px 10px",
-                  borderRadius: "10px",
-                  transition: "0.2s ease-in-out",
-
-                  ":hover": {
-                    cursor: "pointer",
-                    background: "lightgray",
-                  },
-                },
-              }}
-            >
-              <Text>Indique & Ganhe</Text>
-              <Text>Deixe um feedback para nós</Text>
-              <Text>Financeiro / Contrato</Text>
-              <Text>Comercial</Text>
-            </Flex>
-            <Text fontWeight={500} mt="1rem">
-              Conteúdos <strong>para você</strong>
-            </Text>
-            <Flex
-              flexDirection={"column"}
-              css={{
-                p: {
-                  marginBottom: "unset",
-                  fontWeight: 700,
-                  padding: "3px 10px",
-                  borderRadius: "10px",
-                  transition: "0.2s ease-in-out",
-
-                  ":hover": {
-                    cursor: "pointer",
-                    background: "lightgray",
-                  },
-                },
-              }}
-            >
-              <Text>Blog Link 1</Text>
-              <Text>Blog Link 2</Text>
-              <Text>Blog Link 3</Text>
-              <Text>Blog Link 4</Text>
-            </Flex>
-          </Flex>
-        </Flex>
+          */}
       </Flex>
     </GenericPage>
   );
