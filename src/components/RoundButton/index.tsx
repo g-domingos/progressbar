@@ -4,8 +4,9 @@ import { MdEdit } from "react-icons/md";
 interface IRoundButton {
   handleClick: (values?: any) => void;
   icon?: React.ReactNode;
+  label?: string;
 }
-export const RoundButton = ({ icon, handleClick }: IRoundButton) => {
+export const RoundButton = ({ label, icon, handleClick }: IRoundButton) => {
   return (
     <Button
       onClick={handleClick}
@@ -22,6 +23,7 @@ export const RoundButton = ({ icon, handleClick }: IRoundButton) => {
       }}
     >
       {icon ? icon : <MdEdit />}
+      {label ? label : null}
     </Button>
   );
 };

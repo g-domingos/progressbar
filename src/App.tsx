@@ -13,8 +13,6 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { pathname } = location;
-
   const isAuthenticated = () => {
     fetchUserAttributes()
       .then(async (user) => {
@@ -31,6 +29,7 @@ function App() {
 
   useEffect(() => {
     isAuthenticated();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

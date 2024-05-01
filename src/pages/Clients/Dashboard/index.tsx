@@ -98,7 +98,7 @@ export const Dashboard = () => {
         </Flex>
         <Flex
           width={"100%"}
-          maxH={"100%"}
+          h={"100%"}
           overflowY={"auto"}
           flexDirection={"column"}
         >

@@ -103,11 +103,11 @@ export const CnpjForm = ({
         value="Valor R$"
       />
       <Drawer.DrawerArrayInput
-        title="Adicionar Chaves APIs"
+        title="Tiny - Adicionar Chaves APIs"
         name="api"
         label="Plataforma"
         value="Chave API"
-        placeholder="Bling ou Tiny"
+        placeholder="Tiny"
       />
     </Drawer>
   );
