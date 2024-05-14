@@ -1,7 +1,8 @@
-import { object, string } from "yup";
+import { mixed, object, string } from "yup";
 
 export const createUser = object({
   email: string().required("Campo obrigatório"),
+  permission: mixed(),
 });
 
 export const createCnpj = object({

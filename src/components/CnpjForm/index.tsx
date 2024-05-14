@@ -1,11 +1,14 @@
-import { Flex, useDisclosure, useToast } from "@chakra-ui/react";
+import { Text, Flex, useToast } from "@chakra-ui/react";
 import { createCnpj, createUser } from "../../forms/formValidation";
 import { useApi } from "../../hooks/useApi";
 import Drawer from "../Drawer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ICardDetail } from "../SummaryCard";
 import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
+import { RoundButton } from "../RoundButton";
+import { MdAdd } from "react-icons/md";
+import { colors } from "../../styles/theme";
 
 interface ICnpjForm {
   cnpj?: IInfo;
@@ -35,6 +38,11 @@ export const CnpjForm = ({
   });
 
   const toast = useToast();
+
+  const handleRedirectBling = () => {
+    const url = `/admin/task-settings/${params.id}/bling/${cnpj?.id}`;
+    window.open(url, "_blank");
+  };
 
   const handleSubmit = (values: any) => {
     if (processing) return;
@@ -102,8 +110,25 @@ export const CnpjForm = ({
         label="Marketplace"
         value="Valor R$"
       />
+      {cnpj && (
+        <Flex
+          w={"100%"}
+          alignItems={"center"}
+          gap="1rem"
+          justifyContent={"flex-end"}
+        >
+          <Text mb="unset" fontSize={13}>
+            Integração com o Bling
+          </Text>
+          <RoundButton
+            handleClick={handleRedirectBling}
+            icon={<MdAdd />}
+            backgroundColor={colors.bling}
+          />
+        </Flex>
+      )}
       <Drawer.DrawerArrayInput
-        title="Tiny - Adicionar Chaves APIs"
+        title="Adicionar Chaves APIs"
         name="api"
         label="Plataforma"
         value="Chave API"

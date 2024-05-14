@@ -32,6 +32,7 @@ interface IDrawerArrayInput {
   label?: string;
   value?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const DrawerArrayInput = ({
@@ -40,6 +41,7 @@ const DrawerArrayInput = ({
   label,
   value,
   placeholder,
+  disabled,
 }: IDrawerArrayInput) => {
   const {
     register,
@@ -75,7 +77,7 @@ const DrawerArrayInput = ({
           }}
           type="button"
           onClick={() =>
-            append({ name: "", value: "", id: new Date().getTime() })
+            append({ name: "Tiny", value: "", id: new Date().getTime() })
           }
           background={colors.yellow}
         >
@@ -90,6 +92,9 @@ const DrawerArrayInput = ({
               key={field?.id}
               {...register(`${name}.${index}.name`)}
               placeholder={placeholder}
+              disabled={
+                disabled || getValues(`${name}.${index}.name`) === "Bling"
+              }
             />
           </Text>
           <Text>
@@ -98,6 +103,9 @@ const DrawerArrayInput = ({
               key={field?.id}
               {...register(`${name}.${index}.value`)}
               step={"0.01"}
+              disabled={
+                disabled || getValues(`${name}.${index}.name`) === "Bling"
+              }
             />
           </Text>
           <RoundButton icon={<MdDelete />} handleClick={() => remove(index)} />

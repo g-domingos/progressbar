@@ -30,14 +30,14 @@ export const SummaryCard = ({
     handleEdit && handleEdit();
   };
 
-  const sorted = useMemo(() => {
-    return data?.sort((a: any, b: any) => a.name.localeCompare(b.name));
+  const dataMemo = useMemo(() => {
+    return data || [];
   }, [data]);
 
   return (
     <Flex
       flexDirection={"column"}
-      gap="1rem"
+      gap="0.5rem"
       w="14rem"
       height={"14rem"}
       border={"1px solid lightgray"}
@@ -79,9 +79,9 @@ export const SummaryCard = ({
         </Text>
       </Flex>
 
-      <Flex overflow={"scroll"}>
-        <Flex flexDirection={"column"} w={"100%"} gap="0.4rem">
-          {sorted.map((card: ICardDetail) => (
+      <Flex height={"100%"} overflow={"scroll"} paddingRight="6px">
+        <Flex flexDirection={"column"} w={"100%"} gap="0.4rem" h="100%">
+          {dataMemo.map((card: ICardDetail) => (
             <Flex gap="1rem" justifyContent={"space-between"}>
               <Flex>
                 <Tag

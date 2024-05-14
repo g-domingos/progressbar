@@ -96,6 +96,7 @@ export const useApi = ({ path }: IuseApi) => {
               headers: authToken
                 ? { Authorization: "Bearer " + authToken }
                 : {},
+              queryParams: queryStringParameters,
             },
           });
 

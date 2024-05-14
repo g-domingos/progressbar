@@ -26,11 +26,17 @@ import { useApi } from "../../hooks/useApi";
 export const BlingIntegration = () => {
   const location = useLocation();
   const params = useParams();
+  const navigate = useNavigate();
 
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
 
   const { request, processing } = useApi({ path: `/integration/${params.id}` });
+
+  const handleReturn = () => {
+    const url = `/admin/task-settings/${params.id}`;
+    navigate(url);
+  };
 
   const {
     register,
@@ -42,8 +48,6 @@ export const BlingIntegration = () => {
   });
 
   const toast = useToast();
-
-  const onClose = () => {};
 
   const postData = ({ values }: any) => {
     return request({
@@ -102,7 +106,7 @@ export const BlingIntegration = () => {
         toast({ description: "Integração realizada com sucesso!" });
         localStorage.setItem("apiId", "");
 
-        // navigate(`/admin/task-settings/${params.id}`);
+        navigate(`/admin/task-settings/${params.id}`);
       });
     }
   }, []);
@@ -125,21 +129,24 @@ export const BlingIntegration = () => {
           </Flex>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Flex flexDirection={"column"}>
+            <Flex flexDirection={"column"} gap="1rem" mt="1rem">
               <Flex>
                 <Flex
                   flexDirection={"column"}
                   css={{ p: { marginBottom: "unset" } }}
                 >
                   <Text>
-                    Copie e cole o link abaixo no campo "URL de Redirecionamento
-                    do App"
+                    Ao criar o aplicativo na conta do cliente, terá um campo com
+                    o nome "URL de Redirecionamento do App". Neste campo, copie
+                    e cole o link abaixo:
                   </Text>
-                  <Text>{window.location.href}</Text>
+                  <Flex alignItems={"center"}>
+                    <Text>{window.location.href}</Text>
+                    <Button onClick={() => handleCopy(window.location.href)}>
+                      <AiOutlineCopy />
+                    </Button>
+                  </Flex>
                 </Flex>
-                <Button onClick={() => handleCopy(window.location.href)}>
-                  <AiOutlineCopy />
-                </Button>
               </Flex>
               <Text>
                 Cole o Link de Convite
@@ -187,7 +194,12 @@ export const BlingIntegration = () => {
               </Text>
             </Flex>
             <Flex className="footer" justifyContent={"flex-end"}>
-              <Button variant="ghost" mr={3} onClick={onClose} type="button">
+              <Button
+                variant="ghost"
+                mr={3}
+                onClick={handleReturn}
+                type="button"
+              >
                 Cancelar
               </Button>
               <Button background={colors.yellow} type="submit">

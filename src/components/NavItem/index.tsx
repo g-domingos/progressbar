@@ -1,23 +1,30 @@
-import { Flex, Link } from "@chakra-ui/react";
+import { Box, Flex, Link } from "@chakra-ui/react";
+import { FaLock } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface INavItem {
   name: string;
   link: string;
   icon: React.ReactNode;
+  blocked?: boolean;
 }
 
-export const NavItem = ({ link, name, icon }: INavItem) => {
+export const NavItem = ({ link, name, icon, blocked }: INavItem) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const { pathname } = location;
 
   const handleClick = () => {
+    if (blocked) {
+      return;
+    }
+
     navigate(link);
   };
 
   const isSelected = pathname === link;
+
   return (
     <Flex
       onClick={handleClick}
@@ -37,9 +44,16 @@ export const NavItem = ({ link, name, icon }: INavItem) => {
         background: "#fbfb47",
         label: { cursor: "pointer" },
       }}
+      opacity={blocked ? "0.5" : "1"}
+      cursor={blocked ? "not-allowed" : "pointer"}
     >
       {icon}
       <label>{name}</label>
+      {blocked && (
+        <Box>
+          <FaLock />
+        </Box>
+      )}
     </Flex>
   );
 };

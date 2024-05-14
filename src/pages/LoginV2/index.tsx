@@ -41,11 +41,21 @@ export const LoginV2 = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const [confirmationCode, setConfirmationCode] = useState<string>("");
 
+  const redirectUser = async (user: any) => {
+    const { profile, family_name } = user;
+
+    if (profile === "ADMIN") {
+      navigate("/admin");
+    } else if (profile === "CLIENT") {
+      navigate("/clients/dashboard/" + family_name);
+    }
+  };
+
   const isUserAlreadySignedIn = async () => {
     fetchUserAttributes()
-      .then((response) => {
-        if (response.sub) {
-          navigate("/");
+      .then((user) => {
+        if (user.sub) {
+          redirectUser(user);
         }
       })
       .catch(() => {});
@@ -61,13 +71,7 @@ export const LoginV2 = () => {
         if (response.isSignedIn) {
           const user = await fetchUserAttributes();
 
-          const { profile, family_name } = user;
-
-          if (profile === "ADMIN") {
-            navigate("/admin");
-          } else if (profile === "CLIENT") {
-            navigate("/clients/dashboard/" + family_name);
-          }
+          redirectUser(user);
 
           return;
         }

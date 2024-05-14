@@ -14,10 +14,12 @@ import { useApi } from "../../hooks/useApi";
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { GeneralInfoTask } from "../GeneralInfoTask";
+import { RoundButton } from "../../components/RoundButton";
+import { useNavigate } from "react-router-dom";
+import { IoMdOpen } from "react-icons/io";
 
 export const TaskSettings = () => {
   const params = useParams();
-
   const [task, setTask] = useState<any>({});
 
   const { request, processing } = useApi({
@@ -34,10 +36,15 @@ export const TaskSettings = () => {
     fetchTask();
   }, []);
 
+  const handleOpenDash = () => {
+    window.open("/clients/dashboard/" + params.id, "_blank");
+  };
+
   return (
     <GenericPage
       title={"Configurações | " + (task?.name || "")}
       processing={processing}
+      action={<RoundButton handleClick={handleOpenDash} icon={<IoMdOpen />} />}
     >
       <Flex w={"100%"}>
         <Flex w="100%">

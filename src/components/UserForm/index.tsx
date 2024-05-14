@@ -1,8 +1,9 @@
-import { useDisclosure, useToast } from "@chakra-ui/react";
+import { Flex, useDisclosure, useToast } from "@chakra-ui/react";
 import { createUser } from "../../forms/formValidation";
 import { useApi } from "../../hooks/useApi";
 import Drawer from "../Drawer";
 import { useParams } from "react-router-dom";
+import { RadioInput } from "../RadioInput";
 
 interface IUserForm {
   user: any;
@@ -50,7 +51,18 @@ export const UserForm = ({ user, refresh }: IUserForm) => {
       onOpen={onOpen}
       processing={processing}
     >
-      <Drawer.DrawerInput title="Email" name="email" />
+      <Flex flexDirection={"column"} gap="1rem">
+        <Drawer.DrawerInput title="Email" name="email" />
+        <RadioInput
+          options={[
+            { value: "no", label: "Desabilitar Dashboard" },
+            { value: "yes", label: "Habilitar" },
+          ]}
+          name={"permission"}
+          defaultValue={"no"}
+          title={"Permissão"}
+        />
+      </Flex>
     </Drawer>
   );
 };

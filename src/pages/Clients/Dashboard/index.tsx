@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { IInfo } from "../../../components/CnpjForm";
 import { CiCloudOff } from "react-icons/ci";
 import { StackedLineChart } from "../../../components/StackedLineChart";
+import { Cenario } from "../../../components/Cenario";
 
 const beforeMock: any = [
   {
@@ -36,8 +37,6 @@ export const Dashboard = () => {
 
   const [cnpjs, setCnpjs] = useState<IInfo[]>([]);
 
-  const [summarybyCnpj, setSummaryByCnpj] = useState<any>([]);
-
   const { request, processing } = useApi({ path: `/task/${params.id}` });
 
   const fetchGeneralInfoByTask = () => {
@@ -49,27 +48,11 @@ export const Dashboard = () => {
     );
   };
 
-  const fetchSummaryByCNPJ = ({ cnpjId }: { cnpjId: string }) => {
-    request({ method: "get", pathParameters: `/sales-summary/${cnpjId}` }).then(
-      (response) => {
-        setSummaryByCnpj([...summarybyCnpj, response]);
-      }
-    );
-  };
-
   useEffect(() => {
     if (!processing) {
       fetchGeneralInfoByTask();
     }
   }, []);
-
-  useEffect(() => {
-    if (!cnpjs?.length || processing) return;
-
-    cnpjs.map((item: IInfo) => {
-      fetchSummaryByCNPJ({ cnpjId: String(item.id) });
-    });
-  }, [cnpjs]);
 
   const gridTemplateColumns = "0.8fr 3fr";
 
@@ -111,7 +94,7 @@ export const Dashboard = () => {
             >
               <Spinner />
             </Flex>
-          ) : !summarybyCnpj.length ? (
+          ) : !cnpjs.length ? (
             <Flex
               width={"100%"}
               height={"100%"}
@@ -123,43 +106,12 @@ export const Dashboard = () => {
               <CiCloudOff size={30} />
             </Flex>
           ) : (
-            summarybyCnpj?.map((item: any, index: number) => (
-              <Flex
-                borderBottom="1px solid lightgray"
-                display={"grid"}
-                padding="1rem 0"
-                gap="1rem"
+            cnpjs?.map((item: any, index: number) => (
+              <Cenario
+                cnpjId={item.id}
                 gridTemplateColumns={gridTemplateColumns}
-                key={index}
-              >
-                <Flex className="Antes" borderRight={"1px solid lightgray"}>
-                  <Flex transform={"scale(0.90)"}>
-                    <SummaryCard
-                      key={index}
-                      data={item?.currentCnpj?.data}
-                      document={item?.currentCnpj?.document}
-                      hideActions
-                    />
-                  </Flex>
-                </Flex>
-                <Flex className="Depois" maxH={"14rem"}>
-                  <Flex width={"40%"} justifyContent={"space-between"}>
-                    <SummaryCard
-                      key={index}
-                      data={item?.summaryData}
-                      document={item?.currentCnpj?.document}
-                      hideActions
-                    />
-                    <PieChart data={item?.summaryData} />
-                  </Flex>
-                  <Flex flex={1}>
-                    <StackedLineChart
-                      data={item?.lineChart}
-                      colors={item?.colorsByMarketPlace}
-                    />
-                  </Flex>
-                </Flex>
-              </Flex>
+                integrator={item?.integrator}
+              />
             ))
           )}
         </Flex>

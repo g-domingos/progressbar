@@ -82,8 +82,8 @@ export const GeneralInfoTask = () => {
             cnpjs.map((card: IInfo, index: number) => (
               <SummaryCard
                 key={index}
-                data={card.data}
-                document={card.document}
+                data={card?.data}
+                document={card?.document}
                 handleEdit={() => handleEdit({ id: card.id })}
                 handleDelete={() => handleDelete({ id: card.id })}
               />

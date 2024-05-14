@@ -16,9 +16,15 @@ function App() {
   const isAuthenticated = () => {
     fetchUserAttributes()
       .then(async (user) => {
-        const { profile, family_name } = user;
+        const { profile, family_name, given_name } = user;
 
         if (profile === "CLIENT") {
+          if (given_name === "no") {
+            navigate("/clients/progress/" + family_name);
+
+            return;
+          }
+
           navigate("/clients/dashboard/" + family_name);
         }
       })

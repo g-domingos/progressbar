@@ -9,7 +9,7 @@ export const StackedLineChart = ({
   colors: any;
 }) => {
   const marketplaceslegend: any[] = [];
-  const generatedSerie = Object.entries(data.data || {}).map(
+  const generatedSerie = Object.entries(data?.data || {}).map(
     ([ecommerce, chartData]: any) => {
       marketplaceslegend.push(ecommerce);
       return {

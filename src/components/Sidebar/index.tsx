@@ -9,6 +9,8 @@ import { FaUsers } from "react-icons/fa";
 import { signOut } from "@aws-amplify/auth";
 import { useNavigate } from "react-router";
 import { CiLogout } from "react-icons/ci";
+import { useEffect, useState } from "react";
+import { fetchUserAttributes } from "aws-amplify/auth";
 
 interface ISidebar {
   isAdmin?: boolean;
@@ -17,6 +19,14 @@ interface ISidebar {
 
 export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
   const navigate = useNavigate();
+
+  const [user, setUser] = useState<any>();
+
+  useEffect(() => {
+    fetchUserAttributes().then((userAttributes) => {
+      setUser(userAttributes);
+    });
+  }, []);
 
   const handleLogOut = async () => {
     await signOut();
@@ -68,6 +78,7 @@ export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
               name={"Dashboard"}
               link={`/clients/dashboard/${clientId}`}
               icon={<MdHome />}
+              blocked={user?.given_name === "no"}
             />
             <NavItem
               name={"Progresso"}

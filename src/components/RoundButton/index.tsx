@@ -5,14 +5,21 @@ interface IRoundButton {
   handleClick: (values?: any) => void;
   icon?: React.ReactNode;
   label?: string;
+  backgroundColor?: string;
 }
-export const RoundButton = ({ label, icon, handleClick }: IRoundButton) => {
+export const RoundButton = ({
+  backgroundColor,
+  label,
+  icon,
+  handleClick,
+}: IRoundButton) => {
   return (
     <Button
       onClick={handleClick}
       // position={"absolute"}
       // right={"0.4rem"}
       // top={"0.3rem"}
+      type="button"
       padding={"5px"}
       minW="unset"
       borderRadius={"100%"}
@@ -21,6 +28,7 @@ export const RoundButton = ({ label, icon, handleClick }: IRoundButton) => {
       _hover={{
         background: "lightgray",
       }}
+      background={backgroundColor}
     >
       {icon ? icon : <MdEdit />}
       {label ? label : null}
