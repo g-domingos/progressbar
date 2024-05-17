@@ -1,26 +1,37 @@
-import { Text, Flex, Spinner, useToast } from "@chakra-ui/react";
+import { Text, Flex, Spinner, useToast, useDisclosure } from "@chakra-ui/react";
 import { useParams } from "react-router";
 import { useApi } from "../../hooks/useApi";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UserForm } from "../../components/UserForm";
 import { CiCloudOff } from "react-icons/ci";
 import { RoundButton } from "../../components/RoundButton";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 export const Users = () => {
   const params = useParams();
   const toast = useToast();
 
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
   const { request, processing } = useApi({ path: `/task/${params.id}/users` });
 
   const [users, setUsers] = useState<any[]>([]);
 
-  const [editUser, setEditUser] = useState<any>({});
+  const [editUser, setEditUser] = useState<any>(null);
+
+  const handleCloseForm = () => {
+    setEditUser(null);
+    onClose();
+  };
 
   const retrieveUsers = () => {
     request({ method: "get" }).then((response) => {
       setUsers(response);
     });
+  };
+
+  const handleEdit = (user: any) => {
+    setEditUser(user);
   };
 
   const deleteUser = (userEmail: string) => {
@@ -47,6 +58,12 @@ export const Users = () => {
     retrieveUsers();
   }, []);
 
+  useEffect(() => {
+    if (editUser) {
+      onOpen();
+    }
+  }, [editUser]);
+
   return (
     <Flex flexDirection={"column"} w={"100%"}>
       <Flex
@@ -56,7 +73,13 @@ export const Users = () => {
         w={"100%"}
       >
         <Flex>Adicionar Usuário </Flex>
-        <UserForm user={editUser} refresh={retrieveUsers} />
+        <UserForm
+          user={editUser}
+          refresh={retrieveUsers}
+          isOpen={isOpen}
+          onClose={handleCloseForm}
+          onOpen={onOpen}
+        />
       </Flex>
       <Flex
         flexDirection={"column"}
@@ -78,6 +101,10 @@ export const Users = () => {
             >
               <Text marginBottom={"unset"}>{user.email}</Text>
               <Flex>
+                <RoundButton
+                  handleClick={() => handleEdit(user)}
+                  icon={<MdEdit />}
+                />
                 <RoundButton
                   icon={<MdDelete />}
                   handleClick={() => deleteUser(user.email)}

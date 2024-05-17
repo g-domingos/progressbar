@@ -1,31 +1,58 @@
-import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { Router } from "./Router";
 import { GlobalStyle } from "./styles/global";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Toast } from "./toast";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { fetchUserAttributes } from "@aws-amplify/auth";
+import { useApi } from "./hooks/useApi";
+import { Slice } from "./context";
 
 export const UserContext = createContext<any>(null);
 
 function App() {
   const [update, setUpdate] = useState<boolean>(false);
   const navigate = useNavigate();
-  const location = useLocation();
+
+  const { user, setUser } = useContext(Slice) as any;
+
+  const params = useParams();
+
+  const { request } = useApi({ path: `` });
+
+  const getUser = async ({
+    userId,
+    taskId,
+  }: {
+    userId: string;
+    taskId: string;
+  }) => {
+    return request({
+      method: "get",
+      pathParameters: `/task/${taskId}/users/${userId}`,
+    }).then((response: any) => {
+      setUser(response);
+      return response;
+    });
+  };
 
   const isAuthenticated = () => {
     fetchUserAttributes()
       .then(async (user) => {
-        const { profile, family_name, given_name } = user;
-
+        const { profile, family_name = "", given_name, sub = "" } = user;
         if (profile === "CLIENT") {
-          if (given_name === "no") {
-            navigate("/clients/progress/" + family_name);
-
-            return;
-          }
-
-          navigate("/clients/dashboard/" + family_name);
+          getUser({ userId: sub, taskId: family_name }).then((response) => {
+            if (response?.permission === "no") {
+              navigate("/clients/progress/" + family_name);
+            } else {
+              navigate("/clients/dashboard/" + family_name);
+            }
+          });
         }
       })
       .catch(() => {

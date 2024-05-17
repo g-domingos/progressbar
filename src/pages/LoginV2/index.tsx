@@ -15,13 +15,14 @@ import {
   resetPassword,
   signIn,
 } from "aws-amplify/auth";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { awsConfig } from "../../services/awsConfig";
 import { useApi } from "../../hooks/useApi";
 import Logo from "../../images/Logo.png";
 import { colors } from "../../styles/theme";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Slice } from "../../context";
 
 Amplify.configure(awsConfig);
 
@@ -41,6 +42,26 @@ export const LoginV2 = () => {
   const [showPass, setShowPass] = useState<boolean>(false);
   const [confirmationCode, setConfirmationCode] = useState<string>("");
 
+  const { request } = useApi({ path: `` });
+
+  const { user, setUser } = useContext(Slice) as any;
+
+  const getUser = async ({
+    userId,
+    taskId,
+  }: {
+    userId: string;
+    taskId: string;
+  }) => {
+    return request({
+      method: "get",
+      pathParameters: `/task/${taskId}/users/${userId}`,
+    }).then((response: any) => {
+      setUser(response);
+      return response;
+    });
+  };
+
   const redirectUser = async (user: any) => {
     const { profile, family_name } = user;
 
@@ -54,8 +75,15 @@ export const LoginV2 = () => {
   const isUserAlreadySignedIn = async () => {
     fetchUserAttributes()
       .then((user) => {
-        if (user.sub) {
-          redirectUser(user);
+        const { profile, family_name = "", given_name, sub = "" } = user;
+        if (profile === "CLIENT") {
+          getUser({ userId: sub, taskId: family_name }).then((response) => {
+            if (response?.permission === "no") {
+              navigate("/clients/progress/" + family_name);
+            } else {
+              navigate("/clients/dashboard/" + family_name);
+            }
+          });
         }
       })
       .catch(() => {});
@@ -71,7 +99,16 @@ export const LoginV2 = () => {
         if (response.isSignedIn) {
           const user = await fetchUserAttributes();
 
-          redirectUser(user);
+          const { profile, family_name = "", given_name, sub = "" } = user;
+          if (profile === "CLIENT") {
+            getUser({ userId: sub, taskId: family_name }).then((response) => {
+              if (response?.permission === "no") {
+                navigate("/clients/progress/" + family_name);
+              } else {
+                navigate("/clients/dashboard/" + family_name);
+              }
+            });
+          }
 
           return;
         }

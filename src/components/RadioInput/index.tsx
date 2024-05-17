@@ -36,7 +36,7 @@ export const RadioInput = ({
   }, [watch(name)]);
 
   useEffect(() => {
-    if (defaultValue) {
+    if (defaultValue && !getValues(name)) {
       setRadioValue(defaultValue);
       setValue(name, defaultValue);
     }

@@ -118,8 +118,9 @@ const DrawerArrayInput = ({
 interface IDrawerInput {
   title: string;
   name: string;
+  disabled?: boolean;
 }
-const DrawerInput = ({ name, title }: IDrawerInput) => {
+const DrawerInput = ({ name, title, disabled }: IDrawerInput) => {
   const {
     register,
     formState: { errors },
@@ -128,7 +129,7 @@ const DrawerInput = ({ name, title }: IDrawerInput) => {
   return (
     <Flex flexDirection={"column"}>
       <Text mb="unset">{title}</Text>
-      <Input {...register(name)} />
+      <Input {...register(name)} disabled={disabled} />
       {errors[name]?.message && (
         <Text color={"red"} fontSize={10}>
           {errors[name]?.message as string}
@@ -175,7 +176,13 @@ const Drawer = ({
   };
 
   const handleClose = () => {
-    methods.reset({ data: [], document: "", id: null });
+    methods.reset({
+      data: [],
+      document: "",
+      id: null,
+      email: "",
+      permission: "",
+    });
     onClose();
   };
 
