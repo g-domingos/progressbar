@@ -1,6 +1,6 @@
 import { Text, Flex, Button, Input, Tooltip, useToast } from "@chakra-ui/react";
 import { GenericPage } from "../../components/GenericPage";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { ExpandableItem } from "../../components/ExpandableItem";
 import { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";

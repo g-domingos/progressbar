@@ -1,7 +1,7 @@
 import { Text, Flex, Button, Tooltip } from "@chakra-ui/react";
 import { FaUserEdit } from "react-icons/fa";
 import { IoMdOpen } from "react-icons/io";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { useNavigate } from "react-router";
 import { IoSettingsOutline } from "react-icons/io5";
 

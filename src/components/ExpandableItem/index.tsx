@@ -1,5 +1,5 @@
 import { Text, Button, Flex, useDisclosure } from "@chakra-ui/react";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { ReactNode } from "react";
 
 interface IExpandableItem {

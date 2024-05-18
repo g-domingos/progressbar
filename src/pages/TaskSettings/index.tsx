@@ -8,7 +8,7 @@ import {
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { Users } from "../Users";
 import { useApi } from "../../hooks/useApi";
 import { useParams } from "react-router";

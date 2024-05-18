@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { MdAdd, MdDelete } from "react-icons/md";
 import { RoundButton } from "../RoundButton";
 

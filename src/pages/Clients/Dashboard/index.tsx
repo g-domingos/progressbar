@@ -2,7 +2,7 @@ import { Flex, Input, Spinner, Text } from "@chakra-ui/react";
 import { GenericPage } from "../../../components/GenericPage";
 import { ICardDetail, SummaryCard } from "../../../components/SummaryCard";
 import { Tag } from "../../../components/Tag";
-import { colors } from "../../../styles/theme";
+import colors from "../../../styles/theme";
 import { PieChart } from "../../../components/PieChart";
 import { LineChart } from "../../../components/LineChart";
 import { useEffect, useState } from "react";
@@ -115,7 +115,6 @@ export const Dashboard = () => {
             ))
           )}
         </Flex>
-        
       </Flex>
     </GenericPage>
   );

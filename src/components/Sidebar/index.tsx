@@ -4,7 +4,7 @@ import { Button, Flex } from "@chakra-ui/react";
 import { NavItem } from "../NavItem";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdHome } from "react-icons/md";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { FaUsers } from "react-icons/fa";
 import { signOut } from "@aws-amplify/auth";
 import { useNavigate } from "react-router";

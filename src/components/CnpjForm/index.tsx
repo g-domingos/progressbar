@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useFieldArray } from "react-hook-form";
 import { RoundButton } from "../RoundButton";
 import { MdAdd } from "react-icons/md";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 
 interface ICnpjForm {
   cnpj?: IInfo;

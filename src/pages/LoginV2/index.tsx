@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { awsConfig } from "../../services/awsConfig";
 import { useApi } from "../../hooks/useApi";
 import Logo from "../../images/Logo.png";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Slice } from "../../context";
 

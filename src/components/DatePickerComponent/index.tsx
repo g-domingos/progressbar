@@ -6,7 +6,8 @@ import pt from "date-fns/locale/pt-BR";
 import { BsCalendar3 } from "react-icons/bs";
 import { Text, Button, Flex, Tooltip } from "@chakra-ui/react";
 import { IoMdClose } from "react-icons/io";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
+
 import moment from "moment";
 registerLocale("pt-BR", pt);
 

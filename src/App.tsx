@@ -1,17 +1,12 @@
-import {
-  BrowserRouter,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import { Router } from "./Router";
-import { GlobalStyle } from "./styles/global";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
+import { Router } from "./Router";
 import { Toast } from "./toast";
 import { createContext, useContext, useEffect, useState } from "react";
 import { fetchUserAttributes } from "@aws-amplify/auth";
 import { useApi } from "./hooks/useApi";
 import { Slice } from "./context";
+import { GlobalStyle } from "./styles/global";
 
 export const UserContext = createContext<any>(null);
 
@@ -20,8 +15,6 @@ function App() {
   const navigate = useNavigate();
 
   const { user, setUser } = useContext(Slice) as any;
-
-  const params = useParams();
 
   const { request } = useApi({ path: `` });
 
@@ -53,7 +46,10 @@ function App() {
               navigate("/clients/dashboard/" + family_name);
             }
           });
+          return;
         }
+
+        navigate("/admin");
       })
       .catch(() => {
         navigate("/login");
@@ -68,7 +64,7 @@ function App() {
 
   return (
     <UserContext.Provider value={{ setUpdate, update }}>
-      <GlobalStyle />
+      {/* <GlobalStyle /> */}
       <Router />
       <Toast />
     </UserContext.Provider>

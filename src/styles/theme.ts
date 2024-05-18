@@ -1,4 +1,4 @@
-export const colors = {
+export default {
   yellow: "#FFFF00",
   gray: "lightgray",
   mercadolivre: "#ffe600",

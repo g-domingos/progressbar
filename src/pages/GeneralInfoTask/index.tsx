@@ -1,6 +1,6 @@
 import { Text, Flex, useDisclosure, useToast, Spinner } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { ISummaryCard, SummaryCard } from "../../components/SummaryCard";
 import { CnpjForm, IInfo } from "../../components/CnpjForm";
 import { useApi } from "../../hooks/useApi";

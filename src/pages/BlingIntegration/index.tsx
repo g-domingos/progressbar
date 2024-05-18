@@ -20,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { blingIntegrationForm } from "../../forms/formValidation";
 import { useEffect, useState } from "react";
 import { AiOutlineCopy } from "react-icons/ai";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 import { useApi } from "../../hooks/useApi";
 
 export const BlingIntegration = () => {

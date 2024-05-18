@@ -12,7 +12,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "aws:deploy": "aws s3 sync dist/  s3://progressbar-integracomm-app --profile integracomm",
-    "full:deploy": "tsc && vite build && aws s3 sync dist/  s3://progressbar-integracomm-app --profile integracomm"
+    "full:deploy": "env-cmd -f .env.development npm run build && aws s3 sync dist/  s3://progressbar-integracomm-app --profile integracomm && aws cloudfront create-invalidation --distribution-id EH788YA5P3IXT --paths /* --aws-profile integracomm"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.2",

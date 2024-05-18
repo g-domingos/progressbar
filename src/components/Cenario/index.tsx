@@ -7,7 +7,7 @@ import { useApi } from "../../hooks/useApi";
 import { useParams } from "react-router-dom";
 import { DatePickerComponent } from "../DatePickerComponent";
 import { Tag } from "../Tag";
-import { colors } from "../../styles/theme";
+import colors from "../../styles/theme";
 
 interface ICenario {
   cnpjId: string;
