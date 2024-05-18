@@ -1,5 +1,5 @@
 import { GenericPage } from "../../components/GenericPage";
-import { Flex } from "@chakra-ui/layout";
+import { Text, Flex } from "@chakra-ui/layout";
 import {
   Tab,
   TabIndicator,
@@ -44,7 +44,12 @@ export const TaskSettings = () => {
     <GenericPage
       title={"Configurações | " + (task?.name || "")}
       processing={processing}
-      action={<RoundButton handleClick={handleOpenDash} icon={<IoMdOpen />} />}
+      action={
+        <Flex alignItems={"center"} justifyContent={"center"}>
+          <Text mb="unset">Dashboard</Text>
+          <RoundButton handleClick={handleOpenDash} icon={<IoMdOpen />} />
+        </Flex>
+      }
     >
       <Flex w={"100%"}>
         <Flex w="100%">

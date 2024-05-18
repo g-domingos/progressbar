@@ -17,11 +17,13 @@ export interface ISummaryCard {
   handleEdit?: () => any;
   handleDelete?: () => any;
   hideActions?: boolean;
+  extraInfo?: string;
 }
 
 export const SummaryCard = ({
   data,
   document,
+  extraInfo,
   handleEdit,
   handleDelete,
   hideActions,
@@ -70,13 +72,14 @@ export const SummaryCard = ({
           />
         </Flex>
       )}
-      <Flex flexDirection={"column"}>
-        <Text fontSize={12} marginBottom={"unset"} fontWeight={600}>
+      <Flex flexDirection={"column"} fontSize={12}>
+        <Text marginBottom={"unset"} fontWeight={600}>
           CNPJ:
         </Text>
-        <Text marginBottom={"unset"} fontWeight={600}>
+        <Text marginBottom={"unset"} fontWeight={600} fontSize={13}>
           {document}
         </Text>
+        <Text>{extraInfo}</Text>
       </Flex>
 
       <Flex height={"100%"} overflow={"scroll"} paddingRight="6px">

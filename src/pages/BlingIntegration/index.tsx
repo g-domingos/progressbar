@@ -135,10 +135,17 @@ export const BlingIntegration = () => {
                   flexDirection={"column"}
                   css={{ p: { marginBottom: "unset" } }}
                 >
+                  <Text>Passo a passo:</Text>
                   <Text>
-                    Ao criar o aplicativo na conta do cliente, terá um campo com
-                    o nome "URL de Redirecionamento do App". Neste campo, copie
-                    e cole o link abaixo:
+                    1º - Com essa guia aberta, entre na conta Bling do cliente.
+                  </Text>
+                  <Text>
+                    2º - Crie um aplicativo.
+                  </Text>
+                  <Text>
+                    3º - Ao criar o aplicativo, terá um
+                    campo com o nome "URL de Redirecionamento do App". Neste
+                    campo, copie e cole o link abaixo:
                   </Text>
                   <Flex alignItems={"center"}>
                     <Text>{window.location.href}</Text>

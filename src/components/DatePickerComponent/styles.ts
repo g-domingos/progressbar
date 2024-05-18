@@ -3,6 +3,8 @@ import styled from "styled-components";
 export const Container = styled.div`
   z-index: 2;
   position: relative;
+  display: flex;
+  gap: 1rem;
 `;
 
 export const DateContainer = styled.div`
@@ -14,7 +16,6 @@ export const DateContainer = styled.div`
   }
 
   .react-datepicker__navigation {
-
     span {
       color: black;
     }

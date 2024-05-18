@@ -83,6 +83,7 @@ export const GeneralInfoTask = () => {
               <SummaryCard
                 key={index}
                 data={card?.data}
+                extraInfo={card?.extraInfo}
                 document={card?.document}
                 handleEdit={() => handleEdit({ id: card.id })}
                 handleDelete={() => handleDelete({ id: card.id })}

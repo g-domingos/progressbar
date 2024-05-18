@@ -12,7 +12,7 @@ interface IuseApi {
 
 interface IHTTPRequest {
   method: "get" | "post" | "put" | "del";
-  queryStringParameters?: Record<string, string> | undefined;
+  queryStringParameters?: Record<string, string> | undefined | any;
   pathParameters?: string | undefined;
   body?: any;
   headers?: any;

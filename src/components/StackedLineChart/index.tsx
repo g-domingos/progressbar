@@ -1,12 +1,15 @@
-import { Flex } from "@chakra-ui/react";
+import { Text, Flex, Spinner } from "@chakra-ui/react";
 import ReactECharts from "echarts-for-react";
+import { CiCloudOff } from "react-icons/ci";
 
 export const StackedLineChart = ({
   data,
+  processing,
   colors,
 }: {
   data: { xAxis: any[]; data: any[] };
   colors: any;
+  processing?: boolean;
 }) => {
   const marketplaceslegend: any[] = [];
   const generatedSerie = Object.entries(data?.data || {}).map(
@@ -57,8 +60,8 @@ export const StackedLineChart = ({
     },
     grid: {
       left: "3%",
-      right: "1%",
-      bottom: "30%",
+      right: "6%",
+      bottom: "35%",
       containLabel: true,
     },
     xAxis: [
@@ -78,7 +81,32 @@ export const StackedLineChart = ({
 
   return (
     <Flex height={"100%"} display={"block"} width="100%">
-      <ReactECharts option={option} />
+      {processing ? (
+        <Flex
+          w="100%"
+          height={"100%"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          opacity={"0.6"}
+        >
+          <Spinner />
+        </Flex>
+      ) : !generatedSerie.length ? (
+        <Flex
+          w="100%"
+          height={"100%"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          opacity={"0.6"}
+        >
+          <Flex flexDirection={"column"} alignItems={"center"}>
+            <CiCloudOff size={30} />
+            <Text>Não há dados para o período selecionado.</Text>
+          </Flex>
+        </Flex>
+      ) : (
+        <ReactECharts option={option} />
+      )}
       {/* {isMobile && <ReactECharts option={mobileOption} />} */}
     </Flex>
   );

@@ -32,6 +32,7 @@ interface IDrawerArrayInput {
   label?: string;
   value?: string;
   placeholder?: string;
+  valueType?: string;
   disabled?: boolean;
 }
 
@@ -40,8 +41,9 @@ const DrawerArrayInput = ({
   title,
   label,
   value,
-  placeholder,
+  placeholder = "",
   disabled,
+  valueType,
 }: IDrawerArrayInput) => {
   const {
     register,
@@ -77,7 +79,7 @@ const DrawerArrayInput = ({
           }}
           type="button"
           onClick={() =>
-            append({ name: "Tiny", value: "", id: new Date().getTime() })
+            append({ name: placeholder, value: "", id: new Date().getTime() })
           }
           background={colors.yellow}
         >
@@ -102,6 +104,7 @@ const DrawerArrayInput = ({
             <Input
               key={field?.id}
               {...register(`${name}.${index}.value`)}
+              type={valueType || undefined}
               step={"0.01"}
               disabled={
                 disabled || getValues(`${name}.${index}.name`) === "Bling"

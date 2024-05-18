@@ -244,6 +244,7 @@ export const Clients = () => {
           <div>
             <Title>TAREFAS CONCLUÍDAS</Title>
             <MenuContainer>
+              <DatePickerComponent request={fetchConcludedSubtasks} />
               <OverlayTrigger
                 overlay={
                   <div
@@ -287,8 +288,6 @@ export const Clients = () => {
                   <FaSortAmountDown size={13} />
                 </button>
               </OverlayTrigger>
-
-              <DatePickerComponent request={fetchConcludedSubtasks} />
             </MenuContainer>
             <TasksContainer>
               {processing.concluded || processing.ongoing ? (

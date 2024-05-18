@@ -22,6 +22,7 @@ export interface IInfo {
   id: number;
   document: string;
   data: ICardDetail[];
+  extraInfo?: string;
 }
 
 export const CnpjForm = ({
@@ -44,8 +45,22 @@ export const CnpjForm = ({
     window.open(url, "_blank");
   };
 
+  const convert = (value: string) => {
+    return btoa(value);
+  };
+
   const handleSubmit = (values: any) => {
     if (processing) return;
+
+    if (values.api) {
+      const encrypted = (values.api || []).map(
+        (item: { name: string; value: string; id: number }) => {
+          return { ...item, value: convert(item.value) };
+        }
+      );
+
+      values.api = encrypted;
+    }
 
     if (cnpj) {
       request({
@@ -104,11 +119,13 @@ export const CnpjForm = ({
       processing={processing}
     >
       <Drawer.DrawerInput title="CNPJ" name="document" />
+      <Drawer.DrawerInput title="Informações Gerais" name="extraInfo" />
       <Drawer.DrawerArrayInput
         title="Adicionar vendas por marketplace antes da integracomm"
         name="data"
         label="Marketplace"
         value="Valor R$"
+        valueType="number"
       />
       {cnpj && (
         <Flex
@@ -132,7 +149,12 @@ export const CnpjForm = ({
         name="api"
         label="Plataforma"
         value="Chave API"
-        placeholder="Tiny"
+      />
+      <Drawer.DrawerArrayInput
+        title="Mapear nome de lojas (Bling)"
+        name="stores"
+        label="ID da Loja no Bling"
+        value="Nome da Loja"
       />
     </Drawer>
   );

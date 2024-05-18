@@ -84,7 +84,10 @@ export const LoginV2 = () => {
               navigate("/clients/dashboard/" + family_name);
             }
           });
+          return;
         }
+
+        navigate("/admin");
       })
       .catch(() => {});
   };
@@ -107,9 +110,11 @@ export const LoginV2 = () => {
               } else {
                 navigate("/clients/dashboard/" + family_name);
               }
+              return;
             });
           }
 
+          navigate("/admin");
           return;
         }
 
