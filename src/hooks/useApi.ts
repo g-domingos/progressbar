@@ -80,7 +80,6 @@ export const useApi = ({ path }: IuseApi) => {
           setProcessing(false);
           return response.body.json() as any;
         } catch (error: any) {
-          console.log("ERRO AQUI ", error);
           setProcessing(false);
           throw new Error(error.message);
         }

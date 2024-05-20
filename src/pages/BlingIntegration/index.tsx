@@ -57,9 +57,7 @@ export const BlingIntegration = () => {
     });
   };
 
-  const postBlingCode = ({ values }: any) => {
-    return request({ method: "post", body: values });
-  };
+
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -80,6 +78,8 @@ export const BlingIntegration = () => {
 
     delete values.clientId;
     delete values.clientSecret;
+
+
 
     postData({ values }).then((response) => {
       toast({ description: "Salvo com sucesso!" });
@@ -103,9 +103,12 @@ export const BlingIntegration = () => {
         body: { code },
         queryStringParameters: { apiId, cnpjId },
       }).then((response) => {
-        toast({ description: "Integração realizada com sucesso!" });
+        toast({ description: "Integração realizada com sucesso!", status: "success" });
         localStorage.setItem("apiId", "");
 
+        navigate(`/admin/task-settings/${params.id}`);
+      }).catch((errors: any) => {
+        toast({ description: "Erro ao integrar com Bling!", status: "error" });
         navigate(`/admin/task-settings/${params.id}`);
       });
     }
@@ -147,6 +150,7 @@ export const BlingIntegration = () => {
                     campo com o nome "URL de Redirecionamento do App". Neste
                     campo, copie e cole o link abaixo:
                   </Text>
+                  <Text>4º - <strong>ATENÇÃO</strong> - Antes de clicar no botão Salvar abaixo, certifique-se de salvar o aplicativo do Bling! </Text>
                   <Flex alignItems={"center"}>
                     <Text>{window.location.href}</Text>
                     <Button onClick={() => handleCopy(window.location.href)}>
@@ -155,20 +159,7 @@ export const BlingIntegration = () => {
                   </Flex>
                 </Flex>
               </Flex>
-              <Text>
-                Cole o Link de Convite
-                <Input {...register("inviteLink")} />
-                {errors["inviteLink"] && (
-                  <Text
-                    fontSize={12}
-                    color="red"
-                    mb="unset"
-                    paddingLeft={"10px"}
-                  >
-                    {errors?.["inviteLink"].message as any}
-                  </Text>
-                )}
-              </Text>
+
 
               <Text>
                 Insira o Client Id
@@ -196,6 +187,20 @@ export const BlingIntegration = () => {
                     paddingLeft={"10px"}
                   >
                     {errors?.["clientSecret"].message as any}
+                  </Text>
+                )}
+              </Text>
+              <Text>
+                Cole o Link de Convite
+                <Input {...register("inviteLink")} />
+                {errors["inviteLink"] && (
+                  <Text
+                    fontSize={12}
+                    color="red"
+                    mb="unset"
+                    paddingLeft={"10px"}
+                  >
+                    {errors?.["inviteLink"].message as any}
                   </Text>
                 )}
               </Text>

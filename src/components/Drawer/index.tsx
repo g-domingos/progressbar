@@ -174,7 +174,7 @@ const Drawer = ({
   });
 
   const submitForm = (values: any) => {
-    handleSubmit(values);
+    handleSubmit(values, methods.formState.dirtyFields);
     methods.reset();
   };
 

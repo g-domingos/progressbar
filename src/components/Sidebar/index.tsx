@@ -39,12 +39,12 @@ export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
       {isAdmin ? (
         <>
           <Flex flexDirection={"column"} gap="0.2rem">
-            <NavItem name={"Início"} link={"/admin"} icon={<MdHome />} />
             <NavItem
-              name={"Clientes"}
+              name={"Início"}
               link={"/admin/clients"}
               icon={<FaUsers />}
             />
+            <NavItem name={"Implantação"} link={"/admin"} icon={<MdHome />} />
           </Flex>
           <Flex flexDirection={"column"}>
             <NavItem

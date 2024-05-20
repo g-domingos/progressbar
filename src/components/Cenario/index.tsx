@@ -22,6 +22,7 @@ export const Cenario = ({
 }: ICenario) => {
   const [data, setData] = useState<any>({});
 
+
   const params = useParams();
 
   const { request, processing } = useApi({ path: `/task/${params.id}` });
@@ -43,7 +44,7 @@ export const Cenario = ({
     defaultDate()
   );
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const fetchSummaryByCNPJ = async ({
     minDate,
@@ -89,6 +90,25 @@ export const Cenario = ({
     }
   }, [cnpjId]);
 
+  const [height, setHeight] = useState<number>(0);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setHeight(Math.random())
+      }
+    };
+
+    // Add event listener for visibility change
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+
   return (
     <Flex
       borderBottom="1px solid lightgray"
@@ -97,11 +117,12 @@ export const Cenario = ({
       gap="1rem"
       position={"relative"}
       gridTemplateColumns={gridTemplateColumns}
+      height={256 + height}
     >
       <Flex position={"absolute"}>
         <Tag
-          text={data?.currentCnpj?.integrator}
-          background={renderBackgroundColor(data?.currentCnpj?.integrator)}
+          text={integrator}
+          background={renderBackgroundColor(integrator)}
           color="white"
         />
       </Flex>
@@ -139,6 +160,7 @@ export const Cenario = ({
             <DatePickerComponent
               request={fetchSummaryByCNPJ}
               defaultDates={defaultInitialDate}
+              hideClearButton
             />
           </Flex>
           <StackedLineChart

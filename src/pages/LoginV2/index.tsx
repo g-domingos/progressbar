@@ -66,7 +66,7 @@ export const LoginV2 = () => {
     const { profile, family_name } = user;
 
     if (profile === "ADMIN") {
-      navigate("/admin");
+      navigate("/admin/clients");
     } else if (profile === "CLIENT") {
       navigate("/clients/dashboard/" + family_name);
     }
@@ -87,7 +87,7 @@ export const LoginV2 = () => {
           return;
         }
 
-        navigate("/admin");
+        navigate("/admin/clients");
       })
       .catch(() => {});
   };
@@ -114,7 +114,7 @@ export const LoginV2 = () => {
             });
           }
 
-          navigate("/admin");
+          navigate("/admin/clients");
           return;
         }
 
@@ -262,7 +262,7 @@ export const LoginV2 = () => {
         </Button>
 
         {error && <Text color={"red"}>{error}</Text>}
-        <Flex flexDirection={"column"} gap="0.5rem">
+        {/* <Flex flexDirection={"column"} gap="0.5rem">
           <Flex
             onClick={() => setLoginStage("CONFIRM-EMAIL")}
             width={"100%"}
@@ -272,7 +272,7 @@ export const LoginV2 = () => {
           >
             <Text>Esqueci a senha</Text>
           </Flex>
-        </Flex>
+        </Flex> */}
       </Flex>
     );
   };

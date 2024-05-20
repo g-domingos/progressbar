@@ -6,30 +6,23 @@ import {
   CardTask,
   Circle,
   HistoryDate,
-  InputContainer,
   LabelContainer,
   Legend,
   MainDiv,
-  NoData,
-  SessionContainer,
-  SessionsHistoryContainer,
   Span,
   SpinnerDiv,
   TaskContainer,
   TaskLabel,
   TextBox,
-  TitleContainer,
 } from "./styles";
-import { TfiSearch } from "react-icons/tfi";
 import { BsNut } from "react-icons/bs";
-import { CiCloudOff } from "react-icons/ci";
 import Spinner from "react-bootstrap/Spinner";
 import { isMobile } from "react-device-detect";
 import { url } from "../../env";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { UserContext } from "../../App";
-import { format, parseISO } from "date-fns";
 import { MessagesModal } from "../../components/MessagesModal";
+import { useApi } from "../../hooks/useApi";
 
 export const Home = () => {
   const [statuses, setStatuses] = useState<any>();
@@ -51,17 +44,13 @@ export const Home = () => {
   let taskId = pathname.split("/").slice(2)[0];
   const { setUpdate, update } = useContext(UserContext);
 
-  function formatDate(inputDate: string) {
-    const parsedDate = parseISO(inputDate);
-    const formattedDate = format(parsedDate, "dd/MM/yyyy");
-    return formattedDate;
-  }
+
+  const { request } = useApi({ path: "" })
 
   const getHistory = () => {
-    axios
-      .get(url.ENDPOINT + `/history/${taskId}`)
+    request({ method: "get", pathParameters: `/history/${taskId}` })
       .then((response) => {
-        setHistory(JSON.parse(response.data.body));
+        setHistory(response)
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
@@ -69,37 +58,29 @@ export const Home = () => {
 
   const getStatusesList = () => {
     setProcessing(true);
-    axios
-      .get(url.ENDPOINT + "/statuses")
-      .then((response) => {
-        setStatuses(response.data.body);
-        setProcessing(false);
-      })
+    request({ method: "get", pathParameters: "/statuses" }).then((response) => {
+      setStatuses(response);
+      setProcessing(false);
+    })
       .catch((err: any) => console.log(err));
   };
 
   const getSessionsHistory = () => {
     setProcessing(true);
-    axios
-      .get(
-        url.ENDPOINT +
-          `/client/sessions?phone=${task?.phone}&name=${task?.name}`
-      )
-      .then((response) => {
-        const parsedResponse = JSON.parse(response.data.body);
-        setSessions(parsedResponse);
-        setProcessing(false);
-      })
+
+    request({ method: "get", pathParameters: `/client/sessions?phone=${task?.phone}&name=${task?.name}` }).then((response) => {
+      setSessions(response);
+      setProcessing(false);
+    })
       .catch((err: any) => console.log(err));
   };
 
   const getStatusByClient = () => {
-    axios
-      .get(url.ENDPOINT + `/task/${taskId}`)
-      .then((response) => {
-        setTask(JSON.parse(response.data.body));
-        setProcessing(false);
-      })
+
+    request({ method: "get", pathParameters: `/task/${taskId}` }).then((response) => {
+      setTask(response);
+      setProcessing(false);
+    })
       .catch((err: any) => console.log(err));
   };
 
@@ -373,52 +354,32 @@ export const Home = () => {
                       color={
                         item.orderindex === task?.orderIndex
                           ? isLate({
-                              dueDate: task?.due_date,
-                              dateConcluded: new Date().getTime(),
-                            })
+                            dueDate: task?.due_date,
+                            dateConcluded: new Date().getTime(),
+                          })
                           : isLate({
-                              dueDate: history?.filter(
-                                (hist: any) =>
-                                  hist.orderIndex === item.orderindex
-                              )[0]?.due_date,
-                              dateConcluded: history?.filter(
-                                (hist: any) =>
-                                  hist.orderIndex === item.orderindex
-                              )[0]?.date_concluded,
-                            })
+                            dueDate: history?.filter(
+                              (hist: any) =>
+                                hist.orderIndex === item.orderindex
+                            )[0]?.due_date,
+                            dateConcluded: history?.filter(
+                              (hist: any) =>
+                                hist.orderIndex === item.orderindex
+                            )[0]?.date_concluded,
+                          })
                       }
                     >
                       {item.orderindex === task?.orderIndex
                         ? dateFormatter(task?.due_date)
                         : dateFormatter(
-                            history?.[item.orderindex]?.date_conclusion
-                          )}
+                          history?.[item.orderindex]?.date_conclusion
+                        )}
                     </HistoryDate>
                   )}
                 </div>
               ))}
           </LabelContainer>
-          {/* <LegendTwo>
-            <div>
-              <span style={{ backgroundColor: "#ff1317" }}></span>
-              <label>Em atraso</label>
-              <span style={{ backgroundColor: "#00e408" }}></span>
-              <label>Dentro do Prazo</label>
-            </div>
-          </LegendTwo> */}
         </>
-      )}
-      <Button onClick={() => handleShowSessionsHistory()}>
-        {!showSessionHistory ? <IoIosArrowDown /> : <IoIosArrowUp />}
-        ATENDIMENTOS
-      </Button>
-
-      {showSessionHistory && (
-        <MessagesModal
-          show={showSessionHistory}
-          handleClose={() => setShowSessionHistory(false)}
-          sessions={sessions}
-        />
       )}
     </MainDiv>
   );

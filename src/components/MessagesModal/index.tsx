@@ -20,40 +20,30 @@ import { url } from "../../env";
 import { useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "../LoadingSpinning";
 import { CiCloudOff } from "react-icons/ci";
+import { useApi } from "../../hooks/useApi";
+import { Flex, Spinner } from "@chakra-ui/react";
 
 interface MessagesModalInterface {
   show: boolean;
-  handleClose: () => any;
   sessions: any[];
+  processingSession?: boolean;
 }
 
 export const MessagesModal = ({
   show,
-  handleClose,
   sessions,
+  processingSession
 }: MessagesModalInterface) => {
   const [messages, setMessages] = useState<any>();
-  const [processing, setProcessing] = useState<boolean>(false);
 
   const ref = useRef<any>();
+
+  const { request, processing } = useApi({ path: `` })
 
   function formatDate(inputDate: string) {
     return new Date(inputDate).toLocaleString();
   }
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleClickOutside = (event: any) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      handleClose();
-    }
-  };
 
   const getMessagesFromSession = ({
     created_at,
@@ -64,17 +54,10 @@ export const MessagesModal = ({
     session_id: string;
     finished_at: string;
   }) => {
-    setProcessing(true);
-    axios
-      .get(
-        url.ENDPOINT +
-          `/client/sessions/messages?created_at=${created_at}&session_id=${session_id}&finished_at=${finished_at}`
-      )
-      .then((response) => {
-        setMessages(JSON.parse(response.data.body));
-      })
+    request({ method: "get", pathParameters: `/client/sessions/messages?created_at=${created_at}&session_id=${session_id}&finished_at=${finished_at}` }).then((response) => {
+      setMessages(response);
+    })
       .catch((err: any) => console.log(err))
-      .finally(() => setProcessing(false));
   };
 
   const renderMessageContent = (
@@ -110,7 +93,7 @@ export const MessagesModal = ({
             onClick={() =>
               window.open(
                 "https://integracomm.syngoo-talk.app/config/storage/view/" +
-                  storage_id,
+                storage_id,
                 "_blank"
               )
             }
@@ -133,77 +116,83 @@ export const MessagesModal = ({
   });
 
   return (
-    // <Modal show={show} size="xl">
     <Container ref={ref}>
-      <label>Histórico de Atendimento</label>
-      {!!sessions?.length ? (
-        <AgentsContainer>
-          <LeftSide>
-            {(sessions || [])?.map((item, index) => (
-              <Employee
-                key={index}
-                selected={employeeSelected.name === item.name}
-                onClick={() => {
-                  setEmployeeSelected(item);
-                  setMessages("");
-                }}
-              >
-                <label>{item.name}</label>
-              </Employee>
-            ))}
-          </LeftSide>
-          {processing ? (
-            <LoadingDiv>
-              <LoadingSpinner />
-            </LoadingDiv>
-          ) : (
-            <RightSide>
-              {!messages?.length ? (
-                employeeSelected?.result?.map((msgs: any, index: number) => (
-                  <Sessions
+      {processingSession ? <Flex><Spinner /></Flex> :
+
+
+
+        <>
+
+          <label>Histórico de Atendimento</label>
+          {!!sessions?.length ? (
+            <AgentsContainer>
+              <LeftSide>
+                {(sessions || [])?.map((item, index) => (
+                  <Employee
                     key={index}
-                    onClick={() => getMessagesFromSession({ ...msgs })}
+                    selected={employeeSelected.name === item.name}
+                    onClick={() => {
+                      setEmployeeSelected(item);
+                      setMessages("");
+                    }}
                   >
-                    <strong>{formatDate(msgs?.created_at)}</strong>- Atendente
-                    Integracomm : {(msgs?.agent_name || "").toUpperCase()}
-                  </Sessions>
-                ))
+                    <label>{item.name}</label>
+                  </Employee>
+                ))}
+              </LeftSide>
+              {processing ? (
+                <LoadingDiv>
+                  <LoadingSpinner />
+                </LoadingDiv>
               ) : (
-                <>
-                  <Header>
-                    Mensagens da Sessão -{" "}
-                    {formatDate(messages?.[0].created_at) || ""}
-                    <button onClick={() => setMessages([])}>
-                      <IoReturnUpBack size={20} />
-                    </button>
-                  </Header>
-                  {messages?.map((msg: any, index: number) => (
-                    <MessageContainer
-                      isClient={msg.origin === "channel"}
-                      key={index}
-                    >
-                      <Message isClient={msg.origin === "channel"}>
-                        {renderMessageContent(
-                          msg.type,
-                          msg.message,
-                          msg.storage_id
-                        )}
-                        <span>{formatDate(msg.created_at)}</span>
-                      </Message>
-                    </MessageContainer>
-                  ))}
-                </>
+                <RightSide>
+                  {!messages?.length ? (
+                    employeeSelected?.result?.map((msgs: any, index: number) => (
+                      <Sessions
+                        key={index}
+                        onClick={() => getMessagesFromSession({ ...msgs })}
+                      >
+                        <strong>{formatDate(msgs?.created_at)}</strong>- Atendente
+                        Integracomm : {(msgs?.agent_name || "").toUpperCase()}
+                      </Sessions>
+                    ))
+                  ) : (
+                    <>
+                      <Header>
+                        Mensagens da Sessão -{" "}
+                        {formatDate(messages?.[0].created_at) || ""}
+                        <button onClick={() => setMessages([])}>
+                          <IoReturnUpBack size={20} />
+                        </button>
+                      </Header>
+                      {messages?.map((msg: any, index: number) => (
+                        <MessageContainer
+                          isClient={msg.origin === "channel"}
+                          key={index}
+                        >
+                          <Message isClient={msg.origin === "channel"}>
+                            {renderMessageContent(
+                              msg.type,
+                              msg.message,
+                              msg.storage_id
+                            )}
+                            <span>{formatDate(msg.created_at)}</span>
+                          </Message>
+                        </MessageContainer>
+                      ))}
+                    </>
+                  )}
+                </RightSide>
               )}
-            </RightSide>
+            </AgentsContainer>
+          ) : (
+            <Empty>
+              <CiCloudOff size={40} />
+              <label>Não há dados a serem mostrados</label>
+            </Empty>
           )}
-        </AgentsContainer>
-      ) : (
-        <Empty>
-          <CiCloudOff size={40} />
-          <label>Não há dados a serem mostrados</label>
-        </Empty>
-      )}
+        </>
+      }
     </Container>
-    // </Modal>
   );
 };

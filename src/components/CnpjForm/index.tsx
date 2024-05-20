@@ -49,13 +49,20 @@ export const CnpjForm = ({
     return btoa(value);
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: any, dirtyFields: any) => {
     if (processing) return;
+
+    console.log(dirtyFields)
 
     if (values.api) {
       const encrypted = (values.api || []).map(
-        (item: { name: string; value: string; id: number }) => {
-          return { ...item, value: convert(item.value) };
+        (item: { name: string; value: string; id: number; encrypted: boolean }) => {
+
+          if (item.encrypted || item.name === "Bling") {
+            return item
+          }
+
+          return { ...item, value: convert(item.value), encrypted: true };
         }
       );
 
@@ -66,7 +73,7 @@ export const CnpjForm = ({
       request({
         method: "put",
         pathParameters: "/edit-info",
-        body: values,
+        body: { values, dirtyFields },
       })
         .then(() => {
           toast({

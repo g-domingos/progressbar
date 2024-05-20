@@ -8,7 +8,7 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
   const colorPallete: string[] = data?.map((item: any) => {
     return item.color;
   });
-  
+
   const option = {
     title: {
       show: false,
@@ -105,6 +105,7 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
       },
     ],
   };
+
 
   return (
     <Flex height={"14rem"} display={"block"} width="10rem">

@@ -14,11 +14,13 @@ registerLocale("pt-BR", pt);
 interface IDatePickerComponent {
   request: (values: any) => void;
   defaultDates?: { minDate: number; maxDate: number };
+  hideClearButton?: boolean
 }
 
 export const DatePickerComponent = ({
   request,
   defaultDates,
+  hideClearButton
 }: IDatePickerComponent) => {
   const [show, setShow] = useState<boolean>(false);
   const [startDate, setStartDate] = useState<any>();
@@ -119,7 +121,7 @@ export const DatePickerComponent = ({
             <Text>-</Text>
             <Text>{`${formatDate(endDate)}`}</Text>
           </Flex>
-          <Button
+          {!hideClearButton && <Button
             onClick={handleClear}
             border="none"
             borderRadius={"100%"}
@@ -133,7 +135,7 @@ export const DatePickerComponent = ({
             }}
           >
             <IoMdClose />
-          </Button>
+          </Button>}
         </Flex>
       ) : (
         <Flex height={"20px"}></Flex>

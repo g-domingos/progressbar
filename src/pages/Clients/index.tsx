@@ -1,6 +1,4 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { url } from "../../env";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import {
   ColumnsDivs,
@@ -36,15 +34,13 @@ export const Clients = () => {
   const params = useParams();
   const taskId = params?.id;
 
-  const subtasksQuantityperPage = 20;
+  const subtasksQuantityperPage = 10;
 
   const [shouldReverseOrder, setShouldReverseOrder] = useState<boolean>(false);
 
   const [subtasksQuantityToDisplay, setSubtasksQuantityToDisplay] =
     useState<number>(20);
 
-  const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
-  const [sessions, setSessions] = useState<any>([]);
   const [processing, setProcessing] = useState<{
     concluded: boolean;
     ongoing: boolean;
@@ -56,77 +52,46 @@ export const Clients = () => {
     session: false,
     subtask: false,
   });
-  const [task, setTask] = useState<any>();
 
   const [concludedTask, setConcludedTask] = useState<any>();
   const [onGoingTask, setOnGoingTask] = useState<any>();
 
   const [subtaskDetail, setSubtaskDetail] = useState<any>();
   const [showDetails, setShowDetails] = useState<any>({ id: "", status: "" });
-  const { setUpdate, update } = useContext(UserContext);
+  const { setUpdate } = useContext(UserContext);
 
-  const getSessionsHistory = () => {
-    setProcessing({ ...processing, session: true });
-    axios
-      .get(
-        url.ENDPOINT +
-          `/client/sessions?phone=${concludedTask?.phone}&name=${concludedTask?.name}`
-      )
-      .then((response) => {
-        const parsedResponse = JSON.parse(response.data.body);
-        setSessions(parsedResponse);
-        setProcessing({ ...processing, session: false });
-      })
-      .catch((err: any) => console.log(err));
-  };
 
-  const fetchSubtask = (subtaskId: string) => {
-    const urlLink = url.ENDPOINT + "/clients/tasks/" + subtaskId;
-    setProcessing({ ...processing, subtask: true });
-    axios
-      .get(urlLink, { params: { dev: true } })
-      .then((response: any) => {
-        setSubtaskDetail(JSON.parse(response.data.body));
-        setProcessing({ ...processing, subtask: false });
-      })
-      .catch((err: any) => console.log(err));
-  };
+  const { request, processing: processingGetSubtask } = useApi({ path: "" })
 
   const fetchConcludedSubtasks = (queryStringParameters?: any) => {
     setProcessing({ ...processing, concluded: true });
-    const urlLink = url.ENDPOINT + "/clients/tasks/" + taskId;
-    axios
-      .get(urlLink, {
-        params: {
-          taskStatus: "true",
-          ...(queryStringParameters || {}),
-        },
-      })
-      .then((response: any) => {
-        setConcludedTask(JSON.parse(response.data.body || "[]"));
-      })
+
+    request({
+      method: "get", pathParameters: "/clients/tasks/" + taskId, queryStringParameters: { taskStatus: "true", ...(queryStringParameters || {}) },
+
+    }).then((response: any) => {
+      setConcludedTask(response);
+    })
       .catch((err: any) => console.log(err))
       .finally(() => setProcessing({ ...processing, concluded: false }));
   };
 
   const fetchOngoingSubtasks = () => {
     setProcessing({ ...processing, ongoing: true });
-    const urlLink = url.ENDPOINT + "/clients/tasks/" + taskId;
-    axios
-      .get(urlLink, { params: { dev: true } })
-      .then((response: any) => {
-        const taskInfo = JSON.parse(response.data.body || "[]");
 
-        const { subtasks = [] } = taskInfo;
+    request({ method: "get", pathParameters: "/clients/tasks/" + taskId, queryStringParameters: { dev: true } }).then((response: any) => {
+      const taskInfo = response
 
-        const filtered = (subtasks || []).filter(
-          (sub: any) => sub?.status?.status !== "concluído"
-        );
+      const { subtasks = [] } = taskInfo;
 
-        setOnGoingTask(filtered);
+      const filtered = (subtasks || []).filter(
+        (sub: any) => sub?.status?.status !== "concluído"
+      );
 
-        setProcessing({ ...processing, ongoing: false });
-      })
+      setOnGoingTask(filtered);
+
+      setProcessing({ ...processing, ongoing: false });
+    })
       .catch((err: any) => console.log(err));
   };
 
@@ -143,7 +108,6 @@ export const Clients = () => {
       setShowDetails({});
     } else {
       setShowDetails({ id: index, status: status });
-      fetchSubtask(taskId);
     }
   };
 
@@ -151,16 +115,6 @@ export const Clients = () => {
     fetchOngoingSubtasks();
     setUpdate(true);
   }, []);
-
-  useEffect(() => {
-    if (!!concludedTask) {
-      getSessionsHistory();
-    }
-  }, [concludedTask]);
-
-  const handleShowSessionsHistory = () => {
-    setShowSessionHistory(!showSessionHistory);
-  };
 
   const handleNextPage = () => {
     if (subtasksQuantityToDisplay <= concludedTask?.subtasks?.length) {
@@ -174,12 +128,15 @@ export const Clients = () => {
     }
   }, [subtasksQuantityToDisplay]);
 
+
   const concludedTaskMemo = useMemo(() => {
-    return concludedTask?.subtasks.slice(
+    return concludedTask?.subtasks?.slice(
       subtasksQuantityToDisplay - subtasksQuantityperPage,
       subtasksQuantityToDisplay
     );
   }, [concludedTask, subtasksQuantityToDisplay]);
+
+
 
   return (
     <>
@@ -222,8 +179,8 @@ export const Clients = () => {
                           <label>
                             {item.due_date
                               ? new Intl.DateTimeFormat("pt-BR").format(
-                                  item.due_date
-                                )
+                                item.due_date
+                              )
                               : "-"}
                           </label>
                         </div>
@@ -232,7 +189,8 @@ export const Clients = () => {
                         showDetails.status === "unconcluded" && (
                           <CardDetails
                             details={subtaskDetail}
-                            processing={processing.subtask}
+                            processing={processingGetSubtask}
+                            subtaskId={item.id}
                           ></CardDetails>
                         )}
                     </>
@@ -331,6 +289,7 @@ export const Clients = () => {
                               <CardDetails
                                 details={subtaskDetail?.data}
                                 processing={processing.subtask}
+                                subtaskId={item.id}
                               ></CardDetails>
                             )}
                         </>

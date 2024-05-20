@@ -1,3 +1,4 @@
+import { Spinner } from "@chakra-ui/react";
 import { LoadingDiv } from "../../pages/Clients/styles";
 import { LoadingSpinner } from "../LoadingSpinning";
 import {
@@ -9,7 +10,15 @@ import {
 } from "./styles";
 
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
-export const CardDetails = ({ details, processing }: any) => {
+import { useEffect, useState } from "react";
+import { useApi } from "../../hooks/useApi";
+
+export const CardDetails = ({ show, subtaskId }: any) => {
+
+  const [subtaskDetail, setSubtaskDetail] = useState<any>();
+
+  const { request, processing: processingSubtask } = useApi({ path: "" })
+
   function formatTimeSpent(time: number) {
     const date = new Date(time);
     const hours = date.getUTCHours().toString().padStart(2, "0");
@@ -17,6 +26,14 @@ export const CardDetails = ({ details, processing }: any) => {
     const seconds = date.getUTCSeconds().toString().padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   }
+
+  const fetchSubtask = (subtaskId: string) => {
+    request({ method: "get", pathParameters: "/clients/tasks/" + subtaskId, queryStringParameters: { dev: true } }).then((response: any) => {
+      setSubtaskDetail(response?.data);
+    })
+      .catch((err: any) => console.log(err));
+  };
+
 
   const makeLinkClickable = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -32,12 +49,15 @@ export const CardDetails = ({ details, processing }: any) => {
     });
   };
 
-  console.log("DETRAILS", details);
+  useEffect(() => {
+    fetchSubtask(subtaskId)
+  }, [])
+
   return (
     <Details>
-      {processing ? (
+      {processingSubtask ? (
         <LoadingDiv>
-          <LoadingSpinner />
+          <Spinner />
         </LoadingDiv>
       ) : (
         <>
@@ -49,21 +69,21 @@ export const CardDetails = ({ details, processing }: any) => {
               <label>TEMPO GASTO</label>
               {
                 <p>
-                  {details?.time_spent
-                    ? formatTimeSpent(details?.time_spent)
+                  {subtaskDetail?.time_spent
+                    ? formatTimeSpent(subtaskDetail?.time_spent)
                     : "-"}
                 </p>
               }
             </Item>
             <Item>
               <label>DESCRIÇÃO</label>
-              {details?.description && (
-                <p>{makeLinkClickable(details?.description)}</p>
+              {subtaskDetail?.description && (
+                <p>{makeLinkClickable(subtaskDetail?.description)}</p>
               )}
             </Item>
             <Item>
               <label>CHECKLIST</label>
-              {details?.checklists?.[0]?.items
+              {subtaskDetail?.checklists?.[0]?.items
                 ?.sort((a: any, b: any) => a.resolved - b.resolved)
                 .map((item: any, index: number) => (
                   <CheckListContainer isChecked={item.resolved}>
@@ -80,7 +100,7 @@ export const CardDetails = ({ details, processing }: any) => {
             </Item>
             <Item>
               <label>RESPONSÁVEIS</label>
-              {details?.assignees?.map((resp: any, index: number) => (
+              {subtaskDetail?.assignees?.map((resp: any, index: number) => (
                 <Responsible key={index}>
                   <img src={resp.profilePicture} />
                   <label>{resp.username}</label>

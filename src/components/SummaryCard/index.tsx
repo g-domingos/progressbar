@@ -32,6 +32,8 @@ export const SummaryCard = ({
     handleEdit && handleEdit();
   };
 
+
+
   const dataMemo = useMemo(() => {
     return data || [];
   }, [data]);
@@ -54,10 +56,12 @@ export const SummaryCard = ({
     >
       {!hideActions && (
         <Flex
-          justifyContent={"flex-end"}
+          justifyContent={"space-between"}
           position={"absolute"}
           right={"0.3rem"}
           top={"0.6rem"}
+          width={"5rem"}
+
         >
           <RoundButton
             handleClick={() => {

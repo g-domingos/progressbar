@@ -5,6 +5,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { url } from "../../../env";
 import { useParams } from "react-router-dom";
+import { useApi } from "../../../hooks/useApi";
 
 export const Sessions = () => {
   const [sessions, setSessions] = useState<any>([]);
@@ -14,30 +15,28 @@ export const Sessions = () => {
 
   const taskId = params?.id;
 
+  const { request, processing } = useApi({ path: "" })
+
   const fetchConcludedSubtasks = (queryStringParameters?: any) => {
-    const urlLink = url.ENDPOINT + "/clients/tasks/" + taskId;
-    axios
-      .get(urlLink, {
-        params: {
-          taskStatus: "true",
-          ...(queryStringParameters || {}),
-        },
-      })
-      .then((response: any) => {
-        setConcludedTask(JSON.parse(response.data.body || "[]"));
-      })
+
+
+    request({
+      method: "get", pathParameters: "/clients/tasks/" + taskId, queryStringParameters: {
+        taskStatus: "true",
+        ...(queryStringParameters || {}),
+      }
+    }).then((response: any) => {
+      setConcludedTask(response);
+    })
       .catch((err: any) => console.log(err));
   };
 
+
   const getSessionsHistory = () => {
-    axios
-      .get(
-        url.ENDPOINT +
-          `/client/sessions?phone=${concludedTask?.phone}&name=${concludedTask?.name}`
-      )
+
+    request({ method: "get", pathParameters: `/client/sessions?phone=${concludedTask?.phone}&name=${concludedTask?.name}` })
       .then((response) => {
-        const parsedResponse = JSON.parse(response.data.body);
-        setSessions(parsedResponse);
+        setSessions(response);
       })
       .catch((err: any) => console.log(err));
   };
@@ -56,10 +55,8 @@ export const Sessions = () => {
     <GenericPage title={"Atendimentos"}>
       <Flex width={"100%"}>
         <MessagesModal
+          processingSession={processing}
           show={true}
-          handleClose={function () {
-            throw new Error("Function not implemented.");
-          }}
           sessions={sessions || []}
         />
       </Flex>

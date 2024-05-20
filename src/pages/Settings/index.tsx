@@ -7,6 +7,7 @@ import { FiPlus } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
 import { url } from "../../env";
+import { useApi } from "../../hooks/useApi";
 
 interface IMessageModels {
   id: number;
@@ -15,15 +16,16 @@ interface IMessageModels {
 }
 export const Settings = () => {
   const toast = useToast();
-  const urlLink = url.ENDPOINT + "/message-models";
+
+  const { request, processing } = useApi({ path: "/message-models" })
 
   const [messageModels, setMessageModels] = useState<IMessageModels[]>([]);
 
   const fetchMessageModels = () => {
-    axios.get(urlLink).then((response) => {
-      const body = JSON.parse(response?.data?.body);
 
-      setMessageModels(body || []);
+    request({ method: "get" }).then((response) => {
+
+      setMessageModels(response);
     });
   };
 
@@ -70,8 +72,7 @@ export const Settings = () => {
   };
 
   const handleSubmit = async () => {
-    await axios
-      .put(urlLink, messageModels)
+    request({ method: "put", body: messageModels })
       .then(() => {
         toast({
           description: "Modelos de mensagem salvos com sucesso!",

@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
+import { HashRouter, useLocation, useNavigate } from "react-router-dom";
 import { Router } from "./Router";
 import { Toast } from "./toast";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -13,6 +13,9 @@ export const UserContext = createContext<any>(null);
 function App() {
   const [update, setUpdate] = useState<boolean>(false);
   const navigate = useNavigate();
+  const location = useLocation()
+
+  const { pathname } = location
 
   const { user, setUser } = useContext(Slice) as any;
 
@@ -34,6 +37,7 @@ function App() {
     });
   };
 
+
   const isAuthenticated = () => {
     fetchUserAttributes()
       .then(async (user) => {
@@ -49,7 +53,9 @@ function App() {
           return;
         }
 
-        navigate("/admin");
+        if (pathname === "/") {
+          navigate("/admin/clients");
+        }
       })
       .catch(() => {
         navigate("/login");
@@ -64,7 +70,7 @@ function App() {
 
   return (
     <UserContext.Provider value={{ setUpdate, update }}>
-      {/* <GlobalStyle /> */}
+      <GlobalStyle />
       <Router />
       <Toast />
     </UserContext.Provider>
