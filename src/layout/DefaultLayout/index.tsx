@@ -14,11 +14,13 @@ export const DefaultLayout = () => {
 
   const clientId = params?.id;
 
+  const shouldShowSidebar = !pathname.includes("client-id")
+
   return (
     <Flex flexDirection={"column"} height={"100vh"}>
       <NavBar />
       <Flex height={"100%"}>
-        <Sidebar isAdmin={isAdmin} clientId={clientId} />
+        {shouldShowSidebar && <Sidebar isAdmin={isAdmin} clientId={clientId} />}
         <Outlet />
       </Flex>
     </Flex>

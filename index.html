@@ -32,8 +32,15 @@
         var global = window;
       }
     </script>
-    <!-- <script type="text/javascript">
+    <script type="text/javascript">
       (function (s, z, c, h, a, t) {
+        if (
+          window.location.pathname === "/login" ||
+          window.location.pathname === "/"
+        ) {
+          return;
+        }
+
         s.webchat =
           s.webchat ||
           function () {
@@ -54,6 +61,6 @@
         },
         false
       );
-    </script> -->
+    </script>
   </body>
 </html>

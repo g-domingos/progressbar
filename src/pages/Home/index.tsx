@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   Button,
   CardTask,
@@ -107,23 +107,35 @@ export const Home = () => {
     if (!!task && !!task?.phone?.length) {
       getSessionsHistory();
     }
+
+
+    if (!!task) {
+      getStatusesList();
+    }
   }, [task]);
 
   useEffect(() => {
-    getStatusesList();
+
     getStatusByClient();
-  }, [pathname]);
+  }, []);
 
   const numberOfTasks = isMobile ? 1 : 2;
 
   const filteredStatus = useMemo(() => {
-    return statuses?.filter(
-      (tasks: any, index: number) =>
-        tasks.visible &&
-        tasks.orderindex >= task?.orderIndex - numberOfTasks &&
-        tasks.orderindex <= task?.orderIndex + numberOfTasks
-    );
+    if (statuses?.length) {
+
+      return statuses?.filter(
+        (tasks: any, index: number) =>
+          tasks.visible &&
+          tasks.orderindex >= task?.orderIndex - numberOfTasks &&
+          tasks.orderindex <= task?.orderIndex + numberOfTasks
+      );
+    }
+
+    return []
+
   }, [statuses]);
+
 
   const currentTaskDuration = statuses?.filter(
     (item: any) => item.orderindex === task?.orderIndex
@@ -259,6 +271,17 @@ export const Home = () => {
     }
     return false;
   };
+
+  const [, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+
+    if (!location.search.includes("stop")) {
+      setSearchParams({ "stop": "true" })
+      window.location.reload()
+    }
+
+  }, [])
 
   return (
     <MainDiv>

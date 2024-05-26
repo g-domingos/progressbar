@@ -228,7 +228,7 @@ const Drawer = ({
 
                 <DrawerBody>{children}</DrawerBody>
 
-                <DrawerFooter>
+                <DrawerFooter justifyContent={"flex-start"}>
                   <Button mr={3} onClick={handleClose} type="button">
                     Cancelar
                   </Button>

@@ -44,7 +44,7 @@ export const CardClients = ({ id, status, title, color }: ICardClients) => {
         borderRadius={"6px"}
         alignItems={"center"}
       >
-        <Text fontWeight={700} fontSize={18}>
+        <Text fontWeight={700} fontSize={18} maxH={"4.5rem"}>
           {title}
         </Text>
         <Text>{status}</Text>

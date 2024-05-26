@@ -87,9 +87,15 @@ export const LoginV2 = () => {
           return;
         }
 
+
+        if (profile === "IMPLANTATION") {
+          navigate("/client-id/" + given_name)
+          return
+        }
+
         navigate("/admin/clients");
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const handleLogin = async () => {
@@ -112,6 +118,11 @@ export const LoginV2 = () => {
               }
               return;
             });
+          }
+
+          if (profile === "IMPLANTATION") {
+            navigate("/client-id/" + given_name)
+            return
           }
 
           navigate("/admin/clients");
@@ -167,14 +178,22 @@ export const LoginV2 = () => {
         if (response.isSignedIn) {
           const user = await fetchUserAttributes();
 
-          const { profile, family_name } = user;
+          const { profile, family_name, given_name } = user;
 
           if (profile === "ADMIN") {
             navigate("/admin");
-          } else if (profile === "CLIENT") {
-            navigate("/clients/dashboard/" + family_name);
+            return
           }
-          return;
+
+          if (profile === "IMPLANTATION") {
+            navigate("/client-id/" + given_name)
+            return
+          }
+
+          if (profile === "CLIENT") {
+            navigate("/clients/dashboard/" + family_name);
+            return;
+          }
         }
       })
       .catch((response) => {

@@ -53,6 +53,11 @@ function App() {
           return;
         }
 
+        if (profile === "IMPLANTATION") {
+          navigate("/client-id/" + given_name)
+          return
+        }
+
         if (pathname === "/") {
           navigate("/admin/clients");
         }
@@ -67,6 +72,7 @@ function App() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   return (
     <UserContext.Provider value={{ setUpdate, update }}>
