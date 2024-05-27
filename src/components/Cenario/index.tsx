@@ -148,7 +148,7 @@ export const Cenario = ({
             document={data?.currentCnpj?.document}
             hideActions
           />
-          <PieChart data={data?.summaryData} />
+          <PieChart data={data?.pieChart} />
         </Flex>
         <Flex
           flex={1}

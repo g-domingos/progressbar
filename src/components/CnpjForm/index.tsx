@@ -4,8 +4,8 @@ import { useApi } from "../../hooks/useApi";
 import Drawer from "../Drawer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ICardDetail } from "../SummaryCard";
-import { useState } from "react";
-import { useFieldArray } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { RoundButton } from "../RoundButton";
 import { MdAdd } from "react-icons/md";
 import colors from "../../styles/theme";
@@ -19,6 +19,7 @@ interface ICnpjForm {
 }
 
 export interface IInfo {
+  api: any[];
   id: number;
   document: string;
   data: ICardDetail[];
@@ -52,7 +53,6 @@ export const CnpjForm = ({
   const handleSubmit = (values: any, dirtyFields: any) => {
     if (processing) return;
 
-    console.log(dirtyFields)
 
     if (values.api) {
       const encrypted = (values.api || []).map(
@@ -114,6 +114,8 @@ export const CnpjForm = ({
       });
   };
 
+
+
   return (
     <Drawer
       title={cnpj ? "Editar CNPJ" : "Adicionar um novo CNPJ"}
@@ -133,8 +135,9 @@ export const CnpjForm = ({
         label="Marketplace"
         value="Valor R$"
         valueType="number"
+
       />
-      {cnpj && (
+      {cnpj && cnpj.api.length === 0 && (
         <Flex
           w={"100%"}
           alignItems={"center"}
@@ -152,7 +155,7 @@ export const CnpjForm = ({
         </Flex>
       )}
       <Drawer.DrawerArrayInput
-        title="Adicionar Chaves APIs"
+        title="Adicionar Chaves APIs - Tiny"
         name="api"
         label="Plataforma"
         value="Chave API"

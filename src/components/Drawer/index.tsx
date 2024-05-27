@@ -34,6 +34,8 @@ interface IDrawerArrayInput {
   placeholder?: string;
   valueType?: string;
   disabled?: boolean;
+  hideButton?: boolean;
+
 }
 
 const DrawerArrayInput = ({
@@ -44,6 +46,7 @@ const DrawerArrayInput = ({
   placeholder = "",
   disabled,
   valueType,
+  hideButton
 }: IDrawerArrayInput) => {
   const {
     register,
@@ -57,6 +60,8 @@ const DrawerArrayInput = ({
     }
   );
 
+  const shouldHideButton = name === "api" && fields.length > 0
+
   return (
     <Flex flexDirection={"column"} w={"100%"}>
       <Flex
@@ -65,26 +70,29 @@ const DrawerArrayInput = ({
         mt="10px"
         justifyContent={"flex-end"}
       >
-        <Text fontSize={12} mb="unset">
-          {title}
-        </Text>
-        <Button
-          padding={"5px"}
-          minW="unset"
-          borderRadius={"100%"}
-          width={"1.5rem"}
-          height={"1.5rem"}
-          _hover={{
-            background: "lightgray",
-          }}
-          type="button"
-          onClick={() =>
-            append({ name: placeholder, value: "", id: new Date().getTime() })
-          }
-          background={colors.yellow}
-        >
-          <MdAdd />
-        </Button>
+        {!shouldHideButton && <>
+          <Text fontSize={12} mb="unset">
+            {title}
+          </Text>
+          <Button
+            padding={"5px"}
+            minW="unset"
+            borderRadius={"100%"}
+            width={"1.5rem"}
+            height={"1.5rem"}
+            _hover={{
+              background: "lightgray",
+            }}
+            type="button"
+            onClick={() =>
+              append({ name: placeholder, value: "", id: new Date().getTime() })
+            }
+            background={colors.yellow}
+          >
+            <MdAdd />
+          </Button>
+        </>
+        }
       </Flex>
       {fields.map((field: any, index: number) => (
         <Flex gap="5px" fontSize={12} key={index} alignItems={"center"}>

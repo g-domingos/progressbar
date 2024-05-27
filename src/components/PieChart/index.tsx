@@ -11,11 +11,11 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
 
   const option = {
     title: {
-      show: false,
-      text: "Exames por Tipo",
+      show: true,
+      text: "Pedidos por Marketplace",
       left: 0,
       textStyle: {
-        fontSize: "16px",
+        fontSize: "12px",
       },
     },
     tooltip: {
@@ -40,9 +40,9 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
         type: "pie",
         radius: isMobile ? ["40%", "65%"] : ["50%", "75%"],
         avoidLabelOverlap: true,
-        padAngle: 5,
+        padAngle: 1,
         itemStyle: {
-          borderRadius: 10,
+          borderRadius: 6,
         },
         label: { show: false },
         emphasis: {
