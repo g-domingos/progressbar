@@ -19,7 +19,48 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Quicksand:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if (global === undefined) {
+        var global = window;
+      }
+    </script>
+    <script type="text/javascript">
+      (function (s, z, c, h, a, t) {
+        if (
+          window.location.pathname === "/login" ||
+          window.location.pathname === "/"
+        ) {
+          return;
+        }
+
+        s.webchat =
+          s.webchat ||
+          function () {
+            (s.webchat.q = s.webchat.q || []).push(arguments);
+          };
+        (t = z.createElement(c)), (a = z.getElementsByTagName(c)[0]);
+        t.async = 1;
+        t.src = "https://integracomm.syngoo-talk.app/webchat/v2/webchat.js";
+        a.parentNode.insertBefore(t, a);
+        s.webchat("cid", "6363d54fcd2a6c0016a15b06");
+        s.webchat("host", h);
+      })(window, document, "script", "https://integracomm.syngoo-talk.app");
+
+      window.addEventListener(
+        "message",
+        function (event) {
+          if (event.origin !== "https://integracomm.syngoo-talk.app") return;
+        },
+        false
+      );
+    </script>
   </body>
 </html>

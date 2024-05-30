@@ -1,49 +1,149 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { NavLink, useLocation, useParams } from "react-router-dom";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
+  Button,
+  CardTask,
   Circle,
-  DateBackground,
-  DateContainer,
+  HistoryDate,
   LabelContainer,
   Legend,
   MainDiv,
-  PredictDelivered,
   Span,
   SpinnerDiv,
+  TaskContainer,
+  TaskLabel,
   TextBox,
 } from "./styles";
-import Logo from "../../images/Logo.png";
-
+import { BsNut } from "react-icons/bs";
 import Spinner from "react-bootstrap/Spinner";
+import { isMobile } from "react-device-detect";
+import { url } from "../../env";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { UserContext } from "../../App";
+import { MessagesModal } from "../../components/MessagesModal";
+import { useApi } from "../../hooks/useApi";
 
 export const Home = () => {
-  const [apiData, setApiData] = useState<any>();
+  const [statuses, setStatuses] = useState<any>();
+  const [task, setTask] = useState<any>();
+  const [showLabel, setShowLabel] = useState<boolean>(false);
   const [processing, setProcessing] = useState(false);
+  const [history, setHistory] = useState<any>();
+  const [showSessionHistory, setShowSessionHistory] = useState<boolean>(false);
+  const [sessions, setSessions] = useState<any>([]);
+  const [showMessagesModal, setShowMessagesModal] = useState<any>({
+    show: false,
+    parameters: {},
+  });
+  const [searchAgent, setSearchAgent] = useState<string>("");
 
   const location = useLocation();
   const { pathname } = location;
 
-  const clientId = pathname.split("/").slice(3, 4)[0];
+  let taskId = pathname.split("/").slice(2)[0];
+  const { setUpdate, update } = useContext(UserContext);
 
-  const fetchData = async () => {
-    setProcessing(true);
-    axios
-      .get(`https://8e7my2u569.execute-api.us-east-1.amazonaws.com/${clientId}`)
+
+  const { request } = useApi({ path: "" })
+
+  const getHistory = () => {
+    request({ method: "get", pathParameters: `/history/${taskId}` })
       .then((response) => {
-        setApiData(response.data.body);
+        setHistory(response)
         setProcessing(false);
       })
       .catch((err: any) => console.log(err));
   };
 
-  useEffect(() => {
-    const fetch = async () => {
-      await fetchData();
-    };
+  const getStatusesList = () => {
+    setProcessing(true);
+    request({ method: "get", pathParameters: "/statuses" }).then((response) => {
+      setStatuses(response);
+      setProcessing(false);
+    })
+      .catch((err: any) => console.log(err));
+  };
 
-    fetch();
-  }, [pathname]);
+  const getSessionsHistory = () => {
+    setProcessing(true);
+
+    request({ method: "get", pathParameters: `/client/sessions?phone=${task?.phone}&name=${task?.name}` }).then((response) => {
+      setSessions(response);
+      setProcessing(false);
+    })
+      .catch((err: any) => console.log(err));
+  };
+
+  const getStatusByClient = () => {
+
+    request({ method: "get", pathParameters: `/task/${taskId}` }).then((response) => {
+      setTask(response);
+      setProcessing(false);
+    })
+      .catch((err: any) => console.log(err));
+  };
+
+  const handleShowSessionsHistory = () => {
+    setShowSessionHistory(!showSessionHistory);
+  };
+
+  const historySessions = useMemo(() => {
+    if (!!searchAgent.length) {
+      return sessions.filter((item: any) =>
+        item.agent_name.toLowerCase().includes(searchAgent)
+      );
+    }
+
+    return sessions;
+  }, [searchAgent, sessions]);
+
+  useEffect(() => {
+    getHistory();
+    setUpdate(true);
+  }, [task]);
+
+  useEffect(() => {
+    if (!!task && !!task?.phone?.length) {
+      getSessionsHistory();
+    }
+
+
+    if (!!task) {
+      getStatusesList();
+    }
+  }, [task]);
+
+  useEffect(() => {
+
+    getStatusByClient();
+  }, []);
+
+  const numberOfTasks = isMobile ? 1 : 2;
+
+  const filteredStatus = useMemo(() => {
+    if (statuses?.length) {
+
+      return statuses?.filter(
+        (tasks: any, index: number) =>
+          tasks.visible &&
+          tasks.orderindex >= task?.orderIndex - numberOfTasks &&
+          tasks.orderindex <= task?.orderIndex + numberOfTasks
+      );
+    }
+
+    return []
+
+  }, [statuses]);
+
+
+  const currentTaskDuration = statuses?.filter(
+    (item: any) => item.orderindex === task?.orderIndex
+  )[0]?.duration;
+
+  const lastTaskDuration =
+    statuses?.filter((item: any) => item.orderindex === task?.orderIndex + 1)[0]
+      ?.duration + currentTaskDuration;
 
   const getFormattedDate = (dateInput: any) => {
     var date = new Date(dateInput);
@@ -58,109 +158,252 @@ export const Home = () => {
     return dateFromSheet;
   };
 
-  const getStatusColor = (dateInput: number | any) => {
-    if (dateInput) {
-      const dateFromSheet = getFormattedDate(dateInput);
-      const todayDate = new Date().setHours(0, 0, 0, 0);
-      const tomorrow = new Date().setHours(24, 0, 0, 0);
-
-      // return "#DFF8CA";
-      if (dateInput) {
-        return "#0F6360";
-      }
-
-      if (dateFromSheet >= todayDate && dateFromSheet <= tomorrow - 1000) {
-        return "#71B27E";
-      }
+  const getStatusColor = (index: number | any) => {
+    if (index <= task?.orderIndex) {
+      return "#FFFF00";
     }
   };
 
-  const isLate = (predictData: number | any, deliveryDate: any) => {
-    const predict = new Date(
-      predictData?.split("/").reverse().join("-")
-    ).getTime();
-    const delivery = new Date(
-      deliveryDate?.split("/").reverse().join("-")
-    ).getTime();
-
-    if (delivery > predict) {
-      return "#FF5757";
-    } else if (delivery <= predict) {
-      return "#CFFF00";
+  const isLate = ({ dueDate, dateConcluded }: any) => {
+    if (dateConcluded > dueDate) {
+      return "#ff1317";
     }
+    if (dateConcluded < dueDate) {
+      return "#00e408";
+    }
+
+    return "gray";
   };
+
+  function addBusinessDays(date: number, duration: number) {
+    const currentDate = new Date(+date);
+
+    for (let i = 1; i <= duration; i++) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      if (currentDate.getDay() === 6) {
+        currentDate.setDate(currentDate.getDate() + 2);
+      } else if (currentDate.getDay() === 0) {
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    return currentDate.getTime();
+  }
 
   const getPercentageProgress = (array: any[]) => {
-    const amountActivity = array?.slice(1).length;
-    const completed = array?.slice(1).filter((item: any) => item[4]).length;
+    const amountActivity = array?.length - 1;
+    const completed = task?.orderIndex;
 
     return ((completed / amountActivity) * 100).toFixed();
   };
 
+  const getDueDate = (index: number) => {
+    const dueDate = history?.filter(
+      (item: any) => item.orderIndex === index
+    )[0];
+
+    return dateFormatter(dueDate?.date_conclusion);
+  };
+
+  const dateFormatter = (epoch: any) => {
+    if (typeof epoch === "number") {
+      const date = new Intl.DateTimeFormat("pt-BR").format(epoch);
+
+      const dateWithoutYear = date
+        .split("/")
+        .slice(0, date.split("/").length - 1)
+        .join("/");
+
+      return dateWithoutYear;
+    }
+
+    return "";
+  };
+
+  const getDate = ({ itemOrderIndex, taskOrderIndex }: any) => {
+    if (itemOrderIndex > taskOrderIndex) {
+      const duration =
+        itemOrderIndex === filteredStatus[filteredStatus?.length - 1].orderindex
+          ? lastTaskDuration
+          : currentTaskDuration;
+
+      const nextTaskDueDate = dateFormatter(
+        addBusinessDays(+task?.due_date, duration)
+      );
+
+      return nextTaskDueDate;
+    } else if (itemOrderIndex === taskOrderIndex) {
+      return dateFormatter(+task?.due_date);
+    } else {
+      return getDueDate(itemOrderIndex);
+    }
+  };
+
+  const renderText = ({ taskId, currentItem, item }: any) => {
+    if (+taskId === +currentItem || returnIfIsCurrent(item)) {
+      return "TAREFA ATUAL";
+    } else if (+taskId < +currentItem) {
+      return "PRÓX.";
+    } else if (+taskId > +currentItem) {
+      return "ANTERIOR";
+    }
+  };
+
+  const getTaskContainerWidth = () => {
+    if (filteredStatus?.length > 3) {
+      return "100%";
+    }
+    if (filteredStatus?.length <= 2) {
+      return "40%";
+    }
+    return "60%";
+  };
+
+  const returnIfIsCurrent = (item: any) => {
+    const array = filteredStatus.map((item: any) => {
+      return item.orderindex;
+    });
+    if (item.orderindex === task?.orderIndex) {
+      return true;
+    }
+    if (item.orderindex === 17 && !array.includes(task?.orderIndex)) {
+      return true;
+    }
+    return false;
+  };
+
+  const [, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+
+    if (!location.search.includes("stop")) {
+      setSearchParams({ "stop": "true" })
+      window.location.reload()
+    }
+
+  }, [])
+
   return (
     <MainDiv>
       <TextBox>
-        <label>seu progresso:</label>
-        <span>{apiData?.length && getPercentageProgress(apiData)}%</span>
+        <div>{task?.name}</div>
+        <div>
+          <span>
+            <BsNut size={30} />
+          </span>
+          <label>Progresso</label>
+        </div>
       </TextBox>
-      <PredictDelivered>
-        <label>previsto</label>
-        <label>entregue</label>
-      </PredictDelivered>
-      <NavLink
-        to="https://integracomm.com.br/area-do-cliente/"
-        style={{ textDecoration: "none", height: "100px" }}
-        target="_blank"
-      >
-        <img src={Logo} />
-      </NavLink>
       {processing ? (
         <SpinnerDiv>
           <Spinner />
         </SpinnerDiv>
       ) : (
         <div className="div">
-          {apiData?.slice(1)?.map((item: any, index: number) => (
-            <Span
-              customWidth={apiData.length}
-              statusColor={getStatusColor(item[4])}
-            >
-              <DateContainer>
-                <label>{item[3]?.slice(0, 5)}</label>
-                <DateBackground color={isLate(item[3], item[4])}>
-                  <label>{item[4]?.slice(0, 5)}</label>
-                </DateBackground>
-              </DateContainer>
-
-              <Circle
-                opaco={item[4]?.length}
-                color={item[5]?.length ? "black" : "#f1c233"}
+          {statuses?.map((item: any, index: number) => (
+            <>
+              <Span
+                isFirst={index === 0}
+                isLast={index === task?.orderIndex}
+                customWidth={statuses?.length - 1}
+                statusColor={getStatusColor(index)}
               >
-                {index + 1}
-              </Circle>
-            </Span>
+                {index === task?.orderIndex ? (
+                  <span>
+                    {statuses?.length && getPercentageProgress(statuses)}%
+                  </span>
+                ) : null}
+              </Span>
+            </>
           ))}
         </div>
       )}
-      <LabelContainer>
-        {apiData?.slice(1)?.map((item: any, index: number) => (
-          <div>
-            <Circle
-              opaco={item[4]?.length}
-              color={item[5]?.length ? "black" : "#f1c233"}
+      <TaskContainer width={getTaskContainerWidth()}>
+        {filteredStatus?.map((item: any, index: number) => (
+          <>
+            <CardTask
+              current={returnIfIsCurrent(item)}
+              client={item.client_responsabilitie}
             >
-              {index + 1}
-            </Circle>
-            <label>{item[0]}</label>
-          </div>
+              {!isMobile && (
+                <TaskLabel isCurrent={returnIfIsCurrent(item)}>
+                  {renderText({
+                    taskId: task?.orderIndex,
+                    currentItem: item.orderindex,
+                    item,
+                  })}
+                </TaskLabel>
+              )}
+              <label>
+                {getDate({
+                  itemOrderIndex: item.orderindex,
+                  taskOrderIndex: task?.orderIndex,
+                })}
+              </label>
+              <div>{item.statusName?.toUpperCase()}</div>
+            </CardTask>
+          </>
         ))}
-      </LabelContainer>
+      </TaskContainer>
       <Legend>
-        <span></span>
-        <label>Responsabilidade Integracomm</label>
-        <span></span>
-        <label>Responsabilidade Parceiro</label>
+        <div>
+          <span></span>
+          <label>Responsabilidade Integracomm</label>
+          <span></span>
+          <label>Responsabilidade Parceiro</label>
+        </div>
       </Legend>
+      <Button onClick={() => setShowLabel(!showLabel)}>
+        {!showLabel ? <IoIosArrowDown /> : <IoIosArrowUp />}
+        TODAS AS TAREFAS
+      </Button>
+      {showLabel && (
+        <>
+          <LabelContainer>
+            {statuses
+              ?.filter((stats: any) => stats.visible)
+              ?.map((item: any, index: number) => (
+                <div>
+                  <Circle
+                    opaco={index < task?.orderIndex}
+                    color={item.client_responsabilitie ? "black" : "#FFFF00"}
+                  >
+                    {index + 1}
+                  </Circle>
+                  <label>{item.statusName}</label>
+                  {item.orderindex <= task?.orderIndex && (
+                    <HistoryDate
+                      current={item.orderindex === task?.orderIndex}
+                      color={
+                        item.orderindex === task?.orderIndex
+                          ? isLate({
+                            dueDate: task?.due_date,
+                            dateConcluded: new Date().getTime(),
+                          })
+                          : isLate({
+                            dueDate: history?.filter(
+                              (hist: any) =>
+                                hist.orderIndex === item.orderindex
+                            )[0]?.due_date,
+                            dateConcluded: history?.filter(
+                              (hist: any) =>
+                                hist.orderIndex === item.orderindex
+                            )[0]?.date_concluded,
+                          })
+                      }
+                    >
+                      {item.orderindex === task?.orderIndex
+                        ? dateFormatter(task?.due_date)
+                        : dateFormatter(
+                          history?.[item.orderindex]?.date_conclusion
+                        )}
+                    </HistoryDate>
+                  )}
+                </div>
+              ))}
+          </LabelContainer>
+        </>
+      )}
     </MainDiv>
   );
 };
