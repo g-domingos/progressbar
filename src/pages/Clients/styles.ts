@@ -254,6 +254,11 @@ export const Footer = styled.footer`
     :focus {
       border: none;
     }
+
+    :disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 `;
 

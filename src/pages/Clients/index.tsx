@@ -76,6 +76,7 @@ export const Clients = () => {
       .finally(() => setProcessing({ ...processing, concluded: false }));
   };
 
+
   const fetchOngoingSubtasks = () => {
     setProcessing({ ...processing, ongoing: true });
 
@@ -130,10 +131,16 @@ export const Clients = () => {
 
 
   const concludedTaskMemo = useMemo(() => {
-    return concludedTask?.subtasks?.slice(
-      subtasksQuantityToDisplay - subtasksQuantityperPage,
-      subtasksQuantityToDisplay
-    );
+
+    if ((concludedTask?.subtasks || []).length > 10) {
+
+      return concludedTask?.subtasks?.slice(
+        subtasksQuantityToDisplay - subtasksQuantityperPage,
+        subtasksQuantityToDisplay
+      );
+    } else {
+      return concludedTask?.subtasks
+    }
   }, [concludedTask, subtasksQuantityToDisplay]);
 
 
