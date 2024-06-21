@@ -1,59 +1,82 @@
-import { Text, Flex, Button, Input, Tooltip, useToast } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  Button,
+  Input,
+  Tooltip,
+  useToast,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { GenericPage } from "../../components/GenericPage";
 import colors from "../../styles/theme";
 import { ExpandableItem } from "../../components/ExpandableItem";
 import { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import { MdDelete } from "react-icons/md";
-import axios from "axios";
-import { url } from "../../env";
+import { MdDelete, MdEdit } from "react-icons/md";
 import { useApi } from "../../hooks/useApi";
+import { IManagers } from "../../types/types";
+import { useManagers } from "../../hooks/useManagers";
+import { ManagerForm } from "../../components/ManagerForm";
+import { CiCloudOff } from "react-icons/ci";
+import { NoData } from "../../components/NoData";
 
 interface IMessageModels {
   id: number;
   eventName: string;
   messageTemplate: string;
 }
+
 export const Settings = () => {
   const toast = useToast();
 
-  const { request, processing } = useApi({ path: "/message-models" })
+  const { request, processing } = useApi({ path: "" });
 
   const [messageModels, setMessageModels] = useState<IMessageModels[]>([]);
 
+  const [editManager, setEditManager] = useState<IManagers | null>(null);
+
+  const { managers, getManagers, deleteManager, setManagers } = useManagers();
+
+  const {
+    isOpen: isOpenManagerForm,
+    onClose: onCloseManagerForm,
+    onOpen: onOpenManagerForm,
+  } = useDisclosure();
+
   const fetchMessageModels = () => {
-
-    request({ method: "get" }).then((response) => {
-
-      setMessageModels(response);
-    });
+    request({ method: "get", pathParameters: "/message-models" }).then(
+      (response) => {
+        setMessageModels(response);
+      }
+    );
   };
 
   useEffect(() => {
     fetchMessageModels();
+    getManagers();
   }, []);
 
   const handleChange = ({
     id,
     field,
     value,
+    array,
+    setState,
   }: {
     id: number;
     field: string;
     value: string;
+    array: any[];
+    setState: (value: any) => void;
   }) => {
-    const itemToChange = messageModels.find(
-      (item: IMessageModels) => item.id === id
-    );
+    const itemToChange = array.find((item: any) => item.id === id);
 
-    const filtered = messageModels.filter(
-      (item: IMessageModels) => item.id !== id
-    );
+    const filtered = array.filter((item: any) => item.id !== id);
     const changed = [...filtered, { ...itemToChange, [field]: value }];
 
     const sorted = changed.sort((a: any, b: any) => a.id - b.id);
 
-    setMessageModels(sorted as IMessageModels[]);
+    setState(sorted);
   };
 
   const handleAdd = () => {
@@ -87,15 +110,178 @@ export const Settings = () => {
       });
   };
 
+  const handleRemoveManagers = (id: number) => {
+    deleteManager({ managerId: id })
+      .then(() => {
+        const remainingManagers = managers.filter((item) => item.id !== id);
+        setManagers(remainingManagers);
+
+        toast({
+          description: "Gerente excluído com sucesso!",
+          status: "success",
+        });
+      })
+      .catch(() => {
+        toast({
+          description: "Erro!",
+          status: "error",
+        });
+      });
+  };
+
+  const handleEditManager = (manager: IManagers) => {
+    setEditManager(manager);
+  };
+
+  useEffect(() => {
+    if (editManager) {
+      onOpenManagerForm();
+    }
+  }, [editManager]);
+
   return (
-    <GenericPage title={"Configurações"}>
-      <Flex w="100%" flexDirection={"column"}>
+    <GenericPage
+      title={"Configurações"}
+      processing={processing}
+    >
+      <Flex
+        w="100%"
+        flexDirection={"column"}
+        gap="1rem"
+        overflow={"auto"}
+      >
+        <ExpandableItem title={"Gerentes Responsáveis"}>
+          <Flex
+            flexDirection={"column"}
+            w="100%"
+            background={colors.gray}
+            borderRadius={"10px"}
+          >
+            <Flex
+              justifyContent={"flex-end"}
+              paddingRight={"2rem"}
+              paddingTop={"0.6rem"}
+            >
+              <ManagerForm
+                isOpen={isOpenManagerForm}
+                onOpen={onOpenManagerForm}
+                onClose={onCloseManagerForm}
+                refresh={getManagers}
+                manager={editManager}
+              />
+            </Flex>
+            <Flex
+              width={"100%"}
+              minH={"8rem"}
+              borderRadius={"0 0 0.5rem 0.5rem"}
+              gap="1rem"
+              padding="1rem"
+              w={"100%"}
+              fontSize={12}
+              position={"relative"}
+              flexDirection={"column"}
+              sx={{
+                input: {
+                  height: "2rem",
+                  padding: "5px",
+                  background: "white",
+                  border: "none",
+                },
+              }}
+            >
+              {!managers.length ? (
+                <Flex>
+                  <NoData />
+                </Flex>
+              ) : (
+                managers.map((item: IManagers, index: number) => (
+                  <Flex
+                    gap="1rem"
+                    justifyContent={"space-around"}
+                    alignItems={"flex-start"}
+                  >
+                    <Flex
+                      width={"50%"}
+                      flexDirection={"column"}
+                    >
+                      <Text
+                        w="45%"
+                        mb="0.2rem"
+                      >
+                        Nome
+                      </Text>
+                      <Text
+                        padding="10px"
+                        borderRadius={"6px"}
+                        background={"white"}
+                        mb="unset"
+                        height={"2rem"}
+                      >
+                        {item.name}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      width={"50%"}
+                      flexDirection={"column"}
+                    >
+                      <Text
+                        w="45%"
+                        mb="0.2rem"
+                      >
+                        Email
+                      </Text>
+                      <Text
+                        padding="10px"
+                        borderRadius={"6px"}
+                        background={"white"}
+                        mb="unset"
+                        height={"2rem"}
+                      >
+                        {item.name}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      h={"100%"}
+                      alignItems={"flex-end"}
+                      className="buttonsContainers"
+                      css={{
+                        button: {
+                          minWidth: "unset",
+                          width: "25px",
+                          height: "25px",
+                        },
+                      }}
+                      gap="0.6rem"
+                    >
+                      <Button
+                        padding={"unset"}
+                        borderRadius={"100%"}
+                        onClick={() => handleEditManager(item)}
+                        _hover={{ background: "white" }}
+                      >
+                        <MdEdit />
+                      </Button>
+                      <Button
+                        padding={"unset"}
+                        borderRadius={"100%"}
+                        onClick={() => handleRemoveManagers(item.id)}
+                        _hover={{ background: "white" }}
+                      >
+                        <MdDelete />
+                      </Button>
+                    </Flex>
+                  </Flex>
+                ))
+              )}
+            </Flex>
+          </Flex>
+        </ExpandableItem>
         <ExpandableItem title={"Modelos de Mensagem de Boas Vindas"}>
           <Flex
             background={colors.gray}
             borderRadius={"0 0 0.5rem 0.5rem"}
             padding="1rem"
-            w={"60%"}
+            w={"100%"}
             fontSize={12}
             position={"relative"}
             flexDirection={"column"}
@@ -122,8 +308,8 @@ export const Settings = () => {
                 height={"25px"}
                 padding={"unset"}
                 position={"absolute"}
-                top="0.4rem"
-                right={"0.5rem"}
+                top="1rem"
+                right={"2.4rem"}
                 onClick={handleAdd}
               >
                 <FiPlus />
@@ -131,8 +317,6 @@ export const Settings = () => {
             </Tooltip>
             <Flex
               flexDirection={"column"}
-              maxH={"13rem"}
-              overflow={"auto"}
               css={{
                 "&::-webkit-scrollbar": {
                   width: "4px",
@@ -147,8 +331,15 @@ export const Settings = () => {
               }}
             >
               {messageModels.map((item: IMessageModels, index: number) => (
-                <Flex key={index} gap="1rem" alignItems={"center"}>
-                  <Text>
+                <Flex
+                  key={index}
+                  gap="1rem"
+                  alignItems={"center"}
+                >
+                  <Text
+                    w="45%"
+                    mb="0.2rem"
+                  >
                     Nome do Evento
                     <Input
                       value={item.eventName}
@@ -157,11 +348,16 @@ export const Settings = () => {
                           id: item.id,
                           field: "eventName",
                           value: e.target.value,
+                          array: messageModels,
+                          setState: setMessageModels,
                         })
                       }
                     />
                   </Text>
-                  <Text>
+                  <Text
+                    w="45%"
+                    mb="0.2rem"
+                  >
                     Modelo de Mensagem
                     <Input
                       value={item.messageTemplate}
@@ -170,6 +366,8 @@ export const Settings = () => {
                           id: item.id,
                           field: "messageTemplate",
                           value: e.target.value,
+                          array: messageModels,
+                          setState: setMessageModels,
                         })
                       }
                     />
@@ -187,8 +385,18 @@ export const Settings = () => {
                 </Flex>
               ))}
             </Flex>
-            <Flex width={"100%"} justifyContent={"flex-end"} mt="10px">
-              <Button background={"white"} onClick={handleSubmit}>
+            <Flex
+              width={"100%"}
+              justifyContent={"flex-end"}
+              mt="10px"
+              paddingRight={"4rem"}
+            >
+              <Button
+                background={"white"}
+                onClick={handleSubmit}
+                height={"1.6rem"}
+                fontSize={"13px"}
+              >
                 Salvar
               </Button>
             </Flex>

@@ -41,6 +41,7 @@
     "react-hook-form": "^7.51.3",
     "react-icons": "^4.8.0",
     "react-router-dom": "^6.8.0",
+    "react-select": "^5.8.0",
     "react-toastify": "^9.1.2",
     "styled-components": "^5.3.6",
     "ts-node": "^10.9.1",

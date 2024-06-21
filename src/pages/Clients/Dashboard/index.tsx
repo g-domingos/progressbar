@@ -41,8 +41,10 @@ export const Dashboard = () => {
 
   const fetchGeneralInfoByTask = () => {
     request({ method: "get", pathParameters: "/info" }).then(
-      (response: IInfo[]) => {
-        const sorted = response.sort((a: IInfo, b: IInfo) => a.id - b.id);
+      (response: any) => {
+        const sorted = response?.info?.sort(
+          (a: IInfo, b: IInfo) => a.id - b.id
+        );
         setCnpjs(sorted);
       }
     );
@@ -58,7 +60,11 @@ export const Dashboard = () => {
 
   return (
     <GenericPage title={"Dashboard"}>
-      <Flex width={"100%"} fontSize={14} flexDirection={"column"}>
+      <Flex
+        width={"100%"}
+        fontSize={14}
+        flexDirection={"column"}
+      >
         <Flex
           width={"100%"}
           display={"grid"}

@@ -10,7 +10,10 @@ interface IExpandableItem {
 export const ExpandableItem = ({ title, children }: IExpandableItem) => {
   const { isOpen, onToggle } = useDisclosure();
   return (
-    <Flex w={"100%"} flexDirection={"column"}>
+    <Flex
+      w={"100%"}
+      flexDirection={"column"}
+    >
       <Flex
         w={"100%"}
         alignItems={"center"}
@@ -19,7 +22,12 @@ export const ExpandableItem = ({ title, children }: IExpandableItem) => {
         boxShadow={"0 0 15px lightgray"}
         justifyContent={"space-between"}
       >
-        <Text mb="unset" fontWeight={600}>{title}</Text>
+        <Text
+          mb="unset"
+          fontWeight={600}
+        >
+          {title}
+        </Text>
         <Button
           padding={"10px"}
           fontSize={11}

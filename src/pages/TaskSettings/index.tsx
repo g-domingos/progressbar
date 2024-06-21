@@ -15,7 +15,6 @@ import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { GeneralInfoTask } from "../GeneralInfoTask";
 import { RoundButton } from "../../components/RoundButton";
-import { useNavigate } from "react-router-dom";
 import { IoMdOpen } from "react-icons/io";
 
 export const TaskSettings = () => {

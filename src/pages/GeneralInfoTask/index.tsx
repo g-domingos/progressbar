@@ -1,11 +1,12 @@
 import { Text, Flex, useDisclosure, useToast, Spinner } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import colors from "../../styles/theme";
-import { ISummaryCard, SummaryCard } from "../../components/SummaryCard";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Select from "react-select";
+import { SummaryCard } from "../../components/SummaryCard";
 import { CnpjForm, IInfo } from "../../components/CnpjForm";
 import { useApi } from "../../hooks/useApi";
 import { useParams } from "react-router";
 import { CiCloudOff } from "react-icons/ci";
+import { useManagers } from "../../hooks/useManagers";
 
 export const GeneralInfoTask = () => {
   const [cnpjs, setCnpjs] = useState<IInfo[]>([]);
@@ -15,17 +16,31 @@ export const GeneralInfoTask = () => {
   const params = useParams();
   const { request, processing } = useApi({ path: `/task/${params.id}` });
 
+  const { managers, assignTaskToManager, getManagers } = useManagers();
+  const [currentManager, setCurrentManager] = useState<any>({});
+
   const fetchGeneralInfoByCNPJ = () => {
     request({ method: "get", pathParameters: "/info" }).then(
-      (response: IInfo[]) => {
-        const sorted = response.sort((a: IInfo, b: IInfo) => a.id - b.id);
+      (response: { info: any[]; manager: any }) => {
+        const sorted = response?.info?.sort(
+          (a: IInfo, b: IInfo) => a.id - b.id
+        );
         setCnpjs(sorted);
+
+        if (response.manager) {
+          const formatedManager = {
+            label: response.manager.managerName,
+            value: response.manager.managerId,
+          };
+          setCurrentManager(formatedManager);
+        }
       }
     );
   };
 
   useEffect(() => {
     fetchGeneralInfoByCNPJ();
+    getManagers();
   }, []);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -48,16 +63,144 @@ export const GeneralInfoTask = () => {
       });
   };
 
+  const handleChangeManager = (
+    values: { label: string; value: number } | null
+  ) => {
+    let body = null;
+
+    if (values) {
+      setCurrentManager({ label: values.label, value: values.value });
+
+      body = { managerName: values.label, managerId: values.value };
+    } else {
+      setCurrentManager({});
+    }
+
+    assignTaskToManager({
+      taskId: params.id || "",
+      body,
+    })
+      .then(() => {
+        toast({
+          description: "Gerente responsável atualizado com sucesso!",
+          status: "success",
+        });
+      })
+      .catch(() => {
+        toast({
+          description: "Erro ao atualizar!",
+          status: "error",
+        });
+      });
+  };
+
   const handleCloseForm = () => {
     setEditCnpj(undefined);
     onClose();
   };
 
+  const managersFormatedForSelect = useMemo(() => {
+    if (!managers.length) return [];
+
+    return managers.map((item) => {
+      return { value: item.id, label: item.name };
+    });
+  }, [managers]);
+
+  const styles = {
+    control: (baseStyles: any) => ({
+      ...baseStyles,
+      // Customize the overall container
+      width: "240px", // Adjust width as needed
+      borderRadius: "8px",
+      backgroundColor: "#fff",
+      borderColor: "#ccc",
+      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+      height: "2.5rem",
+      "&:hover": {
+        borderColor: "#999",
+      },
+      border: "none",
+      fontWeight: 600,
+    }),
+
+    option: (provided: any, state: any) => ({
+      ...provided,
+      // Customize individual options
+      padding: "10px 15px",
+      backgroundColor: state.isSelected ? "#f0f8ff" : "#fff",
+      color: state.isSelected ? "#007bff" : "#333",
+      cursor: "pointer",
+      "&:hover": {
+        backgroundColor: "#f0f8ff",
+      },
+    }),
+
+    menu: (baseStyles: any) => ({
+      ...baseStyles,
+      // Customize the dropdown menu
+      width: "250px", // Match the control width
+      backgroundColor: "#fff",
+      border: "1px solid #ccc",
+      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+      zIndex: 100,
+    }),
+    menuList: (baseStyles: any) => ({
+      ...baseStyles,
+      "&::-webkit-scrollbar": {
+        width: "4px",
+      },
+      "&::-webkit-scrollbar-track": {
+        width: "6px",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        borderRadius: "24px",
+      },
+    }),
+
+    // Customize other elements as needed:
+    // singleValue, placeholder, multiValue, dropdownIndicator, etc.
+  };
+
   return (
-    <Flex w="100%" height={"100%"}>
-      <Flex flexDirection={"column"} w="100%" height={"100%"}>
-        <Flex alignItems={"center"} gap="1rem" mb="1rem">
-          <Text mb="unset" fontWeight={600}>
+    <Flex
+      w="100%"
+      height={"100%"}
+    >
+      <Flex
+        flexDirection={"column"}
+        w="100%"
+        height={"100%"}
+      >
+        <Flex
+          alignItems={"center"}
+          gap="1rem"
+          mb="0.8rem"
+        >
+          <Text
+            fontWeight={600}
+            mb="unset"
+          >
+            Gerente Responsável:
+          </Text>
+          <Select
+            value={currentManager}
+            options={managersFormatedForSelect}
+            styles={styles}
+            isClearable
+            placeholder="Selecionar"
+            onChange={handleChangeManager}
+          />
+        </Flex>
+        <Flex
+          alignItems={"center"}
+          gap="1rem"
+          mb="1rem"
+        >
+          <Text
+            mb="unset"
+            fontWeight={600}
+          >
             Configuração por CNPJ
           </Text>
           <CnpjForm
@@ -68,7 +211,11 @@ export const GeneralInfoTask = () => {
             cnpj={editCnpj}
           />
         </Flex>
-        <Flex className="cardContainers" gap="1rem" w={"100%"}>
+        <Flex
+          className="cardContainers"
+          gap="1rem"
+          w={"100%"}
+        >
           {processing ? (
             <Flex
               w="100%"

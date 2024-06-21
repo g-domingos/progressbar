@@ -14,3 +14,8 @@ export const blingIntegrationForm = object({
   clientId: string().required("Campo obrigatório"),
   clientSecret: string().required("Campo obrigatório"),
 });
+
+export const createManagerForm = object({
+  name: string().required("Campo obrigatório"),
+  email: string().required("Campo obrigatório"),
+});

@@ -5,7 +5,6 @@ import Drawer from "../Drawer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ICardDetail } from "../SummaryCard";
 import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
 import { RoundButton } from "../RoundButton";
 import { MdAdd } from "react-icons/md";
 import colors from "../../styles/theme";

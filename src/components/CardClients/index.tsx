@@ -10,9 +10,10 @@ interface ICardClients {
   id: string;
   color?: string;
   status: string;
+  manager?: string;
 }
 
-export const CardClients = ({ id, status, title, color }: ICardClients) => {
+export const CardClients = ({ id, status, title, color, manager }: ICardClients) => {
   const handleOpenDash = () => {
     window.open("/clients/dashboard/" + id, "_blank");
   };
@@ -24,8 +25,8 @@ export const CardClients = ({ id, status, title, color }: ICardClients) => {
   return (
     <Flex
       border="1px solid lightgray"
-      width={"200px"}
-      height={"200px"}
+      width={"17rem"}
+      maxH={"10.4rem"}
       borderRadius={"15px"}
       padding={"14px"}
       flexDirection={"column"}
@@ -39,15 +40,23 @@ export const CardClients = ({ id, status, title, color }: ICardClients) => {
     >
       <Flex
         flexDirection={"column"}
-        height={"90%"}
         justifyContent={"space-between"}
         borderRadius={"6px"}
         alignItems={"center"}
+        width={"100%"}
+        mb="0.3rem"
       >
-        <Text fontWeight={700} fontSize={18} maxH={"4.5rem"}>
-          {title}
-        </Text>
-        <Text>{status}</Text>
+
+        <Flex h={"3.5rem"} overflow={"hidden"} alignItems={"flex-start"} w="100%">
+          <Text fontWeight={700} fontSize={16} width={"100%"} >
+            {title}
+          </Text>
+        </Flex>
+        <Flex w={"100%"} flexDirection={"column"} css={{ "p": { "marginBottom": "unset" } }} alignItems={"flex-start"}>
+          <Text fontSize={"12px"}>Gerente:</Text>
+          <Text>{manager || " - "}</Text>
+        </Flex>
+        {/* <Text>{status}</Text> */}
       </Flex>
       <Flex
         flex={1}
@@ -57,10 +66,16 @@ export const CardClients = ({ id, status, title, color }: ICardClients) => {
         justifyContent={"space-around"}
         css={{
           button: {
+            height: "25px",
+            minWidth: "unset",
+            width: "25px",
             borderRadius: "100%",
+            padding: "unset",
             ":hover": { background: "white", borderRadius: "100%" },
           },
         }}
+        padding="6px"
+
       >
         <Button onClick={handleOpenTaskSettings}>
           <IoSettingsOutline />
