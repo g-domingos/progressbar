@@ -13,25 +13,6 @@ import { CiCloudOff } from "react-icons/ci";
 import { StackedLineChart } from "../../../components/StackedLineChart";
 import { Cenario } from "../../../components/Cenario";
 
-const beforeMock: any = [
-  {
-    document: "10.081.944/0001-94",
-    data: [
-      {
-        name: "Mercado Livre",
-        value: 120000.0,
-        color: colors.mercadolivre,
-      },
-      { name: "Shopee", value: 40000.0, color: colors.shopee },
-      {
-        name: "Magalu",
-        value: 40000.0,
-        color: colors.magalu,
-      },
-    ],
-  },
-];
-
 export const Dashboard = () => {
   const params = useParams();
 

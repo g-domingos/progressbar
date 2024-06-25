@@ -14,6 +14,21 @@ export const StackedLineChart = ({
   const marketplaceslegend: any[] = [];
   const generatedSerie = Object.entries(data?.data || {}).map(
     ([ecommerce, chartData]: any) => {
+
+      
+      const datesOnChartData = chartData.map(
+        (item: { value: number; date: string }) => {
+          return item.date;
+        }
+      );
+
+      //Se o gráfico não tiver valores de venda para determinado dia, irá colocar como 0
+      data?.xAxis?.forEach((item: string) => {
+        if (!datesOnChartData.includes(item)) {
+          chartData.push({ date: item, value: 0 });
+        }
+      });
+
       marketplaceslegend.push(ecommerce);
       return {
         name: ecommerce,
@@ -80,7 +95,11 @@ export const StackedLineChart = ({
   };
 
   return (
-    <Flex height={"100%"} display={"block"} width="100%">
+    <Flex
+      height={"100%"}
+      display={"block"}
+      width="100%"
+    >
       {processing ? (
         <Flex
           w="100%"
@@ -99,7 +118,10 @@ export const StackedLineChart = ({
           alignItems={"center"}
           opacity={"0.6"}
         >
-          <Flex flexDirection={"column"} alignItems={"center"}>
+          <Flex
+            flexDirection={"column"}
+            alignItems={"center"}
+          >
             <CiCloudOff size={30} />
             <Text>Não há dados para o período selecionado.</Text>
           </Flex>

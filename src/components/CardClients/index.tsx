@@ -11,9 +11,17 @@ interface ICardClients {
   color?: string;
   status: string;
   manager?: string;
+  users?: any[];
 }
 
-export const CardClients = ({ id, status, title, color, manager }: ICardClients) => {
+export const CardClients = ({
+  id,
+  status,
+  title,
+  color,
+  manager,
+  users,
+}: ICardClients) => {
   const handleOpenDash = () => {
     window.open("/clients/dashboard/" + id, "_blank");
   };
@@ -46,13 +54,39 @@ export const CardClients = ({ id, status, title, color, manager }: ICardClients)
         width={"100%"}
         mb="0.3rem"
       >
-
-        <Flex h={"3.5rem"} overflow={"hidden"} alignItems={"flex-start"} w="100%">
-          <Text fontWeight={700} fontSize={16} width={"100%"} >
+        <Flex
+          h={"3.5rem"}
+          overflow={"hidden"}
+          alignItems={"flex-start"}
+          w="100%"
+          position={"relative"}
+        >
+          <Text
+            fontWeight={700}
+            fontSize={16}
+            width={"100%"}
+          >
             {title}
           </Text>
+          {users?.length ? null : (
+            <Tooltip label="Ainda não há usuários cadastrados" bg="black">
+              <Flex
+                position="absolute"
+                right={"0"}
+                w="10px"
+                h="10px"
+                bg="red"
+                borderRadius={"100%"}
+              ></Flex>
+            </Tooltip>
+          )}
         </Flex>
-        <Flex w={"100%"} flexDirection={"column"} css={{ "p": { "marginBottom": "unset" } }} alignItems={"flex-start"}>
+        <Flex
+          w={"100%"}
+          flexDirection={"column"}
+          css={{ p: { marginBottom: "unset" } }}
+          alignItems={"flex-start"}
+        >
           <Text fontSize={"12px"}>Gerente:</Text>
           <Text>{manager || " - "}</Text>
         </Flex>
@@ -75,7 +109,6 @@ export const CardClients = ({ id, status, title, color, manager }: ICardClients)
           },
         }}
         padding="6px"
-
       >
         <Button onClick={handleOpenTaskSettings}>
           <IoSettingsOutline />

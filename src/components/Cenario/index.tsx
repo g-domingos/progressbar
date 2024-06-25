@@ -1,4 +1,5 @@
-import { Text, Flex } from "@chakra-ui/react";
+import { LuBarChart3 } from "react-icons/lu";
+import { Text, Flex, Button, Tooltip } from "@chakra-ui/react";
 import { PieChart } from "../PieChart";
 import { StackedLineChart } from "../StackedLineChart";
 import { SummaryCard } from "../SummaryCard";
@@ -8,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { DatePickerComponent } from "../DatePickerComponent";
 import { Tag } from "../Tag";
 import colors from "../../styles/theme";
+import { CompareModal } from "../CompareModal";
 
 interface ICenario {
   cnpjId: string;
@@ -21,7 +23,6 @@ export const Cenario = ({
   integrator = "",
 }: ICenario) => {
   const [data, setData] = useState<any>({});
-
 
   const params = useParams();
 
@@ -94,20 +95,19 @@ export const Cenario = ({
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        setHeight(Math.random())
+      if (document.visibilityState === "visible") {
+        setHeight(Math.random());
       }
     };
 
     // Add event listener for visibility change
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     // Cleanup event listener on component unmount
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
-
 
   return (
     <Flex
@@ -141,8 +141,14 @@ export const Cenario = ({
           />
         </Flex>
       </Flex>
-      <Flex className="Depois" maxH={"14rem"}>
-        <Flex width={"40%"} justifyContent={"space-between"}>
+      <Flex
+        className="Depois"
+        maxH={"14rem"}
+      >
+        <Flex
+          width={"40%"}
+          justifyContent={"space-between"}
+        >
           <SummaryCard
             data={data?.summaryData || []}
             document={data?.currentCnpj?.document}
@@ -156,7 +162,13 @@ export const Cenario = ({
           gap="1rem"
           paddingRight={"2rem"}
         >
-          <Flex justifyContent={"flex-end"} padding={"0 1rem"}>
+          <Flex
+            justifyContent={"flex-end"}
+            padding={"0 1rem"}
+            alignItems={"center"}
+            gap="1rem"
+          >
+            {/* <CompareModal /> */}
             <DatePickerComponent
               request={fetchSummaryByCNPJ}
               defaultDates={defaultInitialDate}

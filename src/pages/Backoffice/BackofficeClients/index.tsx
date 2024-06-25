@@ -192,6 +192,7 @@ export const BackofficeClients = () => {
                   name: string;
                   status: { color: string; status: string };
                   manager: { managerName: string };
+                  users: any[];
                 },
                 index: number
               ) => (
@@ -200,6 +201,7 @@ export const BackofficeClients = () => {
                   id={client.id}
                   status={client.status.status}
                   manager={client?.manager?.managerName}
+                  users={client?.users}
                 />
               )
             )

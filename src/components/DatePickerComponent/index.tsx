@@ -9,22 +9,29 @@ import { IoMdClose } from "react-icons/io";
 import colors from "../../styles/theme";
 
 import moment from "moment";
+import { useSearchParams } from "react-router-dom";
+import { useQueryString } from "../../utils/queryString";
 registerLocale("pt-BR", pt);
 
 interface IDatePickerComponent {
   request: (values: any) => void;
   defaultDates?: { minDate: number; maxDate: number };
-  hideClearButton?: boolean
+  hideClearButton?: boolean;
+  queryName?: string;
 }
 
 export const DatePickerComponent = ({
   request,
   defaultDates,
-  hideClearButton
+  hideClearButton,
+  queryName,
 }: IDatePickerComponent) => {
   const [show, setShow] = useState<boolean>(false);
   const [startDate, setStartDate] = useState<any>();
   const [endDate, setEndDate] = useState<any>();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const { queryParams } = useQueryString();
 
   useEffect(() => {
     if (defaultDates) {
@@ -44,6 +51,17 @@ export const DatePickerComponent = ({
 
     setStartDate(start);
     setEndDate(end);
+
+    if (queryName && start && end) {
+      const startDate = new Date(start).getTime().toString();
+      const endDate = new Date(end).getTime().toString();
+
+      setSearchParams({
+        ...queryParams,
+        [queryName + "Start"]: startDate,
+        [queryName + "End"]: endDate,
+      });
+    }
   };
 
   const handleClose = () => {
@@ -69,6 +87,12 @@ export const DatePickerComponent = ({
   const handleClear = () => {
     setStartDate(null);
     setEndDate(null);
+
+    if (queryName) {
+      delete queryParams[queryName + "Start"];
+      delete queryParams[queryName + "End"];
+      setSearchParams(queryParams);
+    }
 
     request({});
   };
@@ -103,6 +127,9 @@ export const DatePickerComponent = ({
 
   return (
     <Container ref={ref}>
+      <button onClick={() => setShow(true)}>
+        <BsCalendar3 />
+      </button>
       {startDate && endDate ? (
         <Flex
           alignItems={"center"}
@@ -121,29 +148,28 @@ export const DatePickerComponent = ({
             <Text>-</Text>
             <Text>{`${formatDate(endDate)}`}</Text>
           </Flex>
-          {!hideClearButton && <Button
-            onClick={handleClear}
-            border="none"
-            borderRadius={"100%"}
-            minW={"unset"}
-            padding={"3px"}
-            w="1.3rem"
-            h="1.3rem"
-            background={colors.yellow}
-            _hover={{
-              background: "lightgray",
-            }}
-          >
-            <IoMdClose />
-          </Button>}
+          {!hideClearButton && (
+            <Button
+              onClick={handleClear}
+              border="none"
+              borderRadius={"100%"}
+              minW={"unset"}
+              padding={"3px"}
+              w="1.3rem"
+              h="1.3rem"
+              background={colors.yellow}
+              _hover={{
+                background: "lightgray",
+              }}
+            >
+              <IoMdClose />
+            </Button>
+          )}
         </Flex>
       ) : (
         <Flex height={"20px"}></Flex>
       )}
 
-      <button onClick={() => setShow(true)}>
-        <BsCalendar3 />
-      </button>
       {show && (
         <DateContainer>
           <DatePicker
