@@ -43,8 +43,6 @@ export const DatePickerComponent = ({
     }
   }, [defaultDates]);
 
-  console.log({ startDate, endDate });
-
   const onChange = (dates: any) => {
     const [start, end] = dates;
 

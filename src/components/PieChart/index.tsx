@@ -126,7 +126,7 @@ export const PieChart = ({
         />
       )}
       {isMobile && <ReactECharts option={mobileOption} />}
-      {total && (
+      {!!total && (
         <Flex
           justifyContent={"space-between"}
           padding={"0 5px"}

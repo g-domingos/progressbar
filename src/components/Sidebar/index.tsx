@@ -95,11 +95,11 @@ export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
               link={`/clients/messages/${clientId}`}
               icon={<TiMessages />}
             />
-            <NavItem
+            {/* <NavItem
               name={"Métricas"}
               link={`/clients/metrics/${clientId}`}
               icon={<FaChartPie />}
-            />
+            /> */}
           </Flex>
           <Flex flexDirection={"column"}>
             <NavItem

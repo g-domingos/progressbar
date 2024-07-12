@@ -130,7 +130,7 @@ export const SummaryCard = ({
           ))}
         </Flex>
       </Flex>
-      {total && (
+      {!!total && (
         <Flex
           justifyContent={"space-between"}
           padding={"0 5px"}
