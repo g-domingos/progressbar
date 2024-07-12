@@ -5,7 +5,7 @@ import { NavItem } from "../NavItem";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdHome } from "react-icons/md";
 import colors from "../../styles/theme";
-import { FaUsers } from "react-icons/fa";
+import { FaChartLine, FaChartPie, FaUsers } from "react-icons/fa";
 import { signOut } from "@aws-amplify/auth";
 import { useNavigate } from "react-router";
 import { CiLogout } from "react-icons/ci";
@@ -38,13 +38,20 @@ export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
     >
       {isAdmin ? (
         <>
-          <Flex flexDirection={"column"} gap="0.2rem">
+          <Flex
+            flexDirection={"column"}
+            gap="0.2rem"
+          >
             <NavItem
               name={"Início"}
               link={"/admin/clients"}
               icon={<FaUsers />}
             />
-            <NavItem name={"Implantação"} link={"/admin"} icon={<MdHome />} />
+            <NavItem
+              name={"Implantação"}
+              link={"/admin"}
+              icon={<MdHome />}
+            />
           </Flex>
           <Flex flexDirection={"column"}>
             <NavItem
@@ -68,7 +75,10 @@ export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
         </>
       ) : (
         <>
-          <Flex flexDirection={"column"} gap="1rem">
+          <Flex
+            flexDirection={"column"}
+            gap="1rem"
+          >
             <NavItem
               name={"Dashboard"}
               link={`/clients/dashboard/${clientId}`}
@@ -78,12 +88,17 @@ export const Sidebar = ({ isAdmin, clientId }: ISidebar) => {
             <NavItem
               name={"Progresso"}
               link={`/clients/progress/${clientId}`}
-              icon={<FaUsers />}
+              icon={<FaChartLine />}
             />
             <NavItem
               name={"Atendimentos"}
               link={`/clients/messages/${clientId}`}
               icon={<TiMessages />}
+            />
+            <NavItem
+              name={"Métricas"}
+              link={`/clients/metrics/${clientId}`}
+              icon={<FaChartPie />}
             />
           </Flex>
           <Flex flexDirection={"column"}>

@@ -34,6 +34,8 @@ export const CnpjForm = ({
 }: ICnpjForm) => {
   const params = useParams();
 
+  const [apisToDelete, setApisToDelete] = useState<any[]>([]);
+
   const { request, processing } = useApi({
     path: `/task/${params.id}`,
   });
@@ -49,16 +51,19 @@ export const CnpjForm = ({
     return btoa(value);
   };
 
-  const handleSubmit = (values: any, dirtyFields: any) => {
+  const handleSubmit = (values: any) => {
     if (processing) return;
-
 
     if (values.api) {
       const encrypted = (values.api || []).map(
-        (item: { name: string; value: string; id: number; encrypted: boolean }) => {
-
+        (item: {
+          name: string;
+          value: string;
+          id: number;
+          encrypted: boolean;
+        }) => {
           if (item.encrypted || item.name === "Bling") {
-            return item
+            return item;
           }
 
           return { ...item, value: convert(item.value), encrypted: true };
@@ -72,7 +77,7 @@ export const CnpjForm = ({
       request({
         method: "put",
         pathParameters: "/edit-info",
-        body: { values, dirtyFields },
+        body: { values, apisToDelete },
       })
         .then(() => {
           toast({
@@ -113,7 +118,9 @@ export const CnpjForm = ({
       });
   };
 
-
+  const handleDeleteAPI = (values: any) => {
+    setApisToDelete([...apisToDelete, { cnpjId: cnpj?.id, sk: values.sk }]);
+  };
 
   return (
     <Drawer
@@ -126,15 +133,20 @@ export const CnpjForm = ({
       onOpen={onOpen}
       processing={processing}
     >
-      <Drawer.DrawerInput title="CNPJ" name="document" />
-      <Drawer.DrawerInput title="Informações Gerais" name="extraInfo" />
+      <Drawer.DrawerInput
+        title="CNPJ"
+        name="document"
+      />
+      <Drawer.DrawerInput
+        title="Informações Gerais"
+        name="extraInfo"
+      />
       <Drawer.DrawerArrayInput
         title="Adicionar vendas por marketplace antes da integracomm"
         name="data"
         label="Marketplace"
         value="Valor R$"
         valueType="number"
-
       />
       {cnpj && cnpj.api.length === 0 && (
         <Flex
@@ -143,7 +155,10 @@ export const CnpjForm = ({
           gap="1rem"
           justifyContent={"flex-end"}
         >
-          <Text mb="unset" fontSize={13}>
+          <Text
+            mb="unset"
+            fontSize={13}
+          >
             Integração com o Bling
           </Text>
           <RoundButton
@@ -158,6 +173,7 @@ export const CnpjForm = ({
         name="api"
         label="Plataforma"
         value="Chave API"
+        onClick={handleDeleteAPI}
       />
       <Drawer.DrawerArrayInput
         title="Mapear nome de lojas (Bling)"

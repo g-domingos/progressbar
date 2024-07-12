@@ -1,11 +1,8 @@
 import { LuBarChart3 } from "react-icons/lu";
 import {
-  Flex,
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   Button,
@@ -13,9 +10,16 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { CompareResults } from "../CompareResults";
+import { useSearchParams } from "react-router-dom";
 
 export const CompareModal = () => {
+  const [, setSearchParams] = useSearchParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleClose = () => {
+    setSearchParams({});
+    onClose();
+  };
   return (
     <>
       <Tooltip
@@ -36,11 +40,13 @@ export const CompareModal = () => {
 
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleClose}
       >
         <ModalOverlay />
-        <ModalContent minWidth="fit-content">
-          <ModalHeader>Comparar Resultados</ModalHeader>
+        <ModalContent
+          minWidth="fit-content"
+          minH={"550px"}
+        >
           <ModalCloseButton />
           <ModalBody>
             <CompareResults />

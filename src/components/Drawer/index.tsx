@@ -35,7 +35,7 @@ interface IDrawerArrayInput {
   valueType?: string;
   disabled?: boolean;
   hideButton?: boolean;
-
+  onClick?: (values?: any) => void;
 }
 
 const DrawerArrayInput = ({
@@ -46,7 +46,8 @@ const DrawerArrayInput = ({
   placeholder = "",
   disabled,
   valueType,
-  hideButton
+  hideButton,
+  onClick,
 }: IDrawerArrayInput) => {
   const {
     register,
@@ -60,42 +61,66 @@ const DrawerArrayInput = ({
     }
   );
 
-  const shouldHideButton = name === "api" && fields.length > 0
+  const shouldHideButton = name === "api" && fields.length > 0;
+
+  const handleClick = (fieldValues: any, index: number) => {
+    if (onClick) {
+      onClick(fieldValues);
+    }
+
+    remove(index);
+  };
 
   return (
-    <Flex flexDirection={"column"} w={"100%"}>
+    <Flex
+      flexDirection={"column"}
+      w={"100%"}
+    >
       <Flex
         gap="1rem"
         alignItems={"center"}
         mt="10px"
         justifyContent={"flex-end"}
       >
-        {!shouldHideButton && <>
-          <Text fontSize={12} mb="unset">
-            {title}
-          </Text>
-          <Button
-            padding={"5px"}
-            minW="unset"
-            borderRadius={"100%"}
-            width={"1.5rem"}
-            height={"1.5rem"}
-            _hover={{
-              background: "lightgray",
-            }}
-            type="button"
-            onClick={() =>
-              append({ name: placeholder, value: "", id: new Date().getTime() })
-            }
-            background={colors.yellow}
-          >
-            <MdAdd />
-          </Button>
-        </>
-        }
+        {!shouldHideButton && (
+          <>
+            <Text
+              fontSize={12}
+              mb="unset"
+            >
+              {title}
+            </Text>
+            <Button
+              padding={"5px"}
+              minW="unset"
+              borderRadius={"100%"}
+              width={"1.5rem"}
+              height={"1.5rem"}
+              _hover={{
+                background: "lightgray",
+              }}
+              type="button"
+              onClick={() =>
+                append({
+                  name: placeholder,
+                  value: "",
+                  id: new Date().getTime(),
+                })
+              }
+              background={colors.yellow}
+            >
+              <MdAdd />
+            </Button>
+          </>
+        )}
       </Flex>
       {fields.map((field: any, index: number) => (
-        <Flex gap="5px" fontSize={12} key={index} alignItems={"center"}>
+        <Flex
+          gap="5px"
+          fontSize={12}
+          key={index}
+          alignItems={"center"}
+        >
           <Text>
             {label}
             <Input
@@ -119,7 +144,10 @@ const DrawerArrayInput = ({
               }
             />
           </Text>
-          <RoundButton icon={<MdDelete />} handleClick={() => remove(index)} />
+          <RoundButton
+            icon={<MdDelete />}
+            handleClick={() => handleClick(field, index)}
+          />
         </Flex>
       ))}
     </Flex>
@@ -140,9 +168,15 @@ const DrawerInput = ({ name, title, disabled }: IDrawerInput) => {
   return (
     <Flex flexDirection={"column"}>
       <Text mb="unset">{title}</Text>
-      <Input {...register(name)} disabled={disabled} />
+      <Input
+        {...register(name)}
+        disabled={disabled}
+      />
       {errors[name]?.message && (
-        <Text color={"red"} fontSize={10}>
+        <Text
+          color={"red"}
+          fontSize={10}
+        >
           {errors[name]?.message as string}
         </Text>
       )}
@@ -182,7 +216,7 @@ const Drawer = ({
   });
 
   const submitForm = (values: any) => {
-    handleSubmit(values, methods.formState.dirtyFields);
+    handleSubmit(values);
     methods.reset();
   };
 
@@ -218,7 +252,12 @@ const Drawer = ({
         height={"2rem"}
         minW={"unset"}
       >
-        {icon || <IoMdAdd size={18} color={"black"} />}
+        {icon || (
+          <IoMdAdd
+            size={18}
+            color={"black"}
+          />
+        )}
       </Button>
       {isOpen && (
         <DrawerC
@@ -237,10 +276,17 @@ const Drawer = ({
                 <DrawerBody>{children}</DrawerBody>
 
                 <DrawerFooter justifyContent={"flex-start"}>
-                  <Button mr={3} onClick={handleClose} type="button">
+                  <Button
+                    mr={3}
+                    onClick={handleClose}
+                    type="button"
+                  >
                     Cancelar
                   </Button>
-                  <Button type="submit" background={colors.yellow}>
+                  <Button
+                    type="submit"
+                    background={colors.yellow}
+                  >
                     {processing ? <Spinner /> : "Salvar"}
                   </Button>
                 </DrawerFooter>

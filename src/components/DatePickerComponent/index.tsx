@@ -35,16 +35,15 @@ export const DatePickerComponent = ({
 
   useEffect(() => {
     if (defaultDates) {
-      let defaultStart: any = new Date(defaultDates.minDate);
-      defaultStart = moment(defaultStart).format("YYYY-MM-DD");
+      const start = new Date(defaultDates.minDate);
+      const end = new Date(defaultDates.maxDate);
 
-      let defaultEnd: any = new Date(defaultDates.maxDate);
-      defaultEnd = moment(defaultEnd).format("YYYY-MM-DD");
-
-      setStartDate(new Date(defaultStart));
-      setEndDate(new Date(defaultEnd));
+      setStartDate(start);
+      setEndDate(end);
     }
   }, [defaultDates]);
+
+  console.log({ startDate, endDate });
 
   const onChange = (dates: any) => {
     const [start, end] = dates;
@@ -100,7 +99,9 @@ export const DatePickerComponent = ({
   const formatDate = (value: Date) => {
     if (!value) return "";
 
-    let date = new Date(value).toISOString();
+    const epoch = new Date(value).getTime() - 3 * 60 * 60 * 1000;
+
+    let date = new Date(epoch).toISOString();
 
     date = date.split("T")[0];
 

@@ -1,23 +1,37 @@
+import ReactECharts from "echarts-for-react";
 import Select from "react-select";
-import { Button, Flex, Text } from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DatePickerComponent } from "../DatePickerComponent";
 import colors from "../../styles/colors";
 import { useQueryString } from "../../utils/queryString";
 import { useTask } from "../../hooks/useTask";
 import { useParams, useSearchParams } from "react-router-dom";
+import { Tag } from "../Tag";
 
 const FIRST_INTERVAL_QUERY_NAME = "firstDate";
 const SECOND_INTERVAL_QUERY_NAME = "secondDate";
 
+interface ICompareResponse {
+  firstPeriodSalesSummary: number;
+  secondPeriodSalesSummary: number;
+  percentualDifference: any[];
+  firstPeriodLineChart: any[];
+  secondPeriodLineChart: any[];
+  chartData: any;
+}
+
 export const CompareResults = () => {
   const params = useParams();
   const [shouldCompare, setShouldCompare] = useState<boolean>(false);
+  const [compareResults, setCompareResults] = useState<ICompareResponse | null>(
+    null
+  );
   const [, setSearchParams] = useSearchParams();
 
   const { queryParams } = useQueryString();
 
-  const { fetch, taskInfo } = useTask();
+  const { fetch, taskInfo, compare, processing } = useTask();
 
   useEffect(() => {
     const queryParamsKeys = Object.keys(queryParams);
@@ -53,6 +67,7 @@ export const CompareResults = () => {
         return {
           value: item.id,
           label: item.document,
+          integrator: item.integrator || "",
         };
       });
 
@@ -66,12 +81,18 @@ export const CompareResults = () => {
     option: {
       label: string;
       value: string | number;
+      integrator: string;
     } | null
   ) => {
     if (option) {
-      setSearchParams({ ...queryParams, cnpjId: option.value.toString() });
+      setSearchParams({
+        ...queryParams,
+        cnpjId: option.value.toString(),
+        integrator: option.integrator,
+      });
     } else {
       delete queryParams.cnpjId;
+      delete queryParams.integrator;
 
       setSearchParams(queryParams);
     }
@@ -131,22 +152,158 @@ export const CompareResults = () => {
     // singleValue, placeholder, multiValue, dropdownIndicator, etc.
   };
 
+  const handleCompare = useCallback(() => {
+    if (processing) return;
+
+    compare({
+      cnpjId: queryParams.cnpjId,
+      queryStringParameters: queryParams,
+      taskId: params.id || "",
+    }).then((response) => setCompareResults(response));
+  }, [processing, queryParams]);
+
+  var emphasisStyle = {
+    itemStyle: {
+      shadowBlur: 10,
+      shadowColor: "rgba(0,0,0,0.3)",
+    },
+  };
+
+  const chartOptions = useMemo(() => {
+    if (!compareResults) return {};
+
+    const { chartData } = compareResults;
+
+    const generatedSeries = Object.entries(chartData).map(
+      ([key, value]: any, index: number) => {
+        return {
+          name: key,
+          type: "bar",
+          stack: "one",
+          emphasis: emphasisStyle,
+          data: chartData[key],
+        };
+      }
+    );
+
+    // return {
+    //   color: ["#80FFA5", "#00DDFF", "#37A2FF", "#FF0087", "#FFBF00"],
+    //   title: {},
+    //   tooltip: {
+    //     trigger: "axis",
+    //     axisPointer: {
+    //       type: "cross",
+    //       label: {
+    //         backgroundColor: "#6a7985",
+    //       },
+    //     },
+    //   },
+    //   legend: {
+    //     // data: marketplaceslegend,
+    //   },
+    //   toolbox: {
+    //     feature: {
+    //       saveAsImage: {},
+    //     },
+    //   },
+    //   grid: {
+    //     left: "3%",
+    //     right: "6%",
+    //     bottom: "35%",
+    //     containLabel: true,
+    //   },
+    //   xAxis: {
+    //     type: "category",
+    //     boundaryGap: false,
+    //     data: xAxisArray || [],
+    //   },
+
+    //   yAxis: {
+    //     type: "value",
+    //   },
+
+    //   series: [
+    //     {
+    //       name: "Primeiro Período",
+    //       type: "line",
+    //       stack: "Total",
+    //       data: firstPeriodLineChart,
+    //     },
+    //     {
+    //       name: "Segundo Período",
+    //       type: "line",
+    //       stack: "Total",
+    //       data: secondPeriodLineChart,
+    //     },
+    //   ],
+    // };
+
+    return {
+      xAxis: {
+        type: "category",
+        data: ["Primeiro Período", "Segundo Período"],
+      },
+      brush: {
+        toolbox: ["rect", "polygon", "lineX", "lineY", "keep", "clear"],
+        xAxisIndex: 0,
+      },
+      yAxis: {
+        type: "value",
+        name: "Reais",
+      },
+      series: generatedSeries || [],
+      grid: {
+        left: "4%",
+        bottom: "10%",
+        right: "4%",
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+          label: {
+            backgroundColor: "#6a7985",
+          },
+        },
+      },
+    };
+  }, [compareResults]);
+
+  const getTagColor = (value: string | number) => {
+    if (+value < 0) {
+      return colors.red;
+    }
+    return colors.primary[30];
+  };
+
   return (
     <Flex
-      w={"60rem"}
-      height={"30rem"}
+      w={"100%"}
       flexDirection={"column"}
+      overflow={"auto"}
     >
       <Flex
-        width={"100%"}
-        justifyContent={"space-between"}
         alignItems={"center"}
+        gap="1rem"
+        padding="0.5rem 0"
       >
-        <Flex
-          mb="1rem"
-          flexDirection={"column"}
+        <Text
+          fontWeight={600}
+          mb="unset"
         >
-          <Text mb="6px">Selecione um CNPJ para comparar</Text>
+          Comparar Resultados
+        </Text>
+        {processing && <Spinner />}
+      </Flex>
+      <Flex
+        width={"100%"}
+        gap="1rem"
+        alignItems={"flex-start"}
+        fontSize={12}
+        paddingRight={"6rem"}
+      >
+        <Flex flexDirection={"column"}>
+          <Text mb="6px">Selecione um CNPJ </Text>
           <Select
             options={cnpjsOptions}
             styles={styles}
@@ -155,20 +312,14 @@ export const CompareResults = () => {
             onChange={handleSelectCnpj}
           />
         </Flex>
-        <Button
-          bg={shouldCompare ? colors.yellow : "lightgray"}
-          disabled={!shouldCompare}
-        >
-          Comparar
-        </Button>{" "}
-      </Flex>
-      <Flex w="100%">
         <Flex
           w="100%"
-          css={{ "& > div": { width: "50%" } }}
+          h="100%"
+          gap="2rem"
         >
           <Flex
-            justifyContent={"flex-start"}
+            justifyContent={"space-around"}
+            h="90%"
             flexDirection={"column"}
           >
             <Text mb="6px">Selecione o período inicial</Text>
@@ -179,7 +330,8 @@ export const CompareResults = () => {
           </Flex>
           <Flex
             flexDirection={"column"}
-            justifyContent={"flex-start"}
+            justifyContent={"space-around"}
+            h="90%"
           >
             <Text mb="6px">Selecione o período final</Text>
             <DatePickerComponent
@@ -187,6 +339,73 @@ export const CompareResults = () => {
               queryName={SECOND_INTERVAL_QUERY_NAME}
             />
           </Flex>
+        </Flex>
+        <Button
+          bg={shouldCompare ? colors.yellow : "lightgray"}
+          onClick={() => {
+            shouldCompare && !processing && handleCompare();
+          }}
+          padding="0.4rem 2rem"
+          mt="1rem"
+          opacity={shouldCompare ? "1" : "0.5"}
+        >
+          Comparar
+        </Button>
+      </Flex>
+
+      <Flex
+        mt="1.4rem"
+        flexDirection={"column"}
+      >
+        <Text
+          mb="unset"
+          fontWeight={600}
+        >
+          Variação:
+        </Text>
+        <Flex
+          gap="1rem"
+          flexWrap={"wrap"}
+          overflow={"auto"}
+        >
+          {compareResults?.percentualDifference?.map(
+            ({ percentual, store }: { store: string; percentual: string }) => (
+              <Flex
+                gap="0.5rem"
+                alignItems={"center"}
+                border="1px solid lightgray"
+                padding="5px 5px"
+                borderRadius={"10px"}
+              >
+                <Text
+                  mb="unset"
+                  fontSize={store === "Total Período" ? 16 : 14}
+                  fontWeight={store === "Total Período" ? 600 : undefined}
+                >
+                  {store}:
+                </Text>
+                <Tag
+                  text={percentual + "%"}
+                  background={getTagColor(percentual)}
+                />
+              </Flex>
+            )
+          )}
+        </Flex>
+      </Flex>
+
+      <Flex height={"100%"}>
+        <Flex
+          display={"block"}
+          width={"100%"}
+          height={"100%"}
+          sx={{
+            "& > div": {
+              maxHeight: "100% !important",
+            },
+          }}
+        >
+          <ReactECharts option={chartOptions} />
         </Flex>
       </Flex>
     </Flex>

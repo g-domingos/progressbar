@@ -1,9 +1,8 @@
 import { Text, Flex, Button, Tooltip } from "@chakra-ui/react";
-import { FaUserEdit } from "react-icons/fa";
 import { IoMdOpen } from "react-icons/io";
 import colors from "../../styles/theme";
-import { useNavigate } from "react-router";
 import { IoSettingsOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 interface ICardClients {
   title: string;
@@ -22,14 +21,6 @@ export const CardClients = ({
   manager,
   users,
 }: ICardClients) => {
-  const handleOpenDash = () => {
-    window.open("/clients/dashboard/" + id, "_blank");
-  };
-
-  const handleOpenTaskSettings = () => {
-    window.open("/admin/task-settings/" + id, "_blank");
-  };
-
   return (
     <Flex
       border="1px solid lightgray"
@@ -69,7 +60,10 @@ export const CardClients = ({
             {title}
           </Text>
           {users?.length ? null : (
-            <Tooltip label="Ainda não há usuários cadastrados" bg="black">
+            <Tooltip
+              label="Ainda não há usuários cadastrados"
+              bg="black"
+            >
               <Flex
                 position="absolute"
                 right={"0"}
@@ -106,16 +100,23 @@ export const CardClients = ({
             borderRadius: "100%",
             padding: "unset",
             ":hover": { background: "white", borderRadius: "100%" },
+            svg: {
+              color: "black",
+            },
           },
         }}
         padding="6px"
       >
-        <Button onClick={handleOpenTaskSettings}>
-          <IoSettingsOutline />
-        </Button>
-        <Button onClick={handleOpenDash}>
-          <IoMdOpen />
-        </Button>
+        <Link to={"/admin/task-settings/" + id}>
+          <Button>
+            <IoSettingsOutline />
+          </Button>
+        </Link>
+        <Link to={"/clients/dashboard/" + id}>
+          <Button>
+            <IoMdOpen />
+          </Button>
+        </Link>
       </Flex>
     </Flex>
   );

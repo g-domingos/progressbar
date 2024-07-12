@@ -14,8 +14,6 @@ export const StackedLineChart = ({
   const marketplaceslegend: any[] = [];
   const generatedSerie = Object.entries(data?.data || {}).map(
     ([ecommerce, chartData]: any) => {
-
-      
       const datesOnChartData = chartData.map(
         (item: { value: number; date: string }) => {
           return item.date;
@@ -76,7 +74,7 @@ export const StackedLineChart = ({
     grid: {
       left: "3%",
       right: "6%",
-      bottom: "35%",
+      bottom: "0",
       containLabel: true,
     },
     xAxis: [
@@ -127,7 +125,10 @@ export const StackedLineChart = ({
           </Flex>
         </Flex>
       ) : (
-        <ReactECharts option={option} />
+        <ReactECharts
+          option={option}
+          style={{ height: "100%" }}
+        />
       )}
       {/* {isMobile && <ReactECharts option={mobileOption} />} */}
     </Flex>

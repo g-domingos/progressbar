@@ -19,9 +19,26 @@ export const useTask = () => {
     );
   };
 
+  const compare = ({
+    taskId,
+    cnpjId,
+    queryStringParameters,
+  }: {
+    taskId: string;
+    cnpjId: string;
+    queryStringParameters: any;
+  }) => {
+    return request({
+      method: "get",
+      pathParameters: `/${taskId}/sales-comparison/${cnpjId}`,
+      queryStringParameters,
+    });
+  };
+
   return {
     taskInfo,
     fetch,
     processing,
+    compare,
   };
 };

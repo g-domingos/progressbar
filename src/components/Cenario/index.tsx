@@ -17,12 +17,44 @@ interface ICenario {
   integrator?: string;
 }
 
+interface ICenarioAPIResponse {
+  currentCnpj: {
+    document: string;
+    extraInfo: string | undefined;
+    data: { name: string; value: string; id: number }[];
+  };
+  summaryData: { name: string; value: string; color?: string }[];
+  colorsByMarketPlace: any;
+  pieChart: { name: string; value: string; id: number }[];
+  lineChart: {
+    data: any;
+    xAxis: string[];
+  };
+  totalQuantityPedidos?: number | null;
+  totalSummedValuePedidosAfterIntegracomm?: number | null;
+  totalSummedValueBeforeIntegracomm?: number | null;
+}
+
+const EMPTY_RESPONSE = {
+  currentCnpj: { data: [], document: "", extraInfo: "" },
+  summaryData: [],
+  colorsByMarketPlace: {},
+  pieChart: [],
+  lineChart: {
+    data: {},
+    xAxis: [],
+  },
+  totalQuantityPedidos: null,
+  totalSummedValuePedidosAfterIntegracomm: null,
+  totalSummedValueBeforeIntegracomm: null,
+};
+
 export const Cenario = ({
   cnpjId,
   gridTemplateColumns,
   integrator = "",
 }: ICenario) => {
-  const [data, setData] = useState<any>({});
+  const [data, setData] = useState<ICenarioAPIResponse>(EMPTY_RESPONSE);
 
   const params = useParams();
 
@@ -45,7 +77,7 @@ export const Cenario = ({
     defaultDate()
   );
 
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
 
   const fetchSummaryByCNPJ = async ({
     minDate,
@@ -137,6 +169,7 @@ export const Cenario = ({
             data={data?.currentCnpj?.data || []}
             extraInfo={data?.currentCnpj?.extraInfo}
             document={data?.currentCnpj?.document}
+            total={data?.totalSummedValueBeforeIntegracomm}
             hideActions
           />
         </Flex>
@@ -153,14 +186,18 @@ export const Cenario = ({
             data={data?.summaryData || []}
             document={data?.currentCnpj?.document}
             hideActions
+            total={data?.totalSummedValuePedidosAfterIntegracomm}
           />
-          <PieChart data={data?.pieChart} />
+          <PieChart
+            data={data?.pieChart}
+            total={data.totalQuantityPedidos}
+          />
         </Flex>
         <Flex
           flex={1}
           flexDirection={"column"}
-          gap="1rem"
           paddingRight={"2rem"}
+          height={"14rem"}
         >
           <Flex
             justifyContent={"flex-end"}

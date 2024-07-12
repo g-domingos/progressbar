@@ -1,16 +1,10 @@
 import { Flex, Input, Spinner, Text } from "@chakra-ui/react";
 import { GenericPage } from "../../../components/GenericPage";
-import { ICardDetail, SummaryCard } from "../../../components/SummaryCard";
-import { Tag } from "../../../components/Tag";
-import colors from "../../../styles/theme";
-import { PieChart } from "../../../components/PieChart";
-import { LineChart } from "../../../components/LineChart";
 import { useEffect, useState } from "react";
 import { useApi } from "../../../hooks/useApi";
 import { useParams } from "react-router-dom";
 import { IInfo } from "../../../components/CnpjForm";
 import { CiCloudOff } from "react-icons/ci";
-import { StackedLineChart } from "../../../components/StackedLineChart";
 import { Cenario } from "../../../components/Cenario";
 
 export const Dashboard = () => {

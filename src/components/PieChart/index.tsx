@@ -2,7 +2,13 @@ import { Flex, useMediaQuery } from "@chakra-ui/react";
 import ReactECharts from "echarts-for-react";
 import { ICardDetail } from "../SummaryCard";
 
-export const PieChart = ({ data }: { data: ICardDetail[] }) => {
+export const PieChart = ({
+  data,
+  total,
+}: {
+  data: ICardDetail[];
+  total?: number | null;
+}) => {
   const [isMobile] = useMediaQuery("(max-width: 768px)");
 
   const colorPallete: string[] = data?.map((item: any) => {
@@ -57,7 +63,7 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
         },
         data: data,
         color: colorPallete,
-        center: isMobile ? ["50%", "45%"] : ["50%", "30%"],
+        center: isMobile ? ["50%", "45%"] : ["50%", "50%"],
       },
     ],
   };
@@ -106,11 +112,33 @@ export const PieChart = ({ data }: { data: ICardDetail[] }) => {
     ],
   };
 
-
   return (
-    <Flex height={"14rem"} display={"block"} width="10rem">
-      {!isMobile && <ReactECharts option={option} />}
+    <Flex
+      height={"14rem"}
+      display={"block"}
+      width="11rem"
+      padding={"0.6rem"}
+    >
+      {!isMobile && (
+        <ReactECharts
+          option={option}
+          style={{ height: "90%" }}
+        />
+      )}
       {isMobile && <ReactECharts option={mobileOption} />}
+      {total && (
+        <Flex
+          justifyContent={"space-between"}
+          padding={"0 5px"}
+        >
+          <span>
+            <strong>Total:</strong>
+          </span>
+          <span>
+            <strong>{total}</strong>
+          </span>
+        </Flex>
+      )}
     </Flex>
   );
 };
