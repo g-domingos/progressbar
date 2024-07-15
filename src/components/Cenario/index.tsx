@@ -77,8 +77,6 @@ export const Cenario = ({
     defaultDate()
   );
 
-  useEffect(() => {}, []);
-
   const fetchSummaryByCNPJ = async ({
     minDate,
     maxDate,

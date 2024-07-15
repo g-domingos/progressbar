@@ -1,7 +1,7 @@
 import { Flex, Text } from "@chakra-ui/react";
 
 interface ITag {
-  text: string;
+  text: string | number;
   color?: string;
   background?: string;
   padding?: string;

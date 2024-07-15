@@ -35,10 +35,27 @@ export const useTask = () => {
     });
   };
 
+  const fetchSummary = ({
+    cnpjId,
+    queryParameters,
+    taskId,
+  }: {
+    taskId: string;
+    cnpjId: string;
+    queryParameters?: any;
+  }) => {
+    return request({
+      method: "get",
+      pathParameters: `/${taskId}/sales-summary/${cnpjId}`,
+      queryStringParameters: queryParameters,
+    });
+  };
+
   return {
     taskInfo,
     fetch,
     processing,
     compare,
+    fetchSummary,
   };
 };

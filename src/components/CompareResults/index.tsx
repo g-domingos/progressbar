@@ -1,61 +1,123 @@
 import ReactECharts from "echarts-for-react";
 import Select from "react-select";
 import { Button, Flex, Spinner, Text } from "@chakra-ui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { DatePickerComponent } from "../DatePickerComponent";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import colors from "../../styles/colors";
 import { useQueryString } from "../../utils/queryString";
 import { useTask } from "../../hooks/useTask";
 import { useParams, useSearchParams } from "react-router-dom";
+import {
+  MONTHS_NAMES,
+  formatEpochToDateDDMMYYY,
+  getEpochFromDaysAgo,
+  getFirstDayOfMonthInEpoch,
+  getLastDayOfMonthInEpoch,
+} from "../../utils/datesUtils";
+import { LoadingSpinner } from "../LoadingSpinning";
+import { CiCloudOff } from "react-icons/ci";
 import { Tag } from "../Tag";
 
-const FIRST_INTERVAL_QUERY_NAME = "firstDate";
-const SECOND_INTERVAL_QUERY_NAME = "secondDate";
-
 interface ICompareResponse {
-  firstPeriodSalesSummary: number;
-  secondPeriodSalesSummary: number;
-  percentualDifference: any[];
-  firstPeriodLineChart: any[];
-  secondPeriodLineChart: any[];
-  chartData: any;
+  sales: {
+    firstPeriodTotalSales: string | null;
+    secondPeriodTotalSales: string | null;
+    percentualDifference: number | null;
+    firstSalesByDate: { x: any[]; y: any[] };
+    secondSalesByDate: { x: any[]; y: any[] };
+  };
+  pedidos: {
+    firstPedidosByDate: { x: any[]; y: any[] };
+    secondPedidosByDate: { x: any[]; y: any[] };
+    percentualDifference: number | null;
+    firstPeriodTotalPedidos: string | null;
+    secondPeriodTotalPedidos: string | null;
+  };
+}
+
+type TCompareOptions =
+  | "MONTH_COMPARATIVE"
+  | "MONTH_ACCUMULATIVE"
+  | "LAST_30_DAYS_COMPARATIVE";
+
+interface IActionReducer {
+  type: TCompareOptions;
+}
+
+interface IReducerState {
+  type: TCompareOptions | null;
+  firstDateStart: number;
+  firstDateEnd: number;
+  secondDateStart?: number;
+  secondDateEnd?: number;
 }
 
 export const CompareResults = () => {
   const params = useParams();
-  const [shouldCompare, setShouldCompare] = useState<boolean>(false);
-  const [compareResults, setCompareResults] = useState<ICompareResponse | null>(
-    null
-  );
+  const [data, setData] = useState<ICompareResponse | null>(null);
   const [, setSearchParams] = useSearchParams();
 
   const { queryParams } = useQueryString();
 
   const { fetch, taskInfo, compare, processing } = useTask();
 
-  useEffect(() => {
-    const queryParamsKeys = Object.keys(queryParams);
+  const currentMonth = new Date().getMonth();
 
-    const hasFirstIntervalQueryParam = queryParamsKeys.filter((item: string) =>
-      item.includes(FIRST_INTERVAL_QUERY_NAME)
-    ).length;
+  const defaultState: IReducerState = {
+    // type: "MONTH_COMPARATIVE",
+    type: null,
+    firstDateStart: getFirstDayOfMonthInEpoch(currentMonth - 1),
+    firstDateEnd: getLastDayOfMonthInEpoch(currentMonth - 1),
+    secondDateStart: getFirstDayOfMonthInEpoch(currentMonth),
+    secondDateEnd: getLastDayOfMonthInEpoch(currentMonth),
+  };
 
-    const hasSecondIntervalQueryParam = queryParamsKeys.filter((item: string) =>
-      item.includes(SECOND_INTERVAL_QUERY_NAME)
-    ).length;
+  const reducerCompareFunction = (
+    state: IReducerState,
+    action: IActionReducer
+  ): IReducerState => {
+    switch (action.type) {
+      case "MONTH_COMPARATIVE": {
+        return {
+          firstDateStart: getFirstDayOfMonthInEpoch(currentMonth - 1),
+          firstDateEnd: getLastDayOfMonthInEpoch(currentMonth - 1),
+          secondDateStart: getFirstDayOfMonthInEpoch(currentMonth),
+          secondDateEnd: getLastDayOfMonthInEpoch(currentMonth),
+          type: action.type,
+        };
+      }
 
-    const hasCnpjId = !!queryParams.cnpjId;
+      case "MONTH_ACCUMULATIVE": {
+        return {
+          firstDateStart: getFirstDayOfMonthInEpoch(currentMonth - 1),
+          firstDateEnd: getLastDayOfMonthInEpoch(currentMonth - 1),
+          secondDateStart: getFirstDayOfMonthInEpoch(currentMonth),
+          secondDateEnd: getLastDayOfMonthInEpoch(currentMonth),
+          type: action.type,
+        };
+      }
 
-    if (
-      hasFirstIntervalQueryParam &&
-      hasSecondIntervalQueryParam &&
-      hasCnpjId
-    ) {
-      setShouldCompare(true);
-    } else {
-      setShouldCompare(false);
+      case "LAST_30_DAYS_COMPARATIVE": {
+        return {
+          ...state,
+          firstDateStart: getEpochFromDaysAgo(60),
+          firstDateEnd: getEpochFromDaysAgo(30, "END"),
+          secondDateStart: getEpochFromDaysAgo(29),
+          secondDateEnd: new Date().getTime(),
+          type: action.type,
+        };
+      }
+
+      default: {
+        return state;
+      }
     }
-  }, [queryParams]);
+  };
+
+  const [state, dispatch] = useReducer(reducerCompareFunction, defaultState);
+
+  const handleSelectPeriodType = (type: TCompareOptions) => {
+    dispatch({ type });
+  };
 
   useEffect(() => {
     fetch(params?.id || "");
@@ -152,16 +214,6 @@ export const CompareResults = () => {
     // singleValue, placeholder, multiValue, dropdownIndicator, etc.
   };
 
-  const handleCompare = useCallback(() => {
-    if (processing) return;
-
-    compare({
-      cnpjId: queryParams.cnpjId,
-      queryStringParameters: queryParams,
-      taskId: params.id || "",
-    }).then((response) => setCompareResults(response));
-  }, [processing, queryParams]);
-
   var emphasisStyle = {
     itemStyle: {
       shadowBlur: 10,
@@ -169,79 +221,82 @@ export const CompareResults = () => {
     },
   };
 
-  const chartOptions = useMemo(() => {
-    if (!compareResults) return {};
-
-    const { chartData } = compareResults;
-
-    const generatedSeries = Object.entries(chartData).map(
-      ([key, value]: any, index: number) => {
+  const renderSeriesName = (state: IReducerState) => {
+    switch (state.type) {
+      case "MONTH_COMPARATIVE": {
         return {
-          name: key,
-          type: "bar",
-          stack: "one",
-          emphasis: emphasisStyle,
-          data: chartData[key],
+          0: { name: MONTHS_NAMES[String(currentMonth - 1)] },
+          1: { name: MONTHS_NAMES[String(currentMonth)] },
         };
       }
-    );
 
-    // return {
-    //   color: ["#80FFA5", "#00DDFF", "#37A2FF", "#FF0087", "#FFBF00"],
-    //   title: {},
-    //   tooltip: {
-    //     trigger: "axis",
-    //     axisPointer: {
-    //       type: "cross",
-    //       label: {
-    //         backgroundColor: "#6a7985",
-    //       },
-    //     },
-    //   },
-    //   legend: {
-    //     // data: marketplaceslegend,
-    //   },
-    //   toolbox: {
-    //     feature: {
-    //       saveAsImage: {},
-    //     },
-    //   },
-    //   grid: {
-    //     left: "3%",
-    //     right: "6%",
-    //     bottom: "35%",
-    //     containLabel: true,
-    //   },
-    //   xAxis: {
-    //     type: "category",
-    //     boundaryGap: false,
-    //     data: xAxisArray || [],
-    //   },
+      case "MONTH_ACCUMULATIVE": {
+        return {
+          0: { name: MONTHS_NAMES[String(currentMonth - 1)] },
+          1: { name: MONTHS_NAMES[String(currentMonth)] },
+        };
+      }
 
-    //   yAxis: {
-    //     type: "value",
-    //   },
+      case "LAST_30_DAYS_COMPARATIVE": {
+        const { firstDateEnd, firstDateStart, secondDateEnd, secondDateStart } =
+          state;
 
-    //   series: [
-    //     {
-    //       name: "Primeiro Período",
-    //       type: "line",
-    //       stack: "Total",
-    //       data: firstPeriodLineChart,
-    //     },
-    //     {
-    //       name: "Segundo Período",
-    //       type: "line",
-    //       stack: "Total",
-    //       data: secondPeriodLineChart,
-    //     },
-    //   ],
-    // };
+        return {
+          0: {
+            name:
+              formatEpochToDateDDMMYYY(firstDateStart) +
+              " a " +
+              formatEpochToDateDDMMYYY(firstDateEnd),
+          },
+          1: {
+            name:
+              formatEpochToDateDDMMYYY(secondDateStart as number) +
+              " a " +
+              formatEpochToDateDDMMYYY(secondDateEnd as number),
+          },
+        };
+      }
+
+      default: {
+        return {
+          0: { name: "Primeiro Período" },
+          1: { name: "Segundo Período" },
+        };
+      }
+    }
+  };
+
+  const salesChartOptions = useMemo(() => {
+    if (!data || processing) return {};
+
+    const { sales } = data;
+    const { firstSalesByDate, secondSalesByDate } = sales;
+
+    const serieName = renderSeriesName(state);
+
+    const series = [
+      {
+        name: serieName["0"].name,
+        type: "line",
+        smooth: true,
+        emphasis: emphasisStyle,
+        data: firstSalesByDate.y,
+      },
+      {
+        name: serieName["1"].name,
+        type: "line",
+        smooth: true,
+        emphasis: emphasisStyle,
+        data: secondSalesByDate.y,
+      },
+    ];
 
     return {
       xAxis: {
         type: "category",
-        data: ["Primeiro Período", "Segundo Período"],
+        data: firstSalesByDate.x.map((_item: any, index: number) => {
+          return index + 1;
+        }),
       },
       brush: {
         toolbox: ["rect", "polygon", "lineX", "lineY", "keep", "clear"],
@@ -251,7 +306,66 @@ export const CompareResults = () => {
         type: "value",
         name: "Reais",
       },
-      series: generatedSeries || [],
+      series: series || [],
+      grid: {
+        left: "4%",
+        bottom: "10%",
+        right: "4%",
+      },
+      tooltip: {
+        valueFormatter: (value: any) => "R$" + value.toFixed(2),
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+          label: {
+            backgroundColor: "#6a7985",
+          },
+        },
+      },
+    };
+  }, [data?.sales.firstSalesByDate.y]);
+
+  const pedidosChartOptions = useMemo(() => {
+    if (!data || processing) return {};
+
+    const { pedidos } = data;
+    const { firstPedidosByDate, secondPedidosByDate } = pedidos;
+
+    const serieName = renderSeriesName(state);
+
+    const series = [
+      {
+        name: serieName["0"].name,
+        type: "line",
+        smooth: true,
+        emphasis: emphasisStyle,
+        data: firstPedidosByDate.y,
+      },
+      {
+        name: serieName["1"].name,
+        type: "line",
+        smooth: true,
+        emphasis: emphasisStyle,
+        data: secondPedidosByDate.y,
+      },
+    ];
+
+    return {
+      xAxis: {
+        type: "category",
+        data: firstPedidosByDate.x.map((_item: any, index: number) => {
+          return index + 1;
+        }),
+      },
+      brush: {
+        toolbox: ["rect", "polygon", "lineX", "lineY", "keep", "clear"],
+        xAxisIndex: 0,
+      },
+      yAxis: {
+        type: "value",
+        name: "Pedidos",
+      },
+      series: series || [],
       grid: {
         left: "4%",
         bottom: "10%",
@@ -267,7 +381,7 @@ export const CompareResults = () => {
         },
       },
     };
-  }, [compareResults]);
+  }, [data?.pedidos.firstPedidosByDate.y]);
 
   const getTagColor = (value: string | number) => {
     if (+value < 0) {
@@ -276,11 +390,22 @@ export const CompareResults = () => {
     return colors.primary[30];
   };
 
+  useEffect(() => {
+    if (!queryParams.cnpjId || !queryParams.integrator || !state.type) return;
+
+    compare({
+      cnpjId: queryParams.cnpjId,
+      queryStringParameters: { ...queryParams, ...state },
+      taskId: params.id || "",
+    }).then((response) => setData(response));
+  }, [state.type, queryParams.cnpjId]);
+
   return (
     <Flex
       w={"100%"}
       flexDirection={"column"}
       overflow={"auto"}
+      gap={"0.5rem"}
     >
       <Flex
         alignItems={"center"}
@@ -293,7 +418,14 @@ export const CompareResults = () => {
         >
           Comparar Resultados
         </Text>
-        {processing && <Spinner />}
+
+        <Select
+          options={cnpjsOptions}
+          styles={styles}
+          isClearable
+          placeholder="Selecionar CNPJ"
+          onChange={handleSelectCnpj}
+        />
       </Flex>
       <Flex
         width={"100%"}
@@ -302,112 +434,204 @@ export const CompareResults = () => {
         fontSize={12}
         paddingRight={"6rem"}
       >
-        <Flex flexDirection={"column"}>
-          <Text mb="6px">Selecione um CNPJ </Text>
-          <Select
-            options={cnpjsOptions}
-            styles={styles}
-            isClearable
-            placeholder="Selecionar"
-            onChange={handleSelectCnpj}
-          />
-        </Flex>
         <Flex
           w="100%"
           h="100%"
           gap="2rem"
-        >
-          <Flex
-            justifyContent={"space-around"}
-            h="90%"
-            flexDirection={"column"}
-          >
-            <Text mb="6px">Selecione o período inicial</Text>
-            <DatePickerComponent
-              request={() => {}}
-              queryName={FIRST_INTERVAL_QUERY_NAME}
-            />
-          </Flex>
-          <Flex
-            flexDirection={"column"}
-            justifyContent={"space-around"}
-            h="90%"
-          >
-            <Text mb="6px">Selecione o período final</Text>
-            <DatePickerComponent
-              request={() => {}}
-              queryName={SECOND_INTERVAL_QUERY_NAME}
-            />
-          </Flex>
-        </Flex>
-        <Button
-          bg={shouldCompare ? colors.yellow : "lightgray"}
-          onClick={() => {
-            shouldCompare && !processing && handleCompare();
-          }}
-          padding="0.4rem 2rem"
-          mt="1rem"
-          opacity={shouldCompare ? "1" : "0.5"}
-        >
-          Comparar
-        </Button>
-      </Flex>
-
-      <Flex
-        mt="1.4rem"
-        flexDirection={"column"}
-      >
-        <Text
-          mb="unset"
-          fontWeight={600}
-        >
-          Variação:
-        </Text>
-        <Flex
-          gap="1rem"
-          flexWrap={"wrap"}
-          overflow={"auto"}
-        >
-          {compareResults?.percentualDifference?.map(
-            ({ percentual, store }: { store: string; percentual: string }) => (
-              <Flex
-                gap="0.5rem"
-                alignItems={"center"}
-                border="1px solid lightgray"
-                padding="5px 5px"
-                borderRadius={"10px"}
-              >
-                <Text
-                  mb="unset"
-                  fontSize={store === "Total Período" ? 16 : 14}
-                  fontWeight={store === "Total Período" ? 600 : undefined}
-                >
-                  {store}:
-                </Text>
-                <Tag
-                  text={percentual + "%"}
-                  background={getTagColor(percentual)}
-                />
-              </Flex>
-            )
-          )}
-        </Flex>
-      </Flex>
-
-      <Flex height={"100%"}>
-        <Flex
-          display={"block"}
-          width={"100%"}
-          height={"100%"}
-          sx={{
-            "& > div": {
-              maxHeight: "100% !important",
+          css={{
+            button: {
+              background: colors.gray[100],
+              ":hover": { background: colors.gray[200] },
             },
           }}
         >
-          <ReactECharts option={chartOptions} />
+          <Button
+            background={
+              state.type === "MONTH_COMPARATIVE" ? "black !important" : ""
+            }
+            color={state.type === "MONTH_COMPARATIVE" ? "white !important" : ""}
+            onClick={() => handleSelectPeriodType("MONTH_COMPARATIVE")}
+          >
+            Mês Atual/Mês Anterior
+          </Button>
+          <Button
+            background={
+              state.type === "MONTH_ACCUMULATIVE" ? "black !important" : ""
+            }
+            color={
+              state.type === "MONTH_ACCUMULATIVE" ? "white !important" : ""
+            }
+            onClick={() => handleSelectPeriodType("MONTH_ACCUMULATIVE")}
+          >
+            Mês Atual/Mês Anterior (Acumulado)
+          </Button>
+          <Button
+            background={
+              state.type === "LAST_30_DAYS_COMPARATIVE"
+                ? "black !important"
+                : ""
+            }
+            color={
+              state.type === "LAST_30_DAYS_COMPARATIVE"
+                ? "white !important"
+                : ""
+            }
+            onClick={() => handleSelectPeriodType("LAST_30_DAYS_COMPARATIVE")}
+          >
+            Últimos 30 dias (Comparativo)
+          </Button>
         </Flex>
       </Flex>
+
+      {!queryParams.cnpjId || !state.type ? (
+        <Flex
+          height={"100%"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          flexDirection={"column"}
+          opacity={"0.7"}
+        >
+          <CiCloudOff size={40} />
+          <Text>Selecione uma loja para comparar</Text>
+        </Flex>
+      ) : (
+        <Flex
+          height={"100%"}
+          overflow={"auto"}
+          flexDirection={"column"}
+          gap="1rem"
+        >
+          {processing ? (
+            <Flex
+              height={"100%"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <Spinner />
+            </Flex>
+          ) : (
+            <Flex
+              display={"block"}
+              width={"100%"}
+              height={"100%"}
+              sx={{
+                "& > div": {
+                  maxHeight: "100% !important",
+                },
+              }}
+            >
+              <Flex flexDirection={"column"}>
+                <Flex
+                  flexDirection={"column"}
+                  css={{
+                    p: { marginBottom: "unset" },
+                    div: {
+                      justifyContent: "space-between",
+                    },
+                  }}
+                  width={"20rem"}
+                >
+                  <Flex>
+                    <Text
+                      mb="unset"
+                      fontWeight={800}
+                      fontSize={18}
+                    >
+                      Faturamento
+                    </Text>
+                    <Tag
+                      text={data?.sales.percentualDifference + " %" || ""}
+                      background={getTagColor(
+                        data?.sales.percentualDifference || 0
+                      )}
+                    />
+                  </Flex>
+                  <Flex gap="1rem">
+                    <Text>{renderSeriesName(state)[0].name}</Text>
+                    <Text fontWeight={700}>
+                      R$ {data?.sales.firstPeriodTotalSales}
+                    </Text>
+                  </Flex>
+                  <Flex gap="1rem">
+                    <Text>{renderSeriesName(state)[1].name}</Text>
+                    <Text fontWeight={700}>
+                      R$ {data?.sales.secondPeriodTotalSales}
+                    </Text>
+                  </Flex>
+                </Flex>
+              </Flex>
+
+              <ReactECharts option={salesChartOptions} />
+            </Flex>
+          )}
+
+          {processing ? (
+            <Flex
+              height={"100%"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <Spinner />
+            </Flex>
+          ) : (
+            <Flex
+              display={"block"}
+              width={"100%"}
+              height={"100%"}
+              sx={{
+                "& > div": {
+                  maxHeight: "100% !important",
+                },
+              }}
+            >
+              <Flex flexDirection={"column"}>
+                <Flex
+                  flexDirection={"column"}
+                  css={{
+                    p: { marginBottom: "unset" },
+                    div: {
+                      justifyContent: "space-between",
+                    },
+                  }}
+                  width={"18rem"}
+                >
+                  <Flex
+                    w={"100%"}
+                    justifyContent={"inherit"}
+                  >
+                    <Text
+                      mb="unset"
+                      fontWeight={800}
+                      fontSize={18}
+                    >
+                      Quantidade de Pedidos
+                    </Text>
+                    <Tag
+                      text={data?.pedidos.percentualDifference + " %" || ""}
+                      background={getTagColor(
+                        data?.pedidos.percentualDifference || 0
+                      )}
+                    />
+                  </Flex>
+                  <Flex gap="1rem">
+                    <Text>{renderSeriesName(state)[0].name}</Text>
+                    <Text fontWeight={700}>
+                      {data?.pedidos.firstPeriodTotalPedidos}
+                    </Text>
+                  </Flex>
+                  <Flex gap="1rem">
+                    <Text>{renderSeriesName(state)[1].name}</Text>
+                    <Text fontWeight={700}>
+                      {data?.pedidos.secondPeriodTotalPedidos}
+                    </Text>
+                  </Flex>
+                </Flex>
+              </Flex>
+              <ReactECharts option={pedidosChartOptions} />
+            </Flex>
+          )}
+        </Flex>
+      )}
     </Flex>
   );
 };

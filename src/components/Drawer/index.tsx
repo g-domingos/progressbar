@@ -35,7 +35,8 @@ interface IDrawerArrayInput {
   valueType?: string;
   disabled?: boolean;
   hideButton?: boolean;
-  onClick?: (values?: any) => void;
+  onRemove?: (values?: any) => void;
+  onAdd?: (values?: any) => void;
 }
 
 const DrawerArrayInput = ({
@@ -47,7 +48,8 @@ const DrawerArrayInput = ({
   disabled,
   valueType,
   hideButton,
-  onClick,
+  onRemove,
+  onAdd,
 }: IDrawerArrayInput) => {
   const {
     register,
@@ -63,12 +65,20 @@ const DrawerArrayInput = ({
 
   const shouldHideButton = name === "api" && fields.length > 0;
 
-  const handleClick = (fieldValues: any, index: number) => {
-    if (onClick) {
-      onClick(fieldValues);
+  const handleRemove = (fieldValues: any, index: number) => {
+    if (onRemove) {
+      onRemove(fieldValues);
     }
 
     remove(index);
+  };
+
+  const handleAdd = (fieldValues: any) => {
+    if (onAdd) {
+      onAdd(fieldValues);
+    }
+
+    append(fieldValues);
   };
 
   return (
@@ -101,7 +111,7 @@ const DrawerArrayInput = ({
               }}
               type="button"
               onClick={() =>
-                append({
+                handleAdd({
                   name: placeholder,
                   value: "",
                   id: new Date().getTime(),
@@ -146,7 +156,7 @@ const DrawerArrayInput = ({
           </Text>
           <RoundButton
             icon={<MdDelete />}
-            handleClick={() => handleClick(field, index)}
+            handleClick={() => handleRemove(field, index)}
           />
         </Flex>
       ))}

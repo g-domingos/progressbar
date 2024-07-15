@@ -35,6 +35,7 @@ export const CnpjForm = ({
   const params = useParams();
 
   const [apisToDelete, setApisToDelete] = useState<any[]>([]);
+  const [tinyApiToAdd, setTinyApiToAdd] = useState<any>();
 
   const { request, processing } = useApi({
     path: `/task/${params.id}`,
@@ -77,7 +78,7 @@ export const CnpjForm = ({
       request({
         method: "put",
         pathParameters: "/edit-info",
-        body: { values, apisToDelete },
+        body: { values, apisToDelete, tinyApiToAdd },
       })
         .then(() => {
           toast({
@@ -120,6 +121,10 @@ export const CnpjForm = ({
 
   const handleDeleteAPI = (values: any) => {
     setApisToDelete([...apisToDelete, { cnpjId: cnpj?.id, sk: values.sk }]);
+  };
+
+  const handleAddTinyAPI = (values: any) => {
+    setTinyApiToAdd(values);
   };
 
   return (
@@ -173,7 +178,9 @@ export const CnpjForm = ({
         name="api"
         label="Plataforma"
         value="Chave API"
-        onClick={handleDeleteAPI}
+        onRemove={handleDeleteAPI}
+        onAdd={handleAddTinyAPI}
+        disabled={!!cnpj?.api.length}
       />
       <Drawer.DrawerArrayInput
         title="Mapear nome de lojas (Bling)"
