@@ -203,7 +203,6 @@ export const Cenario = ({
             alignItems={"center"}
             gap="1rem"
           >
-            {/* <CompareModal /> */}
             <DatePickerComponent
               request={fetchSummaryByCNPJ}
               defaultDates={defaultInitialDate}

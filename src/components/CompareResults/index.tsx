@@ -16,6 +16,7 @@ import {
 import { LoadingSpinner } from "../LoadingSpinning";
 import { CiCloudOff } from "react-icons/ci";
 import { Tag } from "../Tag";
+import { startOfYear } from "date-fns";
 
 interface ICompareResponse {
   sales: {
@@ -50,6 +51,7 @@ interface IReducerState {
   secondDateStart?: number;
   secondDateEnd?: number;
 }
+const HOUR_EPOCH = 60 * 60 * 1000;
 
 export const CompareResults = () => {
   const params = useParams();
@@ -99,9 +101,9 @@ export const CompareResults = () => {
       case "LAST_30_DAYS_COMPARATIVE": {
         return {
           ...state,
-          firstDateStart: getEpochFromDaysAgo(60),
-          firstDateEnd: getEpochFromDaysAgo(30, "END"),
-          secondDateStart: getEpochFromDaysAgo(29),
+          firstDateStart: getEpochFromDaysAgo(61),
+          firstDateEnd: getEpochFromDaysAgo(31, "END"),
+          secondDateStart: getEpochFromDaysAgo(30),
           secondDateEnd: new Date().getTime(),
           type: action.type,
         };
@@ -244,12 +246,14 @@ export const CompareResults = () => {
         return {
           0: {
             name:
+              "Período: " +
               formatEpochToDateDDMMYYY(firstDateStart) +
               " a " +
-              formatEpochToDateDDMMYYY(firstDateEnd),
+              formatEpochToDateDDMMYYY(firstDateEnd - HOUR_EPOCH * 3),
           },
           1: {
             name:
+              "Período: " +
               formatEpochToDateDDMMYYY(secondDateStart as number) +
               " a " +
               formatEpochToDateDDMMYYY(secondDateEnd as number),
@@ -265,6 +269,23 @@ export const CompareResults = () => {
       }
     }
   };
+
+  console.log({
+    firstStart: [
+      state.firstDateStart,
+      new Date(state.firstDateStart).toISOString(),
+    ],
+    firstEnd: [state.firstDateEnd, new Date(state.firstDateEnd).toISOString()],
+
+    secondStart: [
+      state.secondDateStart,
+      new Date(state.secondDateStart || "").toISOString(),
+    ],
+    secondEnd: [
+      state.secondDateEnd,
+      new Date(state.secondDateEnd || "").toISOString(),
+    ],
+  });
 
   const salesChartOptions = useMemo(() => {
     if (!data || processing) return {};
@@ -298,10 +319,6 @@ export const CompareResults = () => {
           return index + 1;
         }),
       },
-      brush: {
-        toolbox: ["rect", "polygon", "lineX", "lineY", "keep", "clear"],
-        xAxisIndex: 0,
-      },
       yAxis: {
         type: "value",
         name: "Reais",
@@ -314,6 +331,45 @@ export const CompareResults = () => {
       },
       tooltip: {
         valueFormatter: (value: any) => "R$" + value.toFixed(2),
+        formatter:
+          state.type !== "LAST_30_DAYS_COMPARATIVE"
+            ? null
+            : (params: any) => {
+                const xValue = params[0].axisValue;
+
+                const yValue1 = (params[0].data || 0)
+                  .toFixed(2)
+                  .replace(".", ",");
+                const yValue2 = (params[1].data || 0)
+                  .toFixed(2)
+                  .replace(".", ",");
+
+                const firstDate = firstSalesByDate.x[xValue - 1]
+                  .split("-")
+                  .reverse()
+                  .join("/");
+                const secondDate = secondSalesByDate.x[xValue - 1]
+                  .split("-")
+                  .reverse()
+                  .join("/");
+
+                const html = `
+            <div>
+              <div>
+                <span style="display:inline-block;margin-right:5px;border-radius:50%;width:10px;height:10px;background-color:${params[0].color};"></span>
+                <span>${firstDate}</span>
+                <span style="font-size: 15px; font-weight: 700; margin-left: 20px">R$ ${yValue1}</span>
+              </div>
+             <div>
+                <span style="display:inline-block;margin-right:5px;border-radius:50%;width:10px;height:10px;background-color:${params[1].color};"></span>
+                <span>${secondDate}</span>
+                <span style="font-size: 15px; font-weight: 700; margin-left: 20px">R$ ${yValue2}</span>
+              </div>
+            </div>
+          `;
+
+                return html;
+              },
         trigger: "axis",
         axisPointer: {
           type: "cross",
@@ -357,10 +413,7 @@ export const CompareResults = () => {
           return index + 1;
         }),
       },
-      brush: {
-        toolbox: ["rect", "polygon", "lineX", "lineY", "keep", "clear"],
-        xAxisIndex: 0,
-      },
+
       yAxis: {
         type: "value",
         name: "Pedidos",
@@ -373,6 +426,42 @@ export const CompareResults = () => {
       },
       tooltip: {
         trigger: "axis",
+        formatter:
+          state.type !== "LAST_30_DAYS_COMPARATIVE"
+            ? null
+            : (params: any) => {
+                const xValue = params[0].axisValue;
+
+                const yValue1 = params[0].data || 0;
+
+                const yValue2 = params[1].data || 0;
+
+                const firstDate = firstPedidosByDate.x[xValue - 1]
+                  .split("-")
+                  .reverse()
+                  .join("/");
+                const secondDate = secondPedidosByDate.x[xValue - 1]
+                  .split("-")
+                  .reverse()
+                  .join("/");
+
+                const html = `
+            <div>
+              <div>
+                <span style="display:inline-block;margin-right:5px;border-radius:50%;width:10px;height:10px;background-color:${params[0].color};"></span>
+                <span>${firstDate}</span>
+                <span style="font-size: 15px; font-weight: 700; margin-left: 20px">${yValue1}</span>
+              </div>
+             <div>
+                <span style="display:inline-block;margin-right:5px;border-radius:50%;width:10px;height:10px;background-color:${params[1].color};"></span>
+                <span>${secondDate}</span>
+                <span style="font-size: 15px; font-weight: 700; margin-left: 20px">${yValue2}</span>
+              </div>
+            </div>
+          `;
+
+                return html;
+              },
         axisPointer: {
           type: "cross",
           label: {
@@ -529,7 +618,7 @@ export const CompareResults = () => {
                       justifyContent: "space-between",
                     },
                   }}
-                  width={"20rem"}
+                  width={"24rem"}
                 >
                   <Flex>
                     <Text
@@ -593,7 +682,7 @@ export const CompareResults = () => {
                       justifyContent: "space-between",
                     },
                   }}
-                  width={"18rem"}
+                  width={"19rem"}
                 >
                   <Flex
                     w={"100%"}

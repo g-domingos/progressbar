@@ -55,6 +55,7 @@ export const StackedLineChart = ({
       //   text: "Histórico",
     },
     tooltip: {
+      confine: true,
       trigger: "axis",
       axisPointer: {
         type: "cross",
