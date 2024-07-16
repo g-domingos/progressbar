@@ -19,6 +19,8 @@ import { useManagers } from "../../hooks/useManagers";
 import { ManagerForm } from "../../components/ManagerForm";
 import { CiCloudOff } from "react-icons/ci";
 import { NoData } from "../../components/NoData";
+import { useUsers } from "../../hooks/useUsers";
+import { AdminUserForm } from "../../components/AdminUserForm";
 
 interface IMessageModels {
   id: number;
@@ -26,6 +28,19 @@ interface IMessageModels {
   messageTemplate: string;
 }
 
+interface IAdminUsers {
+  email: string;
+  status: string;
+  id: string;
+}
+
+const ADMIN_USERS_STATUS: any = {
+  CONFIRMED: { label: "Confirmado", color: colors.bling },
+  FORCE_CHANGE_PASSWORD: {
+    label: "Primeiro Acesso Pendente",
+    color: colors.tiny,
+  },
+};
 export const Settings = () => {
   const toast = useToast();
 
@@ -37,10 +52,18 @@ export const Settings = () => {
 
   const { managers, getManagers, deleteManager, setManagers } = useManagers();
 
+  const { fetchUsersAdmin, usersAdmin, deleteAdmin } = useUsers();
+
   const {
     isOpen: isOpenManagerForm,
     onClose: onCloseManagerForm,
     onOpen: onOpenManagerForm,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenAdminUser,
+    onClose: onCloseAdminUser,
+    onOpen: onOpenAdminUser,
   } = useDisclosure();
 
   const fetchMessageModels = () => {
@@ -54,6 +77,7 @@ export const Settings = () => {
   useEffect(() => {
     fetchMessageModels();
     getManagers();
+    fetchUsersAdmin();
   }, []);
 
   const handleChange = ({
@@ -133,6 +157,16 @@ export const Settings = () => {
     setEditManager(manager);
   };
 
+  const handleDeleteAdmin = ({ id }: { id: string }) => {
+    deleteAdmin({ id }).then(() => {
+      toast({
+        description: "Usuário Admin Deletado com sucesso!",
+        status: "success",
+      });
+      fetchUsersAdmin();
+    });
+  };
+
   useEffect(() => {
     if (editManager) {
       onOpenManagerForm();
@@ -150,6 +184,101 @@ export const Settings = () => {
         gap="1rem"
         overflow={"auto"}
       >
+        <ExpandableItem title="Usuários Admin">
+          <Flex
+            flexDirection={"column"}
+            w="80%"
+            background={colors.gray}
+            borderRadius={"10px"}
+            gap="0.5rem"
+            padding="1rem 2rem"
+          >
+            <Flex
+              w={"100%"}
+              justifyContent={"flex-end"}
+            >
+              <AdminUserForm
+                refresh={fetchUsersAdmin}
+                isOpen={isOpenAdminUser}
+                onOpen={onOpenAdminUser}
+                onClose={onCloseAdminUser}
+              />
+            </Flex>
+            {usersAdmin.map((item: IAdminUsers, index: number) => (
+              <Flex
+                gap="1rem"
+                justifyContent={"space-between"}
+                alignItems={"flex-end"}
+              >
+                <Flex width={"50%"}>
+                  <Flex
+                    flexDirection={"column"}
+                    width={"100%"}
+                  >
+                    <Text
+                      w="45%"
+                      mb="0.2rem"
+                      fontSize={12}
+                    >
+                      Email
+                    </Text>
+                    <Flex
+                      gap="1rem"
+                      alignItems={"center"}
+                      width={"100%"}
+                    >
+                      <Text
+                        borderRadius={"6px"}
+                        background={"white"}
+                        mb="unset"
+                        height={"2rem"}
+                        padding="5px 9px"
+                        w={"100%"}
+                      >
+                        {item.email}
+                      </Text>
+                      <Tooltip
+                        label={ADMIN_USERS_STATUS[item.status].label}
+                        bg="black"
+                      >
+                        <Flex
+                          width={"10px"}
+                          height="10px"
+                          background={ADMIN_USERS_STATUS[item.status].color}
+                          color="white"
+                          borderRadius={"10px"}
+                        ></Flex>
+                      </Tooltip>
+                    </Flex>
+                  </Flex>
+                </Flex>
+
+                <Flex
+                  h={"100%"}
+                  alignItems={"flex-end"}
+                  className="buttonsContainers"
+                  css={{
+                    button: {
+                      minWidth: "unset",
+                      width: "25px",
+                      height: "25px",
+                    },
+                  }}
+                  gap="0.6rem"
+                >
+                  <Button
+                    padding={"unset"}
+                    borderRadius={"100%"}
+                    onClick={() => handleDeleteAdmin({ id: item.id })}
+                    _hover={{ background: "white" }}
+                  >
+                    <MdDelete />
+                  </Button>
+                </Flex>
+              </Flex>
+            ))}
+          </Flex>
+        </ExpandableItem>
         <ExpandableItem title={"Gerentes Responsáveis"}>
           <Flex
             flexDirection={"column"}
