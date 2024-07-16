@@ -38,7 +38,6 @@ export function getEpochFromDaysAgo(days: number, type?: "START" | "END") {
     today = new Date().setHours(23, 58, 58, 0);
   }
 
-  console.log("TODAY ", today - days * DAY_EPOCH);
 
   return today - days * DAY_EPOCH;
 }
@@ -63,7 +62,6 @@ export const MONTHS_NAMES: any = {
 export function formatEpochToDateDDMMYYY(epoch: number) {
   const dateFromEpoch = new Date(epoch).toISOString();
 
-  console.log("dateFromEpoch", dateFromEpoch);
 
   const [date, hour] = dateFromEpoch.split("T");
 

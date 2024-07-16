@@ -270,23 +270,6 @@ export const CompareResults = () => {
     }
   };
 
-  console.log({
-    firstStart: [
-      state.firstDateStart,
-      new Date(state.firstDateStart).toISOString(),
-    ],
-    firstEnd: [state.firstDateEnd, new Date(state.firstDateEnd).toISOString()],
-
-    secondStart: [
-      state.secondDateStart,
-      new Date(state.secondDateStart || "").toISOString(),
-    ],
-    secondEnd: [
-      state.secondDateEnd,
-      new Date(state.secondDateEnd || "").toISOString(),
-    ],
-  });
-
   const salesChartOptions = useMemo(() => {
     if (!data || processing) return {};
 

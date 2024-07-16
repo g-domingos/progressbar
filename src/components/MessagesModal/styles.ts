@@ -6,19 +6,12 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-height: 500px;
+  height: 100%;
   padding: 20px;
   background: #f3ecec;
   border-radius: 8px;
   border: none;
-  width: 100% !important;
-
-  & > label {
-    
-    width: 100%;
-    margin-bottom: 15px;
-    font-weight: 700;
-  }
+  width: 85vw;
 `;
 
 export const ConversationContainer = styled.div`
@@ -72,7 +65,7 @@ export const AgentsContainer = styled.div`
   border: 5px solid lightgray;
   border-radius: 10px;
   width: 100%;
-  height: 100%;
+  height: 95%;
   display: flex;
   gap: 10px;
   background: lightgray;
@@ -159,6 +152,7 @@ export const LoadingDiv = styled.div`
   height: 100%;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 `;
 
 export const Header = styled.div`
