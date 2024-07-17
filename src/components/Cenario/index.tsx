@@ -140,82 +140,86 @@ export const Cenario = ({
   }, []);
 
   return (
-    <Flex
-      borderBottom="1px solid lightgray"
-      display={"grid"}
-      padding="1rem 0"
-      gap="1rem"
-      position={"relative"}
-      gridTemplateColumns={gridTemplateColumns}
-      height={256 + height}
-    >
-      <Flex position={"absolute"}>
+    <>
+      <Flex
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
         <Tag
           text={integrator}
           background={renderBackgroundColor(integrator)}
           color="white"
         />
       </Flex>
-
       <Flex
-        className="Antes"
-        borderRight={"1px solid lightgray"}
-        flexDirection={"column"}
-      >
-        <Flex transform={"scale(0.90)"}>
-          <SummaryCard
-            data={data?.currentCnpj?.data || []}
-            extraInfo={data?.currentCnpj?.extraInfo}
-            document={data?.currentCnpj?.document}
-            total={data?.totalSummedValueBeforeIntegracomm}
-            hideActions
-          />
-        </Flex>
-      </Flex>
-      <Flex
-        className="Depois"
-        maxH={"14rem"}
+        borderBottom="1px solid lightgray"
+        display={"grid"}
+        padding="1rem 0"
+        gap="1rem"
+        position={"relative"}
+        gridTemplateColumns={gridTemplateColumns}
+        height={256 + height}
       >
         <Flex
-          width={"40%"}
-          justifyContent={"space-between"}
-        >
-          <SummaryCard
-            data={data?.summaryData || []}
-            document={data?.currentCnpj?.document}
-            hideActions
-            total={data?.totalSummedValuePedidosAfterIntegracomm}
-          />
-          <PieChart
-            data={data?.pieChart}
-            total={data.totalQuantityPedidos}
-          />
-        </Flex>
-        <Flex
-          flex={1}
+          className="Antes"
+          borderRight={"1px solid lightgray"}
           flexDirection={"column"}
-          paddingRight={"2rem"}
-          height={"14rem"}
         >
-          <Flex
-            justifyContent={"flex-end"}
-            padding={"0 1rem"}
-            alignItems={"center"}
-            gap="1rem"
-          >
-            <DatePickerComponent
-              request={fetchSummaryByCNPJ}
-              defaultDates={defaultInitialDate}
-              hideClearButton
+          <Flex transform={"scale(0.90)"}>
+            <SummaryCard
+              data={data?.currentCnpj?.data || []}
+              extraInfo={data?.currentCnpj?.extraInfo}
+              document={data?.currentCnpj?.document}
+              total={data?.totalSummedValueBeforeIntegracomm}
+              hideActions
             />
           </Flex>
-          <StackedLineChart
-            processing={processing}
-            data={data?.lineChart}
-            colors={data?.colorsByMarketPlace}
-          />
+        </Flex>
+        <Flex
+          className="Depois"
+          maxH={"14rem"}
+        >
+          <Flex
+            width={"40%"}
+            justifyContent={"space-between"}
+          >
+            <SummaryCard
+              data={data?.summaryData || []}
+              document={data?.currentCnpj?.document}
+              hideActions
+              total={data?.totalSummedValuePedidosAfterIntegracomm}
+            />
+            <PieChart
+              data={data?.pieChart}
+              total={data.totalQuantityPedidos}
+            />
+          </Flex>
+          <Flex
+            flex={1}
+            flexDirection={"column"}
+            paddingRight={"2rem"}
+            height={"14rem"}
+          >
+            <Flex
+              justifyContent={"flex-end"}
+              padding={"0 1rem"}
+              alignItems={"center"}
+              gap="1rem"
+            >
+              <DatePickerComponent
+                request={fetchSummaryByCNPJ}
+                defaultDates={defaultInitialDate}
+                hideClearButton
+              />
+            </Flex>
+            <StackedLineChart
+              processing={processing}
+              data={data?.lineChart}
+              colors={data?.colorsByMarketPlace}
+            />
+          </Flex>
         </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 };

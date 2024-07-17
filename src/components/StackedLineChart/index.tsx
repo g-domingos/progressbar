@@ -1,6 +1,7 @@
 import { Text, Flex, Spinner } from "@chakra-ui/react";
 import ReactECharts from "echarts-for-react";
 import { CiCloudOff } from "react-icons/ci";
+import { formatEpochToDateDDMMYYY } from "../../utils/datesUtils";
 
 export const StackedLineChart = ({
   data,
@@ -12,6 +13,13 @@ export const StackedLineChart = ({
   processing?: boolean;
 }) => {
   const marketplaceslegend: any[] = [];
+  const marketplacesColors: string[] = [];
+
+  const xAxis: string[] =
+    data?.xAxis.map((item) => {
+      return formatEpochToDateDDMMYYY(+item);
+    }) || [];
+
   const generatedSerie = Object.entries(data?.data || {}).map(
     ([ecommerce, chartData]: any) => {
       const datesOnChartData = chartData.map(
@@ -23,11 +31,15 @@ export const StackedLineChart = ({
       //Se o gráfico não tiver valores de venda para determinado dia, irá colocar como 0
       data?.xAxis?.forEach((item: string) => {
         if (!datesOnChartData.includes(item)) {
-          chartData.push({ date: item, value: 0 });
+          chartData.push({ date: +item, value: 0, epoch: +item });
         }
       });
 
+      //Gerar as legendas
       marketplaceslegend.push(ecommerce);
+      //Adicionar cores das legendas
+      marketplacesColors.push(colors[ecommerce]);
+
       return {
         name: ecommerce,
         type: "line",
@@ -44,13 +56,15 @@ export const StackedLineChart = ({
         emphasis: {
           focus: "series",
         },
-        data: chartData,
+        data: chartData.sort(
+          (a: { epoch: number }, b: { epoch: number }) => a.epoch - b.epoch
+        ),
       };
     }
   );
 
   const option = {
-    color: ["#80FFA5", "#00DDFF", "#37A2FF", "#FF0087", "#FFBF00"],
+    color: marketplacesColors,
     title: {
       //   text: "Histórico",
     },
@@ -82,7 +96,7 @@ export const StackedLineChart = ({
       {
         type: "category",
         boundaryGap: false,
-        data: data?.xAxis || [],
+        data: xAxis,
       },
     ],
     yAxis: [

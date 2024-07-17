@@ -7,7 +7,15 @@ interface ITag {
   padding?: string;
   fontSize?: number;
 }
-export const Tag = ({ fontSize, text, background, color, padding }: ITag) => {
+
+export const Tag = ({
+  fontSize,
+  text,
+  background,
+  color,
+  padding,
+  ...rest
+}: ITag) => {
   return (
     <Flex>
       <Text
