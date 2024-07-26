@@ -8,6 +8,10 @@ interface ITag {
   fontSize?: number;
 }
 
+type DivProps = React.HTMLProps<HTMLDivElement>;
+
+type AllTogether = ITag & DivProps;
+
 export const Tag = ({
   fontSize,
   text,
@@ -15,9 +19,12 @@ export const Tag = ({
   color,
   padding,
   ...rest
-}: ITag) => {
+}: AllTogether) => {
   return (
-    <Flex>
+    <div
+      style={{ display: "flex" }}
+      {...rest}
+    >
       <Text
         background={background || "lightgray"}
         color={color || "black"}
@@ -31,6 +38,6 @@ export const Tag = ({
       >
         {text}
       </Text>
-    </Flex>
+    </div>
   );
 };

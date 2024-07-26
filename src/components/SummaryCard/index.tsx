@@ -117,6 +117,14 @@ export const SummaryCard = ({
                   background={card.color}
                   fontSize={10}
                   padding="2px 5px"
+                  width={"2rem"}
+                  style={{
+                    maxWidth: "7rem",
+                    overflow: "hidden",
+                    maxHeight: "2.4rem",
+                    textOverflow: "ellipsis",
+                    flexWrap: "nowrap",
+                  }}
                 />
               </Flex>
               <Flex
