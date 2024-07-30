@@ -101,9 +101,9 @@ export const CompareResults = () => {
       case "LAST_30_DAYS_COMPARATIVE": {
         return {
           ...state,
-          firstDateStart: getEpochFromDaysAgo(61),
+          firstDateStart: getEpochFromDaysAgo(60),
           firstDateEnd: getEpochFromDaysAgo(31, "END"),
-          secondDateStart: getEpochFromDaysAgo(30),
+          secondDateStart: getEpochFromDaysAgo(29),
           secondDateEnd: new Date().getTime(),
           type: action.type,
         };

@@ -1,20 +1,22 @@
-import { LuBarChart3 } from "react-icons/lu";
-import { Text, Flex, Button, Tooltip } from "@chakra-ui/react";
+import { Text, Flex, Button, Tooltip, filter } from "@chakra-ui/react";
 import { PieChart } from "../PieChart";
 import { StackedLineChart } from "../StackedLineChart";
 import { SummaryCard } from "../SummaryCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useApi } from "../../hooks/useApi";
 import { useParams } from "react-router-dom";
 import { DatePickerComponent } from "../DatePickerComponent";
 import { Tag } from "../Tag";
 import colors from "../../styles/theme";
 import { CompareModal } from "../CompareModal";
+import { useTask } from "../../hooks/useTask";
 
 interface ICenario {
   cnpjId: string;
   gridTemplateColumns: string;
   integrator?: string;
+  apiId: string;
+  taskId?: string;
 }
 
 interface ICenarioAPIResponse {
@@ -53,10 +55,15 @@ export const Cenario = ({
   cnpjId,
   gridTemplateColumns,
   integrator = "",
+  apiId,
+  taskId,
 }: ICenario) => {
   const [data, setData] = useState<ICenarioAPIResponse>(EMPTY_RESPONSE);
+  const [selectedFilters, setSelectedFilters] = useState<any[]>([]);
 
   const params = useParams();
+
+  const { fetchFilters, filters = [] } = useTask();
 
   const { request, processing } = useApi({ path: `/task/${params.id}` });
 
@@ -80,17 +87,18 @@ export const Cenario = ({
   const fetchSummaryByCNPJ = async ({
     minDate,
     maxDate,
+    situacaosId = JSON.parse(localStorage.getItem("filters" + integrator) || "[]"),
   }: {
     minDate?: number;
     maxDate?: number;
+    situacaosId?: any[];
   }) => {
-    if (processing) return;
-
     const queryParameters: any =
       {
         integrator: integrator,
         minDate: minDate || "",
         maxDate: maxDate || "",
+        situacaosId,
       } || {};
 
     return request({
@@ -115,10 +123,12 @@ export const Cenario = ({
   };
 
   useEffect(() => {
-    if (!processing && cnpjId) {
-      const { minDate, maxDate } = defaultDate();
-      fetchSummaryByCNPJ({ minDate, maxDate });
-    }
+    fetchFilters({
+      integrador: integrator || "",
+      taskId: taskId || "",
+      cnpjId,
+      apiId,
+    });
   }, [cnpjId]);
 
   const [height, setHeight] = useState<number>(0);
@@ -139,17 +149,73 @@ export const Cenario = ({
     };
   }, []);
 
+  const handleSelectFilters = ({ id }: { id: number }) => {
+    const isAlreadySelected = selectedFilters.includes(id);
+
+    if (isAlreadySelected) {
+      const filtered = selectedFilters.filter((item: any) => item !== id);
+      setSelectedFilters(filtered);
+    } else {
+      setSelectedFilters([...selectedFilters, id]);
+    }
+  };
+
+  useEffect(() => {
+    const filtersOnStorage = JSON.parse(
+      localStorage.getItem("filters" + integrator ) || "[]"
+    );
+
+    if (filtersOnStorage.length) {
+      setSelectedFilters(filtersOnStorage);
+      return;
+    }
+
+    const allFilters = filters.map((item: any) => {
+      return item.id;
+    });
+
+    localStorage.setItem("filters" + integrator, JSON.stringify(allFilters));
+    setSelectedFilters(allFilters);
+  }, [filters]);
+
+  useEffect(() => {
+    localStorage.setItem("filters" + integrator, JSON.stringify(selectedFilters));
+  }, [selectedFilters]);
+
   return (
     <>
       <Flex
         alignItems={"center"}
-        justifyContent={"center"}
+        justifyContent={filters.length ? "flex-end" : "center"}
+        gap="2rem"
       >
         <Tag
           text={integrator}
           background={renderBackgroundColor(integrator)}
           color="white"
         />
+        <Flex
+          className="filters"
+          gap="0.5rem"
+        >
+          {filters.map((item: { id: number; nome: string }) => {
+            const isSelected = selectedFilters.includes(item.id);
+
+            return (
+              <Button
+                background={isSelected ? "black" : ""}
+                color={isSelected ? "white" : ""}
+                minW="unset"
+                height={"unset"}
+                padding="2px 5px"
+                fontSize={12}
+                onClick={() => handleSelectFilters({ id: item.id })}
+              >
+                {item.nome}
+              </Button>
+            );
+          })}
+        </Flex>
       </Flex>
       <Flex
         borderBottom="1px solid lightgray"
@@ -164,8 +230,9 @@ export const Cenario = ({
           className="Antes"
           borderRight={"1px solid lightgray"}
           flexDirection={"column"}
+          paddingRight={"0.5rem"}
         >
-          <Flex transform={"scale(0.90)"}>
+          <Flex>
             <SummaryCard
               data={data?.currentCnpj?.data || []}
               extraInfo={data?.currentCnpj?.extraInfo}
@@ -209,6 +276,7 @@ export const Cenario = ({
               <DatePickerComponent
                 request={fetchSummaryByCNPJ}
                 defaultDates={defaultInitialDate}
+                filters={selectedFilters}
                 hideClearButton
               />
             </Flex>

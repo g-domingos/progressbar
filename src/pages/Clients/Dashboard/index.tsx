@@ -92,6 +92,8 @@ export const Dashboard = () => {
                 cnpjId={item.id}
                 gridTemplateColumns={gridTemplateColumns}
                 integrator={item?.integrator}
+                taskId={params.id}
+                apiId={cnpjs[0]?.api[0]?.id}
               />
             ))
           )}

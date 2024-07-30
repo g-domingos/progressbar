@@ -3,6 +3,7 @@ import { Tag } from "../Tag";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { RoundButton } from "../RoundButton";
 import { useMemo } from "react";
+import { getColor } from "../../utils/colorsFunctions";
 
 export interface ICardDetail {
   name: string;
@@ -114,12 +115,12 @@ export const SummaryCard = ({
               <Flex>
                 <Tag
                   text={card.name}
-                  background={card.color}
+                  background={card.color || getColor(card.name)}
                   fontSize={10}
                   padding="2px 5px"
                   width={"2rem"}
                   style={{
-                    maxWidth: "7rem",
+                    maxWidth: "5.6rem",
                     overflow: "hidden",
                     maxHeight: "2.4rem",
                     textOverflow: "ellipsis",

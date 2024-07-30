@@ -18,6 +18,7 @@ interface IDatePickerComponent {
   defaultDates?: { minDate: number; maxDate: number };
   hideClearButton?: boolean;
   queryName?: string;
+  filters?: any[];
 }
 
 export const DatePickerComponent = ({
@@ -25,6 +26,7 @@ export const DatePickerComponent = ({
   defaultDates,
   hideClearButton,
   queryName,
+  filters = [],
 }: IDatePickerComponent) => {
   const [show, setShow] = useState<boolean>(false);
   const [startDate, setStartDate] = useState<any>();
@@ -91,7 +93,7 @@ export const DatePickerComponent = ({
       setSearchParams(queryParams);
     }
 
-    request({});
+    request({ situacaosId: filters || [] });
   };
 
   const formatDate = (value: Date) => {
@@ -120,9 +122,10 @@ export const DatePickerComponent = ({
       request({
         minDate: start.getTime(),
         maxDate: end.getTime(),
+        situacaosId: filters || [],
       });
     }
-  }, [endDate]);
+  }, [endDate, filters?.length]);
 
   return (
     <Container ref={ref}>

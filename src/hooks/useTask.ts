@@ -51,11 +51,34 @@ export const useTask = () => {
     });
   };
 
+  const [filters, setFilters] = useState<any[]>([]);
+  const fetchFilters = ({
+    integrador,
+    taskId,
+    cnpjId,
+    apiId,
+  }: {
+    integrador: string;
+    taskId: string;
+    cnpjId: string;
+    apiId: string;
+  }) => {
+    request({
+      method: "get",
+      pathParameters: `/${taskId}/cnpj/${cnpjId}`,
+      queryStringParameters: { integrador, apiId },
+    }).then((response) => {
+      setFilters(response.data || []);
+    });
+  };
+
   return {
     taskInfo,
     fetch,
     processing,
     compare,
     fetchSummary,
+    fetchFilters,
+    filters,
   };
 };

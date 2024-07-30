@@ -79,7 +79,7 @@ export const StackedLineChart = ({
       },
     },
     legend: {
-      data: marketplaceslegend,
+      data: marketplaceslegend.sort((a: any, b: any) => a.localeCompare(b)),
     },
     toolbox: {
       feature: {
